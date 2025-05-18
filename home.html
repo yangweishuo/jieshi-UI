@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 首页</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .home-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* 顶部状态栏 */
+    .top-bar {
+      height: 60px;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: relative;
+      z-index: 5;
+    }
+    
+    .user-profile {
+      display: flex;
+      align-items: center;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 10px;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .user-name {
+      font-weight: 600;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    .user-level {
+      font-size: 12px;
+      color: var(--secondary-color);
+    }
+    
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    
+    .notification-icon i {
+      font-size: 22px;
+      color: #666;
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 18px;
+      height: 18px;
+      background-color: var(--warning-color);
+      border-radius: 50%;
+      color: white;
+      font-size: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(231, 76, 60, 0.3);
+    }
+    
+    /* 视频限制状态 */
+    .video-limit-status {
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(30, 136, 229, 0.8), rgba(124, 77, 255, 0.8));
+      margin: 15px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(30, 136, 229, 0.2);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .video-limit-status::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMSkiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==');
+      opacity: 0.2;
+      pointer-events: none;
+    }
+    
+    .limit-title {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .limit-title i {
+      font-size: 24px;
+      margin-right: 10px;
+    }
+    
+    .limit-title h3 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .time-progress {
+      background-color: rgba(255, 255, 255, 0.2);
+      height: 8px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    
+    .time-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 35%;
+      background: linear-gradient(to right, #FFF, rgba(255, 255, 255, 0.7));
+      border-radius: 5px;
+    }
+    
+    .time-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+    
+    .time-used {
+      font-weight: 600;
+    }
+    
+    .time-limit {
+      opacity: 0.8;
+    }
+    
+    /* 打卡卡片 */
+    .check-in-card {
+      background-color: white;
+      border-radius: 15px;
+      margin: 15px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .check-in-card.checked {
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.8), rgba(26, 188, 156, 0.8));
+      color: white;
+    }
+    
+    .check-in-card.checked .check-in-title,
+    .check-in-card.checked .streak-count {
+      color: white;
+    }
+    
+    .check-in-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .check-in-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+    
+    .check-in-title i {
+      margin-right: 8px;
+      color: var(--primary-color);
+    }
+    
+    .check-in-card.checked .check-in-title i {
+      color: white;
+    }
+    
+    .streak-count {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .check-in-note {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+    
+    .check-in-card.checked .check-in-note {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .check-in-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #2ECC71, #1ABC9C);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .check-in-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+    
+    .check-in-card.checked .check-in-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      pointer-events: none;
+    }
+    
+    /* 社交圈动态 */
+    .social-feed-preview {
+      background-color: white;
+      border-radius: 15px;
+      margin: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .social-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .social-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+    
+    .social-title i {
+      margin-right: 8px;
+      color: var(--secondary-color);
+      font-size: 20px;
+    }
+    
+    .view-all {
+      color: var(--secondary-color);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    
+    .social-feed-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .social-feed-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    
+    .social-user-avatar {
+      width: 50px;
+      height: 50px;
+      position: relative;
+      margin-right: 15px;
+    }
+    
+    .hexagon-avatar {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-image: url('https://randomuser.me/api/portraits/women/42.jpg');
+    }
+    
+    .social-content {
+      flex: 1;
+    }
+    
+    .social-user-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .social-text {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    
+    .social-time {
+      font-size: 12px;
+      color: #999;
+    }
+    
+    /* 徽章成就 */
+    .achievement-preview {
+      background-color: white;
+      border-radius: 15px;
+      margin: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+    }
+    
+    .achievement-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .achievement-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+    
+    .achievement-title i {
+      margin-right: 8px;
+      color: var(--accent-color);
+      font-size: 20px;
+    }
+    
+    .badges-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    
+    .badge-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80px;
+    }
+    
+    .badge-icon {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    
+    .badge-name {
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+    }
+    
+    /* 底部导航栏 */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 10;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 25%;
+      height: 100%;
+      padding-top: 12px;
+    }
+    
+    .nav-item i {
+      font-size: 24px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    
+    .nav-item .label {
+      font-size: 12px;
+      color: #aaa;
+    }
+    
+    .nav-item.active i,
+    .nav-item.active .label {
+      color: var(--secondary-color);
+    }
+    
+    .particle-explosion {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+    
+    .explosion-particle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 1;
+      animation: explode 1s ease-out forwards;
+    }
+    
+    /* 返回按钮 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+    }
+    
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+    
+    .back-button i {
+      font-size: 24px;
+    }
+    
+    @keyframes explode {
+      0% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--tx), var(--ty));
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-button" title="返回预览页">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+  
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="home-screen">
+          <!-- 顶部状态栏 -->
+          <div class="top-bar">
+            <div class="user-profile">
+              <div class="user-avatar">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+              </div>
+              <div class="user-info">
+                <div class="user-name">李明</div>
+                <div class="user-level">坚持者 Lv.3</div>
+              </div>
+            </div>
+            <div class="notification-icon">
+              <i class="ri-notification-3-line"></i>
+              <div class="notification-badge">2</div>
+            </div>
+          </div>
+          
+          <!-- 视频使用限制状态 -->
+          <div class="video-limit-status">
+            <div class="limit-title">
+              <i class="ri-timer-line"></i>
+              <h3>今日短视频使用时长</h3>
+            </div>
+            <div class="time-progress">
+              <div class="time-bar"></div>
+            </div>
+            <div class="time-info">
+              <div class="time-used">35分钟</div>
+              <div class="time-limit">限制: 100分钟</div>
+            </div>
+          </div>
+          
+          <!-- 打卡卡片 -->
+          <div class="check-in-card">
+            <div class="check-in-header">
+              <div class="check-in-title">
+                <i class="ri-calendar-check-line"></i>
+                今日打卡
+              </div>
+              <div class="streak-count">连续3天</div>
+            </div>
+            <div class="check-in-note">每日打卡可获得成长值和戒断评分加成！</div>
+            <button class="check-in-btn ripple">立即打卡</button>
+          </div>
+          
+          <!-- 社交圈动态预览 -->
+          <div class="social-feed-preview">
+            <div class="social-header">
+              <div class="social-title">
+                <i class="ri-group-line"></i>
+                社交圈动态
+              </div>
+              <a href="#" class="view-all">查看全部</a>
+            </div>
+            
+            <div class="social-feed-item">
+              <div class="social-user-avatar">
+                <div class="hexagon-avatar" style="background-image: url('https://randomuser.me/api/portraits/women/42.jpg')"></div>
+              </div>
+              <div class="social-content">
+                <div class="social-user-name">张小月</div>
+                <div class="social-text">今天成功没看短视频，改读了一小时书，感觉真好！#戒短视频 #读书</div>
+                <div class="social-time">10分钟前</div>
+              </div>
+            </div>
+            
+            <div class="social-feed-item">
+              <div class="social-user-avatar">
+                <div class="hexagon-avatar" style="background-image: url('https://randomuser.me/api/portraits/men/67.jpg')"></div>
+              </div>
+              <div class="social-content">
+                <div class="social-user-name">王强</div>
+                <div class="social-text">连续7天未使用短视频，感觉自己精力充沛了很多！</div>
+                <div class="social-time">1小时前</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 徽章成就预览 -->
+          <div class="achievement-preview">
+            <div class="achievement-header">
+              <div class="achievement-title">
+                <i class="ri-medal-line"></i>
+                成就徽章
+              </div>
+              <a href="#" class="view-all">查看全部</a>
+            </div>
+            
+            <div class="badges-container">
+              <div class="badge-item">
+                <div class="badge-icon">
+                  <div class="holographic-badge">
+                    <i class="ri-seedling-line" style="color: white; font-size: 30px;"></i>
+                  </div>
+                </div>
+                <div class="badge-name">初心者</div>
+              </div>
+              
+              <div class="badge-item">
+                <div class="badge-icon">
+                  <div class="holographic-badge">
+                    <i class="ri-calendar-check-line" style="color: white; font-size: 30px;"></i>
+                  </div>
+                </div>
+                <div class="badge-name">坚持7天</div>
+              </div>
+              
+              <div class="badge-item">
+                <div class="badge-icon">
+                  <div class="holographic-badge" style="background: linear-gradient(135deg, #bdc3c7, #95a5a6);">
+                    <i class="ri-group-line" style="color: white; font-size: 30px;"></i>
+                  </div>
+                </div>
+                <div class="badge-name">社交达人</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 底部导航栏 -->
+          <div class="bottom-nav">
+            <div class="nav-item active">
+              <i class="ri-home-5-line"></i>
+              <div class="label">首页</div>
+            </div>
+            <div class="nav-item">
+              <i class="ri-bar-chart-line"></i>
+              <div class="label">统计</div>
+            </div>
+            <div class="nav-item">
+              <div class="social-nav-icon">
+                <i class="ri-group-line"></i>
+                <div class="particle-flow"></div>
+              </div>
+              <div class="label">社交圈</div>
+            </div>
+            <div class="nav-item">
+              <i class="ri-user-line"></i>
+              <div class="label">我的</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html> 

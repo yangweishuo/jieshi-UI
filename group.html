@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 用户组详情</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .group-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* 顶部栏 */
+    .group-header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: relative;
+      z-index: 5;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .back-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+      margin-right: 15px;
+    }
+
+    .back-button i {
+      font-size: 24px;
+      color: #333;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .more-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+    }
+
+    .more-button i {
+      font-size: 24px;
+      color: #333;
+    }
+
+    /* 组信息卡片 */
+    .group-info-card {
+      position: relative;
+      margin: 15px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .group-cover {
+      width: 100%;
+      height: 140px;
+      position: relative;
+    }
+
+    .group-cover-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .group-cover-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.7));
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 15px;
+      color: white;
+    }
+
+    .group-name {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .group-meta {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .group-meta i {
+      margin-right: 5px;
+    }
+
+    .group-meta-item {
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .group-info-content {
+      padding: 15px;
+      background-color: white;
+    }
+
+    .group-description {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .group-stats {
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      padding-top: 15px;
+    }
+
+    .group-stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--secondary-color);
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* 标签栏 */
+    .tab-bar {
+      display: flex;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 15px 0;
+      text-align: center;
+      font-weight: 600;
+      color: #666;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      color: var(--secondary-color);
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      width: 50%;
+      height: 3px;
+      background-color: var(--secondary-color);
+      border-radius: 3px;
+    }
+
+    /* 动态流内容 */
+    .group-feed {
+      padding: 15px;
+    }
+
+    .post-input {
+      background-color: white;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 15px;
+    }
+
+    .post-input-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .user-mini-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 10px;
+    }
+
+    .user-mini-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .post-placeholder {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .post-actions {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      padding-top: 15px;
+      margin-top: 15px;
+    }
+
+    .post-action {
+      display: flex;
+      align-items: center;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .post-action i {
+      margin-right: 5px;
+      font-size: 18px;
+    }
+
+    .feed-item {
+      background-color: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .feed-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+    }
+
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .feed-user {
+      display: flex;
+      align-items: center;
+    }
+
+    .feed-user-avatar {
+      width: 50px;
+      height: 50px;
+      position: relative;
+      margin-right: 15px;
+    }
+
+    .hexagon-avatar {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .feed-user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feed-user-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .feed-time {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .feed-more {
+      color: #666;
+      font-size: 20px;
+    }
+
+    .feed-content {
+      margin-bottom: 15px;
+    }
+
+    .feed-text {
+      font-size: 16px;
+      color: #333;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .feed-image {
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .feed-image img {
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .feed-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .feed-tag {
+      padding: 5px 10px;
+      background-color: rgba(46, 204, 113, 0.1);
+      color: var(--primary-color);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .feed-stats {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      margin-bottom: 15px;
+    }
+
+    .feed-stat {
+      display: flex;
+      align-items: center;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .feed-stat i {
+      margin-right: 5px;
+      font-size: 16px;
+    }
+
+    .feed-actions {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .feed-action {
+      display: flex;
+      align-items: center;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .feed-action i {
+      margin-right: 5px;
+      font-size: 18px;
+    }
+
+    .feed-action.active {
+      color: var(--secondary-color);
+    }
+
+    /* 成员列表 */
+    .members-list {
+      padding: 15px;
+    }
+
+    .members-search {
+      background-color: white;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 15px;
+    }
+
+    .search-input {
+      position: relative;
+    }
+
+    .search-input input {
+      width: 100%;
+      padding: 12px 15px 12px 40px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .search-input i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+    }
+
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .member-card {
+      background-color: white;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+    }
+
+    .member-avatar {
+      width: 60px;
+      height: 60px;
+      position: relative;
+      margin-right: 15px;
+    }
+
+    .member-info {
+      flex: 1;
+    }
+
+    .member-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .member-role {
+      font-size: 12px;
+      color: var(--secondary-color);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .member-stat {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* 底部导航栏 */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 10;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 25%;
+      height: 100%;
+      padding-top: 12px;
+    }
+
+    .nav-item i {
+      font-size: 24px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+
+    .nav-item .label {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .nav-item.active i,
+    .nav-item.active .label {
+      color: var(--secondary-color);
+    }
+
+    /* 返回按钮 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+
+    .back-button i {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-button" title="返回预览页">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="group-screen">
+          <!-- 顶部栏 -->
+          <div class="group-header">
+            <div class="header-left">
+              <div class="back-button">
+                <i class="ri-arrow-left-s-line"></i>
+              </div>
+              <div class="header-title">戒断小分队</div>
+            </div>
+            <div class="more-button">
+              <i class="ri-more-2-line"></i>
+            </div>
+          </div>
+
+          <!-- 组信息卡片 -->
+          <div class="group-info-card">
+            <div class="group-cover">
+              <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="组封面" class="group-cover-img">
+              <div class="group-cover-overlay">
+                <h2 class="group-name">戒断小分队</h2>
+                <div class="group-meta">
+                  <div class="group-meta-item">
+                    <i class="ri-team-line"></i>
+                    25名成员
+                  </div>
+                  <div class="group-meta-item">
+                    <i class="ri-calendar-check-line"></i>
+                    创建于28天前
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="group-info-content">
+              <div class="group-description">
+                一个致力于减少短视频使用时间的小组，我们一起互相支持、监督和鼓励。每天打卡，分享戒断心得，一起成长！
+              </div>
+              <div class="group-stats">
+                <div class="group-stat-item">
+                  <div class="stat-value">98%</div>
+                  <div class="stat-label">活跃度</div>
+                </div>
+                <div class="group-stat-item">
+                  <div class="stat-value">156</div>
+                  <div class="stat-label">今日打卡</div>
+                </div>
+                <div class="group-stat-item">
+                  <div class="stat-value">89%</div>
+                  <div class="stat-label">戒断率</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 标签栏 -->
+          <div class="tab-bar">
+            <div class="tab active">动态</div>
+            <div class="tab">成员</div>
+            <div class="tab">任务</div>
+          </div>
+
+          <!-- 动态流内容 -->
+          <div class="group-feed">
+            <!-- 发布框 -->
+            <div class="post-input">
+              <div class="post-input-header">
+                <div class="user-mini-avatar">
+                  <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+                </div>
+                <div class="post-placeholder">分享你的戒断心得...</div>
+              </div>
+              <div class="post-actions">
+                <div class="post-action">
+                  <i class="ri-image-line"></i>
+                  图片
+                </div>
+                <div class="post-action">
+                  <i class="ri-emotion-line"></i>
+                  表情
+                </div>
+                <div class="post-action">
+                  <i class="ri-hashtag"></i>
+                  话题
+                </div>
+              </div>
+            </div>
+
+            <!-- 动态条目 -->
+            <div class="feed-item">
+              <div class="feed-header">
+                <div class="feed-user">
+                  <div class="feed-user-avatar">
+                    <div class="hexagon-avatar" style="background-image: url('https://randomuser.me/api/portraits/women/42.jpg')"></div>
+                  </div>
+                  <div class="feed-user-info">
+                    <div class="feed-user-name">张小月</div>
+                    <div class="feed-time">2小时前</div>
+                  </div>
+                </div>
+                <div class="feed-more">
+                  <i class="ri-more-line"></i>
+                </div>
+              </div>
+
+              <div class="feed-content">
+                <div class="feed-text">
+                  今天是我加入小组的第7天，一周没有刷短视频啦！感觉注意力逐渐恢复，晚上也不会刷到很晚才睡了。分享一下我这周的替代活动——读书！
+                </div>
+                <div class="feed-image">
+                  <img src="https://images.unsplash.com/photo-1519682337058-a94d519337bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="动态图片">
+                </div>
+                <div class="feed-tags">
+                  <div class="feed-tag">#7天打卡</div>
+                  <div class="feed-tag">#戒短视频</div>
+                  <div class="feed-tag">#读书替代</div>
+                </div>
+              </div>
+
+              <div class="feed-stats">
+                <div class="feed-stat">
+                  <i class="ri-heart-line"></i>
+                  24人点赞
+                </div>
+                <div class="feed-stat">
+                  <i class="ri-chat-1-line"></i>
+                  8条评论
+                </div>
+              </div>
+
+              <div class="feed-actions">
+                <div class="feed-action">
+                  <i class="ri-heart-line"></i>
+                  点赞
+                </div>
+                <div class="feed-action">
+                  <i class="ri-chat-1-line"></i>
+                  评论
+                </div>
+                <div class="feed-action">
+                  <i class="ri-share-line"></i>
+                  分享
+                </div>
+              </div>
+            </div>
+
+            <div class="feed-item">
+              <div class="feed-header">
+                <div class="feed-user">
+                  <div class="feed-user-avatar">
+                    <div class="hexagon-avatar" style="background-image: url('https://randomuser.me/api/portraits/men/67.jpg')"></div>
+                  </div>
+                  <div class="feed-user-info">
+                    <div class="feed-user-name">王强</div>
+                    <div class="feed-time">5小时前</div>
+                  </div>
+                </div>
+                <div class="feed-more">
+                  <i class="ri-more-line"></i>
+                </div>
+              </div>
+
+              <div class="feed-content">
+                <div class="feed-text">
+                  分享一个小技巧：将短视频应用放在手机最后一页，并设置成黑白屏幕模式，这样就不会下意识地打开了！今天已经成功控制在30分钟以内，明天目标25分钟！
+                </div>
+                <div class="feed-tags">
+                  <div class="feed-tag">#小技巧</div>
+                  <div class="feed-tag">#控制使用</div>
+                </div>
+              </div>
+
+              <div class="feed-stats">
+                <div class="feed-stat">
+                  <i class="ri-heart-line"></i>
+                  18人点赞
+                </div>
+                <div class="feed-stat">
+                  <i class="ri-chat-1-line"></i>
+                  5条评论
+                </div>
+              </div>
+
+              <div class="feed-actions">
+                <div class="feed-action active">
+                  <i class="ri-heart-fill"></i>
+                  已赞
+                </div>
+                <div class="feed-action">
+                  <i class="ri-chat-1-line"></i>
+                  评论
+                </div>
+                <div class="feed-action">
+                  <i class="ri-share-line"></i>
+                  分享
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+        <!-- 底部导航栏 -->
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <i class="ri-home-5-line"></i>
+            <div class="label">首页</div>
+          </div>
+          <div class="nav-item">
+            <i class="ri-bar-chart-line"></i>
+            <div class="label">统计</div>
+          </div>
+          <div class="nav-item active">
+            <i class="ri-group-line"></i>
+            <div class="label">社交圈</div>
+          </div>
+          <div class="nav-item">
+            <i class="ri-user-line"></i>
+            <div class="label">我的</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

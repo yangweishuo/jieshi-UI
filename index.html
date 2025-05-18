@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视APP - UI/UX设计预览</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--main-font);
+      background-color: #f5f5f5;
+    }
+    
+    /* 导航栏 */
+    .navbar {
+      width: 100%;
+      height: 70px;
+      background-color: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    .navbar-content {
+      max-width: 1200px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+    
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+      box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+    }
+    
+    .logo-icon i {
+      font-size: 24px;
+      color: white;
+    }
+    
+    .logo-text {
+      font-weight: bold;
+      font-size: 22px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .navbar-links {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .navbar-link {
+      color: #666;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+    }
+    
+    .navbar-link i {
+      margin-right: 5px;
+    }
+    
+    .navbar-link:hover {
+      color: var(--secondary-color);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 90px auto 0;
+      padding: 30px 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .project-title {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .project-subtitle {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .project-description {
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+      color: #666;
+      text-align: left;
+    }
+    
+    .pages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+    
+    .page-item {
+      background-color: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .page-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .page-preview {
+      width: 100%;
+      height: 280px;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .page-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    
+    .page-item:hover .page-preview img {
+      transform: scale(1.05);
+    }
+    
+    .page-preview::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, transparent 70%, rgba(0,0,0,0.5));
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .page-item:hover .page-preview::after {
+      opacity: 1;
+    }
+    
+    .page-info {
+      padding: 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .page-title i {
+      margin-right: 10px;
+      font-size: 24px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .page-description {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    
+    .view-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 3px 8px rgba(30, 136, 229, 0.3);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .view-button i {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+    
+    .view-button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: rotate(45deg);
+      animation: button-shine 3s infinite;
+    }
+    
+    @keyframes button-shine {
+      0% {
+        transform: translateX(-300%) rotate(45deg);
+      }
+      100% {
+        transform: translateX(300%) rotate(45deg);
+      }
+    }
+    
+    .view-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(30, 136, 229, 0.5);
+    }
+    
+    .footer {
+      margin-top: 60px;
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 14px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    /* 返回顶部按钮 */
+    .back-to-top {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      border-radius: 50%;
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      box-shadow: 0 3px 15px rgba(30, 136, 229, 0.4);
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s;
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .back-to-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(30, 136, 229, 0.6);
+    }
+    
+    .back-to-top i {
+      font-size: 24px;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .navbar-links {
+        display: none;
+      }
+      
+      .pages-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .back-to-top {
+        width: 40px;
+        height: 40px;
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <div class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-logo">
+        <div class="logo-icon">
+          <i class="ri-eye-off-line"></i>
+        </div>
+        <div class="logo-text">戒视APP</div>
+      </div>
+      <div class="navbar-links">
+        <a href="#" class="navbar-link"><i class="ri-home-5-line"></i> 首页</a>
+        <a href="#pages" class="navbar-link"><i class="ri-pages-line"></i> 页面预览</a>
+        <a href="https://github.com/" target="_blank" class="navbar-link"><i class="ri-github-line"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <h1 class="project-title">戒视APP</h1>
+      <p class="project-subtitle">帮助用户减少短视频使用时间的应用</p>
+      <div class="project-description">
+        <p>戒视是一款专注于帮助用户控制短视频使用时间的移动应用。采用社交激励机制、数据可视化和成就系统，促使用户形成健康的数字使用习惯。应用提供时间监控、社交互助、成就奖励等功能，让用户在愉悦的环境中逐步减少对短视频的依赖。</p>
+      </div>
+    </div>
+    
+    <div id="pages" class="pages-grid">
+      <div class="page-item">
+        <div class="page-preview">
+          <img src="https://dummyimage.com/360x280/2ECC71/ffffff&text=启动页" alt="启动页预览">
+        </div>
+        <div class="page-info">
+          <h3 class="page-title">
+            <i class="ri-space-ship-line"></i>
+            启动页
+          </h3>
+          <p class="page-description">应用启动界面，展示品牌标识和口号，带有渐变背景和粒子动画。</p>
+          <a href="splash.html" class="view-button" target="_blank">
+            <i class="ri-eye-line"></i> 查看页面
+          </a>
+        </div>
+      </div>
+      
+      <div class="page-item">
+        <div class="page-preview">
+          <img src="https://dummyimage.com/360x280/1E88E5/ffffff&text=登录注册页" alt="登录注册页预览">
+        </div>
+        <div class="page-info">
+          <h3 class="page-title">
+            <i class="ri-login-circle-line"></i>
+            登录注册页
+          </h3>
+          <p class="page-description">用户登录和注册界面，支持手机号/邮箱登录，以及多种第三方登录方式。</p>
+          <a href="login.html" class="view-button" target="_blank">
+            <i class="ri-eye-line"></i> 查看页面
+          </a>
+        </div>
+      </div>
+      
+      <div class="page-item">
+        <div class="page-preview">
+          <img src="https://dummyimage.com/360x280/7C4DFF/ffffff&text=首页" alt="首页预览">
+        </div>
+        <div class="page-info">
+          <h3 class="page-title">
+            <i class="ri-home-5-line"></i>
+            首页
+          </h3>
+          <p class="page-description">应用主界面，展示用户的使用时长、打卡状态、社交动态和成就徽章。</p>
+          <a href="home.html" class="view-button" target="_blank">
+            <i class="ri-eye-line"></i> 查看页面
+          </a>
+        </div>
+      </div>
+      
+      <div class="page-item">
+        <div class="page-preview">
+          <img src="https://dummyimage.com/360x280/2ECC71/ffffff&text=打卡详情页" alt="打卡详情页预览">
+        </div>
+        <div class="page-info">
+          <h3 class="page-title">
+            <i class="ri-calendar-check-line"></i>
+            打卡详情页
+          </h3>
+          <p class="page-description">展示用户的打卡成功状态、连续打卡记录、奖励明细和历史打卡记录。</p>
+          <a href="checkin.html" class="view-button" target="_blank">
+            <i class="ri-eye-line"></i> 查看页面
+          </a>
+        </div>
+      </div>
+      
+      <div class="page-item">
+        <div class="page-preview">
+          <img src="https://dummyimage.com/360x280/1E88E5/ffffff&text=用户组详情页" alt="用户组详情页预览">
+        </div>
+        <div class="page-info">
+          <h3 class="page-title">
+            <i class="ri-group-line"></i>
+            用户组详情页
+          </h3>
+          <p class="page-description">展示互助小组信息、组内动态、成员互动，支持分享戒断心得和经验。</p>
+          <a href="group.html" class="view-button" target="_blank">
+            <i class="ri-eye-line"></i> 查看页面
+          </a>
+        </div>
+      </div>
+      
+      <div class="page-item">
+        <div class="page-preview">
+          <img src="https://dummyimage.com/360x280/7C4DFF/ffffff&text=时长排行榜页" alt="时长排行榜页预览">
+        </div>
+        <div class="page-info">
+          <h3 class="page-title">
+            <i class="ri-trophy-line"></i>
+            时长排行榜页
+          </h3>
+          <p class="page-description">展示用户短视频戒断时长排名、趋势图表，通过竞争激励用户坚持戒断。</p>
+          <a href="ranking.html" class="view-button" target="_blank">
+            <i class="ri-eye-line"></i> 查看页面
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>© 2024 戒视APP - UI/UX设计</p>
+    </div>
+  </div>
+  
+  <!-- 返回顶部按钮 -->
+  <div class="back-to-top">
+    <i class="ri-arrow-up-line"></i>
+  </div>
+  
+  <script>
+    // 返回顶部按钮逻辑
+    const backToTopButton = document.querySelector('.back-to-top');
+    
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopButton.classList.add('visible');
+      } else {
+        backToTopButton.classList.remove('visible');
+      }
+    });
+    
+    backToTopButton.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+</body>
+</html> 

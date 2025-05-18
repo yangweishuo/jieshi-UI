@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 时长排行榜</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .ranking-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* 顶部栏 */
+    .ranking-header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: relative;
+      z-index: 5;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .back-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+      margin-right: 15px;
+    }
+
+    .back-button i {
+      font-size: 24px;
+      color: #333;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .filter-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+    }
+
+    .filter-button i {
+      font-size: 24px;
+      color: #333;
+    }
+
+    /* 排名顶部卡片 */
+    .top-ranking-card {
+      background: linear-gradient(135deg, rgba(30, 136, 229, 0.8), rgba(124, 77, 255, 0.8));
+      margin: 15px;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(30, 136, 229, 0.2);
+      position: relative;
+      overflow: hidden;
+      color: white;
+    }
+
+    .top-ranking-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMSkiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==');
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .ranking-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .ranking-title i {
+      margin-right: 8px;
+      font-size: 20px;
+    }
+
+    .top-three {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 180px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .top-three::after {
+      content: '';
+      position: absolute;
+      bottom: 60px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .rank-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .rank-second {
+      height: 85%;
+    }
+
+    .rank-first {
+      height: 100%;
+    }
+
+    .rank-third {
+      height: 70%;
+    }
+
+    .rank-pillar {
+      width: 60px;
+      background: rgba(255, 255, 255, 0.2);
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding-bottom: 10px;
+      position: relative;
+    }
+
+    .rank-first .rank-pillar {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .rank-number {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: white;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .rank-first .rank-number {
+      font-size: 30px;
+    }
+
+    .rank-avatar {
+      width: 50px;
+      height: 50px;
+      background-color: white;
+      border-radius: 50%;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .rank-first .rank-avatar {
+      width: 60px;
+      height: 60px;
+      border: 3px solid rgba(255, 215, 0, 0.8);
+    }
+
+    .rank-second .rank-avatar {
+      border: 3px solid rgba(192, 192, 192, 0.8);
+    }
+
+    .rank-third .rank-avatar {
+      border: 3px solid rgba(205, 127, 50, 0.8);
+    }
+
+    .rank-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .rank-info {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .rank-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .rank-value {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .crown {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #FFD700;
+      font-size: 24px;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+    }
+
+    /* 排名标签栏 */
+    .ranking-tabs {
+      display: flex;
+      background-color: white;
+      margin: 0 15px 15px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .ranking-tab {
+      flex: 1;
+      padding: 12px 0;
+      text-align: center;
+      font-weight: 600;
+      color: #666;
+      font-size: 14px;
+      position: relative;
+    }
+
+    .ranking-tab.active {
+      color: white;
+      background-color: var(--secondary-color);
+    }
+
+    /* 排名列表 */
+    .ranking-list {
+      background-color: white;
+      margin: 0 15px 15px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .ranking-item:last-child {
+      border-bottom: none;
+    }
+
+    .rank-position {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      color: #666;
+      margin-right: 15px;
+    }
+
+    .rank-position.top-1 {
+      background-color: #FFD700;
+      color: white;
+    }
+
+    .rank-position.top-2 {
+      background-color: #C0C0C0;
+      color: white;
+    }
+
+    .rank-position.top-3 {
+      background-color: #CD7F32;
+      color: white;
+    }
+
+    .rank-user {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+
+    .rank-user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 10px;
+      position: relative;
+    }
+
+    .rank-user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .rank-user-info {
+      flex: 1;
+    }
+
+    .rank-user-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .rank-user-title {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .rank-user-value {
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+
+    .rank-trend {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      margin-left: 10px;
+    }
+
+    .trend-up {
+      color: #2ECC71;
+    }
+
+    .trend-down {
+      color: #E74C3C;
+    }
+
+    /* 趋势图表 */
+    .trend-chart-card {
+      background-color: white;
+      margin: 15px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .chart-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+
+    .chart-title i {
+      margin-right: 8px;
+      color: var(--secondary-color);
+    }
+
+    .chart-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chart-option {
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #999;
+      background-color: #f8f9fa;
+    }
+
+    .chart-option.active {
+      color: white;
+      background-color: var(--secondary-color);
+    }
+
+    .chart-container {
+      height: 200px;
+      position: relative;
+    }
+
+    .chart-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .grid-line {
+      width: 100%;
+      height: 1px;
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .chart-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 10px 0;
+    }
+
+    .chart-path {
+      width: 100%;
+      height: 100%;
+      fill: none;
+      stroke: var(--secondary-color);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .chart-area {
+      width: 100%;
+      height: 100%;
+      fill: url(#gradient);
+      opacity: 0.2;
+    }
+
+    .chart-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .chart-label {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* 底部导航栏 */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 10;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 25%;
+      height: 100%;
+      padding-top: 12px;
+    }
+
+    .nav-item i {
+      font-size: 24px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+
+    .nav-item .label {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .nav-item.active i,
+    .nav-item.active .label {
+      color: var(--secondary-color);
+    }
+
+    /* 返回按钮 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+
+    .back-button i {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-button" title="返回预览页">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="ranking-screen">
+          <!-- 顶部栏 -->
+          <div class="ranking-header">
+            <div class="header-left">
+              <div class="back-button">
+                <i class="ri-arrow-left-s-line"></i>
+              </div>
+              <div class="header-title">时长排行榜</div>
+            </div>
+            <div class="filter-button">
+              <i class="ri-filter-3-line"></i>
+            </div>
+          </div>
+
+          <!-- 排名顶部卡片 -->
+          <div class="top-ranking-card">
+            <div class="ranking-title">
+              <i class="ri-trophy-line"></i>
+              短视频戒断时长排名
+            </div>
+
+            <div class="top-three">
+              <!-- 排名第二 -->
+              <div class="rank-item rank-second">
+                <div class="rank-pillar">
+                  <div class="rank-number">2</div>
+                  <div class="rank-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+                  </div>
+                </div>
+                <div class="rank-info">
+                  <div class="rank-name">李明</div>
+                  <div class="rank-value">148小时</div>
+                </div>
+              </div>
+
+              <!-- 排名第一 -->
+              <div class="rank-item rank-first">
+                <div class="rank-pillar">
+                  <i class="ri-crown-line crown"></i>
+                  <div class="rank-number">1</div>
+                  <div class="rank-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="用户头像">
+                  </div>
+                </div>
+                <div class="rank-info">
+                  <div class="rank-name">陈静</div>
+                  <div class="rank-value">168小时</div>
+                </div>
+              </div>
+
+              <!-- 排名第三 -->
+              <div class="rank-item rank-third">
+                <div class="rank-pillar">
+                  <div class="rank-number">3</div>
+                  <div class="rank-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="用户头像">
+                  </div>
+                </div>
+                <div class="rank-info">
+                  <div class="rank-name">王浩</div>
+                  <div class="rank-value">132小时</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 排名标签栏 -->
+          <div class="ranking-tabs">
+            <div class="ranking-tab active">周榜</div>
+            <div class="ranking-tab">月榜</div>
+            <div class="ranking-tab">总榜</div>
+          </div>
+
+          <!-- 排名列表 -->
+          <div class="ranking-list">
+            <div class="ranking-item">
+              <div class="rank-position top-1">1</div>
+              <div class="rank-user">
+                <div class="rank-user-avatar">
+                  <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="用户头像">
+                </div>
+                <div class="rank-user-info">
+                  <div class="rank-user-name">陈静</div>
+                  <div class="rank-user-title">戒断王者</div>
+                </div>
+              </div>
+              <div class="rank-user-value">168小时</div>
+              <div class="rank-trend trend-up">
+                <i class="ri-arrow-up-line"></i> 2
+              </div>
+            </div>
+
+            <div class="ranking-item">
+              <div class="rank-position top-2">2</div>
+              <div class="rank-user">
+                <div class="rank-user-avatar">
+                  <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+                </div>
+                <div class="rank-user-info">
+                  <div class="rank-user-name">李明</div>
+                  <div class="rank-user-title">戒断大师</div>
+                </div>
+              </div>
+              <div class="rank-user-value">148小时</div>
+              <div class="rank-trend trend-down">
+                <i class="ri-arrow-down-line"></i> 1
+              </div>
+            </div>
+
+            <div class="ranking-item">
+              <div class="rank-position top-3">3</div>
+              <div class="rank-user">
+                <div class="rank-user-avatar">
+                  <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="用户头像">
+                </div>
+                <div class="rank-user-info">
+                  <div class="rank-user-name">王浩</div>
+                  <div class="rank-user-title">戒断达人</div>
+                </div>
+              </div>
+              <div class="rank-user-value">132小时</div>
+              <div class="rank-trend trend-up">
+                <i class="ri-arrow-up-line"></i> 5
+              </div>
+            </div>
+
+            <div class="ranking-item">
+              <div class="rank-position">4</div>
+              <div class="rank-user">
+                <div class="rank-user-avatar">
+                  <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="用户头像">
+                </div>
+                <div class="rank-user-info">
+                  <div class="rank-user-name">张小月</div>
+                  <div class="rank-user-title">戒断高手</div>
+                </div>
+              </div>
+              <div class="rank-user-value">120小时</div>
+              <div class="rank-trend trend-up">
+                <i class="ri-arrow-up-line"></i> 2
+              </div>
+            </div>
+
+            <div class="ranking-item">
+              <div class="rank-position">5</div>
+              <div class="rank-user">
+                <div class="rank-user-avatar">
+                  <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="用户头像">
+                </div>
+                <div class="rank-user-info">
+                  <div class="rank-user-name">王强</div>
+                  <div class="rank-user-title">戒断先锋</div>
+                </div>
+              </div>
+              <div class="rank-user-value">115小时</div>
+              <div class="rank-trend trend-down">
+                <i class="ri-arrow-down-line"></i> 1
+              </div>
+            </div>
+          </div>
+
+          <!-- 趋势图表 -->
+          <div class="trend-chart-card">
+            <div class="chart-header">
+              <div class="chart-title">
+                <i class="ri-line-chart-line"></i>
+                戒断趋势
+              </div>
+              <div class="chart-options">
+                <div class="chart-option">周</div>
+                <div class="chart-option active">月</div>
+                <div class="chart-option">年</div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-grid">
+                <div class="grid-line"></div>
+                <div class="grid-line"></div>
+                <div class="grid-line"></div>
+                <div class="grid-line"></div>
+                <div class="grid-line"></div>
+              </div>
+              <div class="chart-line">
+                <svg width="100%" height="100%" viewBox="0 0 300 150" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#1E88E5" stop-opacity="0.8" />
+                      <stop offset="100%" stop-color="#1E88E5" stop-opacity="0.1" />
+                    </linearGradient>
+                  </defs>
+                  <path class="chart-path" d="M0,120 C20,100 40,90 60,85 C80,80 100,90 120,70 C140,50 160,40 180,60 C200,80 220,60 240,30 C260,40 280,20 300,10" />
+                  <path class="chart-area" d="M0,120 C20,100 40,90 60,85 C80,80 100,90 120,70 C140,50 160,40 180,60 C200,80 220,60 240,30 C260,40 280,20 300,10 V150 H0 Z" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="chart-labels">
+              <div class="chart-label">1日</div>
+              <div class="chart-label">7日</div>
+              <div class="chart-label">14日</div>
+              <div class="chart-label">21日</div>
+              <div class="chart-label">28日</div>
+            </div>
+          </div>
+
+
+        </div>
+        <!-- 底部导航栏 -->
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <i class="ri-home-5-line"></i>
+            <div class="label">首页</div>
+          </div>
+          <div class="nav-item active">
+            <i class="ri-bar-chart-line"></i>
+            <div class="label">统计</div>
+          </div>
+          <div class="nav-item">
+            <i class="ri-group-line"></i>
+            <div class="label">社交圈</div>
+          </div>
+          <div class="nav-item">
+            <i class="ri-user-line"></i>
+            <div class="label">我的</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

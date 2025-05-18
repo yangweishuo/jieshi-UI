@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 打卡详情</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .checkin-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 70px; /* 调整为与底部导航栏高度相同 */
+    }
+
+    /* 顶部栏 */
+    .checkin-header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: relative;
+      z-index: 5;
+    }
+
+    .back-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+      margin-right: 15px;
+    }
+
+    .back-button i {
+      font-size: 24px;
+      color: #333;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    /* 打卡成功卡片 */
+    .success-card {
+      margin: 20px 15px;
+      padding: 30px 20px;
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.9), rgba(26, 188, 156, 0.9));
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+      position: relative;
+      overflow: hidden;
+      color: white;
+      text-align: center;
+    }
+
+    .success-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMSkiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==');
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 20px;
+      position: relative;
+    }
+
+    .success-icon i {
+      font-size: 40px;
+      color: white;
+    }
+
+    .success-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .success-subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .streak-badge {
+      width: fit-content;
+      padding: 8px 15px;
+      border-radius: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      margin: 0 auto;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .streak-badge i {
+      margin-right: 5px;
+    }
+
+    /* 打卡奖励卡片 */
+    .reward-card {
+      margin: 20px 15px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .reward-header {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .reward-header i {
+      font-size: 20px;
+      color: #f1c40f;
+      margin-right: 8px;
+    }
+
+    .rewards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .reward-item {
+      display: flex;
+      align-items: center;
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .reward-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f1c40f, #f39c12);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 15px;
+      box-shadow: 0 3px 8px rgba(243, 156, 18, 0.2);
+    }
+
+    .reward-icon i {
+      font-size: 22px;
+      color: white;
+    }
+
+    .reward-content {
+      flex: 1;
+    }
+
+    .reward-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .reward-desc {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* 打卡历史 */
+    .history-card {
+      margin: 20px 15px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .history-header {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .history-header i {
+      font-size: 20px;
+      color: var(--secondary-color);
+      margin-right: 8px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 600;
+      color: #999;
+    }
+
+    .calendar-day.checked {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .calendar-day.today {
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .calendar-day.today.checked {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    /* 打卡分享 */
+    .share-card {
+      margin: 20px 15px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    .share-header {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .share-header i {
+      font-size: 20px;
+      color: var(--secondary-color);
+      margin-right: 8px;
+    }
+
+    .share-note {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .share-btn {
+      width: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .share-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .share-icon i {
+      font-size: 25px;
+      color: white;
+    }
+
+    .share-label {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .share-wechat .share-icon {
+      background-color: #07C160;
+    }
+
+    .share-group .share-icon {
+      background-color: var(--secondary-color);
+    }
+
+    .share-weibo .share-icon {
+      background-color: #E6162D;
+    }
+
+    /* 底部导航栏 */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 100;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 25%;
+      height: 100%;
+      padding-top: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      transition: width 0.3s ease;
+      border-radius: 3px 3px 0 0;
+    }
+
+    .nav-item.active::after {
+      width: 50%;
+    }
+
+    .nav-item:active {
+      transform: scale(0.95);
+    }
+
+    .nav-item i {
+      font-size: 24px;
+      margin-bottom: 5px;
+      color: #aaa;
+      transition: color 0.3s ease;
+    }
+
+    .nav-item .label {
+      font-size: 12px;
+      color: #aaa;
+      transition: color 0.3s ease;
+    }
+
+    .nav-item.active i,
+    .nav-item.active .label {
+      color: var(--secondary-color);
+    }
+
+    /* 返回按钮 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+
+    .back-button i {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-button" title="返回预览页">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="checkin-screen">
+          <!-- 顶部栏 -->
+          <div class="checkin-header">
+            <div class="back-button">
+              <i class="ri-arrow-left-s-line"></i>
+            </div>
+            <div class="header-title">打卡详情</div>
+          </div>
+
+          <!-- 打卡成功卡片 -->
+          <div class="success-card">
+            <div class="success-icon">
+              <i class="ri-check-line"></i>
+            </div>
+            <h2 class="success-title">打卡成功！</h2>
+            <p class="success-subtitle">恭喜你完成今日打卡，继续坚持！</p>
+            <div class="streak-badge">
+              <i class="ri-fire-line"></i>
+              连续打卡：3天
+            </div>
+          </div>
+
+          <!-- 打卡奖励 -->
+          <div class="reward-card">
+            <div class="reward-header">
+              <i class="ri-gift-line"></i>
+              打卡奖励
+            </div>
+
+            <div class="rewards-list">
+              <div class="reward-item">
+                <div class="reward-icon">
+                  <i class="ri-medal-line"></i>
+                </div>
+                <div class="reward-content">
+                  <div class="reward-name">成长值 +10</div>
+                  <div class="reward-desc">提升等级进度，解锁更多专属特权</div>
+                </div>
+              </div>
+
+              <div class="reward-item">
+                <div class="reward-icon">
+                  <i class="ri-shield-star-line"></i>
+                </div>
+                <div class="reward-content">
+                  <div class="reward-name">戒断评分 +5%</div>
+                  <div class="reward-desc">提高戒断成功率，稳步前进</div>
+                </div>
+              </div>
+
+              <div class="reward-item">
+                <div class="reward-icon">
+                  <i class="ri-time-line"></i>
+                </div>
+                <div class="reward-content">
+                  <div class="reward-name">时间额度 +10分钟</div>
+                  <div class="reward-desc">今日短视频使用时长上限提升</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 打卡历史 -->
+          <div class="history-card">
+            <div class="history-header">
+              <i class="ri-calendar-line"></i>
+              打卡历史
+            </div>
+
+            <div class="calendar-grid">
+              <div class="calendar-day">1</div>
+              <div class="calendar-day">2</div>
+              <div class="calendar-day">3</div>
+              <div class="calendar-day">4</div>
+              <div class="calendar-day">5</div>
+              <div class="calendar-day checked">6</div>
+              <div class="calendar-day checked">7</div>
+              <div class="calendar-day checked">8</div>
+              <div class="calendar-day checked">9</div>
+              <div class="calendar-day">10</div>
+              <div class="calendar-day">11</div>
+              <div class="calendar-day">12</div>
+              <div class="calendar-day">13</div>
+              <div class="calendar-day">14</div>
+              <div class="calendar-day">15</div>
+              <div class="calendar-day">16</div>
+              <div class="calendar-day">17</div>
+              <div class="calendar-day">18</div>
+              <div class="calendar-day">19</div>
+              <div class="calendar-day">20</div>
+              <div class="calendar-day today checked">21</div>
+              <div class="calendar-day">22</div>
+              <div class="calendar-day">23</div>
+              <div class="calendar-day">24</div>
+              <div class="calendar-day">25</div>
+              <div class="calendar-day">26</div>
+              <div class="calendar-day">27</div>
+              <div class="calendar-day">28</div>
+            </div>
+          </div>
+
+          <!-- 打卡分享 -->
+          <div class="share-card">
+            <div class="share-header">
+              <i class="ri-share-line"></i>
+              分享打卡
+            </div>
+
+            <p class="share-note">分享打卡记录，激励自己也鼓励他人！</p>
+
+            <div class="share-buttons">
+              <div class="share-btn share-wechat">
+                <div class="share-icon">
+                  <i class="ri-wechat-line"></i>
+                </div>
+                <div class="share-label">微信</div>
+              </div>
+
+              <div class="share-btn share-group">
+                <div class="share-icon">
+                  <i class="ri-group-line"></i>
+                </div>
+                <div class="share-label">小组</div>
+              </div>
+
+              <div class="share-btn share-weibo">
+                <div class="share-icon">
+                  <i class="ri-weibo-line"></i>
+                </div>
+                <div class="share-label">微博</div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+        <!-- 底部导航栏 -->
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <i class="ri-home-5-line"></i>
+            <div class="label">首页</div>
+          </div>
+          <div class="nav-item">
+            <i class="ri-bar-chart-line"></i>
+            <div class="label">统计</div>
+          </div>
+          <div class="nav-item">
+            <i class="ri-group-line"></i>
+            <div class="label">社交圈</div>
+          </div>
+          <div class="nav-item">
+            <i class="ri-user-line"></i>
+            <div class="label">我的</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
