@@ -476,6 +476,76 @@
       transform: none;
       box-shadow: none;
     }
+    
+    /* 找回密码表单样式 */
+    .forgot-form .input-group:first-of-type {
+      margin-top: 10px;
+    }
+    
+    .forgot-form .login-button {
+      margin-top: 15px;
+    }
+    
+    .form-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .form-subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    
+    .forgot-form .form-title {
+      margin-top: 10px;
+    }
+    
+    .forgot-step {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .forgot-step::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 25px;
+      right: 25px;
+      height: 2px;
+      background-color: #eee;
+      z-index: 1;
+    }
+    
+    .step-item {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background-color: #eee;
+      color: #999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .step-item.active {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
+    .step-item.completed {
+      background-color: var(--primary-color);
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -515,6 +585,8 @@
             <div class="tabs">
               <div class="tab active" data-form="login-form">登录</div>
               <div class="tab" data-form="register-form">注册</div>
+              <!-- 添加找回密码标签，但默认不显示 -->
+              <div class="tab forgot-tab" data-form="forgot-form" style="display: none;">找回密码</div>
             </div>
             
             <!-- 登录表单 -->
@@ -562,7 +634,7 @@
               
               <!-- 忘记密码 -->
               <div class="forgot-password" id="forgot-pwd-link">
-                <a href="#">忘记密码?</a>
+                <a href="#" id="forgot-password-link">忘记密码?</a>
               </div>
               
               <!-- 分隔线 -->
@@ -647,6 +719,52 @@
                 </div>
               </div>
             </div>
+            
+            <!-- 找回密码表单 -->
+            <div class="form-container forgot-form">
+              <div class="message error" id="forgot-message"></div>
+              
+              <h3 class="form-title">找回密码</h3>
+              <p class="form-subtitle">请完成以下步骤找回您的账号密码</p>
+              
+              <div class="forgot-step">
+                <div class="step-item active">1</div>
+                <div class="step-item">2</div>
+                <div class="step-item">3</div>
+              </div>
+              
+              <div class="input-group">
+                <i class="ri-smartphone-line"></i>
+                <input type="text" placeholder="手机号/邮箱" id="forgot-account">
+              </div>
+              
+              <div class="input-group code-input-group">
+                <div style="position:relative; flex:1;">
+                  <i class="ri-shield-keyhole-line"></i>
+                  <input type="text" placeholder="验证码" id="forgot-code" maxlength="6">
+                </div>
+                <button class="get-code-btn" id="forgot-code-btn">获取验证码</button>
+              </div>
+              
+              <div class="input-group">
+                <i class="ri-lock-line"></i>
+                <input type="password" placeholder="设置新密码" id="forgot-password">
+              </div>
+              
+              <div class="input-group">
+                <i class="ri-lock-line"></i>
+                <input type="password" placeholder="确认新密码" id="forgot-confirm">
+              </div>
+              
+              <div class="login-type-switch" style="margin-bottom: 10px;">
+                <a href="#" class="switch-form" data-target="login-form">
+                  <i class="ri-login-circle-line"></i>
+                  <span>返回登录</span>
+                </a>
+              </div>
+              
+              <button class="login-button ripple" id="reset-btn">重置密码</button>
+            </div>
           </div>
         </div>
       </div>
@@ -711,6 +829,29 @@
             switchLoginType.innerHTML = '<i class="ri-smartphone-line"></i> <span>使用验证码登录</span>';
           }
         });
+      });
+      
+      // 找回密码链接
+      const forgotPasswordLink = document.getElementById('forgot-password-link');
+      
+      forgotPasswordLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // 移除所有标签和表单的激活状态
+        tabs.forEach(t => t.classList.remove('active'));
+        forms.forEach(f => f.classList.remove('active'));
+        
+        // 显示找回密码标签并激活
+        const forgotTab = document.querySelector('.forgot-tab');
+        forgotTab.style.display = 'block';
+        forgotTab.classList.add('active');
+        
+        // 激活找回密码表单
+        document.querySelector('.forgot-form').classList.add('active');
+        
+        // 清空错误消息
+        clearMessages();
+        clearErrorStyles();
       });
       
       // 登录方式切换
@@ -780,6 +921,133 @@
         setTimeout(() => {
           clearMessages();
         }, 3000);
+      });
+
+      // 找回密码验证码按钮
+      const forgotCodeBtn = document.getElementById('forgot-code-btn');
+      const forgotMessage = document.getElementById('forgot-message');
+
+      forgotCodeBtn.addEventListener('click', function() {
+        const account = document.getElementById('forgot-account').value.trim();
+        
+        // 验证账号
+        if (account === '') {
+          showError('forgot-account', '请输入手机号或邮箱');
+          return;
+        }
+        
+        // 检查是手机号还是邮箱
+        const isPhone = /^1\d{10}$/.test(account);
+        const isEmail = isValidEmail(account);
+        
+        if (!isPhone && !isEmail) {
+          showError('forgot-account', '请输入正确的手机号或邮箱');
+          return;
+        }
+        
+        // 禁用按钮并开始倒计时
+        let countdown = 60;
+        this.disabled = true;
+        this.textContent = `${countdown}秒后重新发送`;
+        
+        const timer = setInterval(() => {
+          countdown--;
+          this.textContent = `${countdown}秒后重新发送`;
+          
+          if (countdown <= 0) {
+            clearInterval(timer);
+            this.disabled = false;
+            this.textContent = '获取验证码';
+          }
+        }, 1000);
+        
+        // 模拟发送验证码
+        showMessage(forgotMessage, '验证码已发送', 'success');
+        setTimeout(() => {
+          clearMessages();
+        }, 3000);
+      });
+      
+      // 重置密码表单验证和提交
+      const resetBtn = document.getElementById('reset-btn');
+      
+      resetBtn.addEventListener('click', function() {
+        // 获取输入值
+        const account = document.getElementById('forgot-account').value.trim();
+        const code = document.getElementById('forgot-code').value.trim();
+        const password = document.getElementById('forgot-password').value.trim();
+        const confirm = document.getElementById('forgot-confirm').value.trim();
+        
+        // 清除之前的错误样式
+        clearErrorStyles();
+        
+        // 验证输入
+        if (account === '') {
+          showError('forgot-account', '请输入手机号或邮箱');
+          return;
+        }
+        
+        // 检查是手机号还是邮箱
+        const isPhone = /^1\d{10}$/.test(account);
+        const isEmail = isValidEmail(account);
+        
+        if (!isPhone && !isEmail) {
+          showError('forgot-account', '请输入正确的手机号或邮箱');
+          return;
+        }
+        
+        if (code === '') {
+          showError('forgot-code', '请输入验证码');
+          return;
+        }
+        
+        if (!/^\d{6}$/.test(code)) {
+          showError('forgot-code', '验证码为6位数字');
+          return;
+        }
+        
+        if (password === '') {
+          showError('forgot-password', '请设置新密码');
+          return;
+        }
+        
+        if (password.length < 6) {
+          showError('forgot-password', '密码长度至少6位');
+          return;
+        }
+        
+        if (confirm === '') {
+          showError('forgot-confirm', '请确认新密码');
+          return;
+        }
+        
+        if (password !== confirm) {
+          showError('forgot-confirm', '两次密码输入不一致');
+          return;
+        }
+        
+        // 模拟重置成功效果
+        this.innerHTML = '<i class="ri-loader-2-line"></i> 提交中...';
+        this.disabled = true;
+        buttonClickEffect(this);
+        
+        // 模拟异步请求
+        setTimeout(() => {
+          // 这里可以添加实际的重置密码逻辑
+          this.innerHTML = '重置密码';
+          this.disabled = false;
+          
+          // 成功消息
+          showMessage(forgotMessage, '密码重置成功，请登录', 'success');
+          
+          // 模拟切换到登录标签
+          setTimeout(() => {
+            // 隐藏找回密码标签
+            document.querySelector('.forgot-tab').style.display = 'none';
+            // 显示登录标签
+            document.querySelector('[data-form="login-form"]').click();
+          }, 1500);
+        }, 1000);
       });
       
       // 登录表单验证和提交

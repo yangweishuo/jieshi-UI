@@ -12,7 +12,11 @@
       height: 100%;
       background-color: #f8f9fa;
       position: relative;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
     
     /* 顶部状态栏 */
@@ -408,6 +412,7 @@
       bottom: 0;
       left: 0;
       right: 0;
+      width: 100%;
       height: 70px;
       display: flex;
       justify-content: space-around;
@@ -468,7 +473,7 @@
     
     /* 返回按钮 */
     .back-button {
-      position: fixed;
+      position: absolute;
       top: 20px;
       left: 20px;
       z-index: 1000;
@@ -640,19 +645,28 @@
               <div class="label">首页</div>
             </div>
             <div class="nav-item">
-              <i class="ri-bar-chart-line"></i>
-              <div class="label">统计</div>
+              <a href="statistics.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-bar-chart-line"></i>
+                <div class="label">统计</div>
+              </a>
             </div>
             <div class="nav-item">
-              <div class="social-nav-icon">
+              <a href="ai.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-cpu-line"></i>
+                <div class="label">AI助手</div>
+              </a>
+            </div>
+            <div class="nav-item">
+              <a href="social.html" style="text-decoration: none; color: inherit;">
                 <i class="ri-group-line"></i>
-                <div class="particle-flow"></div>
-              </div>
-              <div class="label">社交圈</div>
+                <div class="label">社交圈</div>
+              </a>
             </div>
             <div class="nav-item">
-              <i class="ri-user-line"></i>
-              <div class="label">我的</div>
+              <a href="profile.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-user-line"></i>
+                <div class="label">我的</div>
+              </a>
             </div>
           </div>
         </div>
