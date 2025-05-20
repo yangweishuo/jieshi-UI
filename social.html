@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 社交圈</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .social-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(52, 152, 219, 0.3) transparent;
+    }
+    
+    .social-screen::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .social-screen::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .social-screen::-webkit-scrollbar-thumb {
+      background-color: rgba(52, 152, 219, 0.3);
+      border-radius: 4px;
+    }
+    
+    .social-content {
+      padding-bottom: 85px; /* 确保底部导航不遮挡内容 */
+    }
+    
+    /* 顶部栏 */
+    .social-header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.95), rgba(30, 136, 229, 0.95));
+      color: white;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 5;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+    }
+    
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      position: relative;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-title::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 40%;
+      height: 2px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 1px;
+    }
+    
+    .search-icon, .notification-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.15);
+      transition: all 0.3s ease;
+    }
+    
+    .search-icon:hover, .notification-icon:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .notification-icon {
+      position: relative;
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #FF4081;
+      border: 2px solid white;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 64, 129, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 6px rgba(255, 64, 129, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 64, 129, 0);
+      }
+    }
+    
+    .search-icon i, .notification-icon i {
+      font-size: 22px;
+      color: white;
+    }
+    
+    /* 顶部导航栏 */
+    .tab-navigation {
+      display: flex;
+      background-color: white;
+      padding: 0 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border-radius: 0 0 20px 20px;
+    }
+    
+    .tab-navigation::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .tab-item {
+      padding: 15px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #999;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .tab-item.active {
+      color: #3498DB;
+    }
+    
+    .tab-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20%;
+      right: 20%;
+      height: 3px;
+      background: linear-gradient(90deg, #3498DB, #1E88E5);
+      border-radius: 3px;
+      animation: slide-in 0.3s forwards;
+    }
+    
+    @keyframes slide-in {
+      from {
+        transform: scaleX(0.5);
+        opacity: 0.5;
+      }
+      to {
+        transform: scaleX(1);
+        opacity: 1;
+      }
+    }
+    
+    .tab-item:hover {
+      color: #1E88E5;
+      transform: translateY(-2px);
+    }
+    
+    /* 家庭中心入口 */
+    .family-center-card {
+      margin: 15px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #3498DB, #1E88E5);
+      padding: 22px;
+      color: white;
+      box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      transform: translateZ(0);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .family-center-card:hover {
+      transform: translateY(-5px) scale(1.01);
+      box-shadow: 0 12px 30px rgba(52, 152, 219, 0.5);
+    }
+    
+    .family-center-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: float-circle 15s infinite alternate ease-in-out;
+    }
+    
+    .family-center-card::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: -60px;
+      width: 180px;
+      height: 180px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: float-circle 12s infinite alternate-reverse ease-in-out;
+    }
+    
+    @keyframes float-circle {
+      0% {
+        transform: translate(0, 0);
+      }
+      100% {
+        transform: translate(20px, 20px);
+      }
+    }
+    
+    .family-center-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .family-center-title {
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+    
+    .family-center-title i {
+      font-size: 28px;
+      margin-right: 12px;
+      background: linear-gradient(135deg, #FFFFFF, #E0F7FA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+    }
+    
+    .notification-count {
+      background-color: #FF4081;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 3px 10px;
+      border-radius: 15px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      animation: pulse-subtle 2s infinite;
+    }
+    
+    @keyframes pulse-subtle {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .family-center-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .family-members {
+      display: flex;
+      margin-bottom: 18px;
+    }
+    
+    .family-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid white;
+      margin-right: -12px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .family-avatar:hover {
+      transform: translateY(-5px) scale(1.1);
+      z-index: 3;
+    }
+    
+    .family-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .family-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 12px;
+      border-radius: 12px;
+      backdrop-filter: blur(5px);
+      flex-wrap: wrap;
+    }
+    
+    .family-stat {
+      text-align: center;
+      min-width: 70px;
+      margin: 5px 0;
+    }
+    
+    .stat-value {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .enter-button {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      font-size: 15px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      position: relative;
+      z-index: 2;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(3px);
+    }
+    
+    .enter-button:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .enter-button i {
+      margin-left: 8px;
+      font-size: 18px;
+      animation: bounce 1.5s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(5px);
+      }
+    }
+    
+    /* 家人鼓励消息区 */
+    .family-encouragement {
+      margin: 20px 15px;
+      border-radius: 18px;
+      background-color: white;
+      padding: 25px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .family-encouragement::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #FF4081, #F50057);
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    
+    .section-title i {
+      font-size: 22px;
+      margin-right: 10px;
+      color: #FF4081;
+      background: linear-gradient(135deg, #FF4081, #F50057);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+    }
+    
+    .view-all {
+      font-size: 14px;
+      color: #3498DB;
+      text-decoration: none;
+      padding: 5px 12px;
+      border-radius: 15px;
+      background: rgba(52, 152, 219, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .view-all:hover {
+      background: rgba(52, 152, 219, 0.2);
+      color: #2980B9;
+      transform: translateX(3px);
+    }
+    
+    .message-card {
+      background: linear-gradient(135deg, rgba(255, 64, 129, 0.05), rgba(30, 136, 229, 0.05));
+      border-radius: 15px;
+      padding: 18px;
+      margin-bottom: 18px;
+      border-left: 3px solid #FF4081;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.02);
+    }
+    
+    .message-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .message-card:last-child {
+      margin-bottom: 0;
+    }
+    
+    .message-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .sender-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 15px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      border: 2px solid white;
+    }
+    
+    .sender-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.5s ease;
+    }
+    
+    .message-card:hover .sender-avatar img {
+      transform: scale(1.1);
+    }
+    
+    .sender-info {
+      flex: 1;
+    }
+    
+    .sender-name {
+      font-weight: 600;
+      font-size: 16px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      margin-bottom: 3px;
+    }
+    
+    .relation-tag {
+      font-size: 12px;
+      background-color: rgba(255, 64, 129, 0.1);
+      color: #FF4081;
+      padding: 3px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
+    }
+    
+    .message-time {
+      font-size: 12px;
+      color: #999;
+    }
+    
+    .message-content {
+      font-size: 15px;
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      padding: 0 5px;
+    }
+    
+    .message-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .voice-message {
+      display: flex;
+      align-items: center;
+      background-color: rgba(52, 152, 219, 0.1);
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 180px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .voice-message:hover {
+      background-color: rgba(52, 152, 219, 0.2);
+    }
+    
+    .voice-icon {
+      color: #3498DB;
+      margin-right: 8px;
+      font-size: 18px;
+    }
+    
+    .voice-duration {
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    .voice-waves {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin: 0 8px;
+    }
+    
+    .wave-bar {
+      width: 2px;
+      height: 10px;
+      background-color: #3498DB;
+      border-radius: 1px;
+      animation: wave-animation 1.5s infinite ease-in-out;
+    }
+    
+    .wave-bar:nth-child(2) { height: 14px; animation-delay: 0.2s; }
+    .wave-bar:nth-child(3) { height: 8px; animation-delay: 0.3s; }
+    .wave-bar:nth-child(4) { height: 12px; animation-delay: 0.4s; }
+    .wave-bar:nth-child(5) { height: 6px; animation-delay: 0.5s; }
+    
+    .message-actions {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .action-button {
+      display: flex;
+      align-items: center;
+      color: #999;
+      font-size: 13px;
+      transition: all 0.3s ease;
+      padding: 5px 10px;
+      border-radius: 15px;
+    }
+    
+    .action-button:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+      color: #666;
+    }
+    
+    .action-button i {
+      font-size: 16px;
+      margin-right: 5px;
+    }
+    
+    /* 社区动态区 */
+    .community-posts {
+      margin: 20px 15px;
+      border-radius: 18px;
+      background-color: white;
+      padding: 25px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .community-posts::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #3498DB, #1E88E5);
+    }
+    
+    .post-card {
+      margin-bottom: 25px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      padding-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .post-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .post-card:last-child {
+      margin-bottom: 0;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    
+    .post-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .poster-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 12px;
+      border: 2px solid #f1f3f4;
+    }
+    
+    .poster-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.3s ease;
+    }
+    
+    .post-card:hover .poster-avatar img {
+      transform: scale(1.1);
+    }
+    
+    .poster-info {
+      flex: 1;
+    }
+    
+    .poster-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 16px;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .verified-badge {
+      color: #3498DB;
+      font-size: 14px;
+      margin-left: 5px;
+    }
+    
+    .post-time {
+      font-size: 12px;
+      color: #aaa;
+    }
+    
+    .post-content {
+      margin-bottom: 15px;
+    }
+    
+    .post-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .post-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .post-tag {
+      font-size: 12px;
+      color: #3498DB;
+      background-color: rgba(52, 152, 219, 0.1);
+      padding: 4px 10px;
+      border-radius: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    .post-tag:hover {
+      background-color: rgba(52, 152, 219, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .post-image {
+      width: 100%;
+      height: 180px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .post-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.5s ease;
+    }
+    
+    .post-card:hover .post-image img {
+      transform: scale(1.05);
+    }
+    
+    .post-footer {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .post-stats {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .post-stat {
+      display: flex;
+      align-items: center;
+      color: #aaa;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .post-stat:hover {
+      color: #3498DB;
+    }
+    
+    .post-stat i {
+      font-size: 16px;
+      margin-right: 5px;
+    }
+    
+    .post-actions {
+      color: #aaa;
+    }
+    
+    .post-actions i {
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .post-actions i:hover {
+      color: #3498DB;
+    }
+    
+    /* 底部导航栏 */
+    .bottom-nav {
+      margin-top: auto;
+      height: 70px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 25%;
+      height: 100%;
+      padding-top: 12px;
+      cursor: pointer;
+    }
+    
+    .nav-item i {
+      font-size: 24px;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    
+    .nav-item .label {
+      font-size: 12px;
+      color: #aaa;
+    }
+    
+    .nav-item.active i,
+    .nav-item.active .label {
+      color: #3498DB;
+    }
+    
+    /* 发布按钮 */
+    .publish-btn {
+      position: absolute;
+      bottom: 85px;
+      right: 20px;
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3498DB, #1E88E5);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+      z-index: 10;
+      transition: all 0.3s ease;
+      transform: translateZ(0);
+    }
+    
+    .publish-btn:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+    }
+    
+    .publish-btn i {
+      font-size: 28px;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .publish-btn:hover i {
+      transform: rotate(90deg);
+    }
+    
+    /* 返回按钮 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+    }
+    
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+    
+    .back-button i {
+      font-size: 24px;
+    }
+    
+    @media (max-width: 360px) {
+      .family-stats {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .family-stat {
+        display: flex;
+        align-items: center;
+        text-align: left;
+        width: 100%;
+      }
+      
+      .stat-value {
+        margin-bottom: 0;
+        margin-right: 10px;
+      }
+    }
+    
+    @media (max-width: 340px) {
+      .post-stats {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .post-actions {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+    
+    /* 引入滚动阴影效果 */
+    .social-screen::after {
+      content: '';
+      position: fixed;
+      bottom: 70px;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: linear-gradient(to top, rgba(248, 249, 250, 0.9), transparent);
+      pointer-events: none;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-button" title="返回预览页">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+  
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="social-screen">
+          <!-- 顶部栏 -->
+          <div class="social-header">
+            <div class="header-title">社交圈</div>
+            <div class="actions" style="display: flex; gap: 10px;">
+              <div class="search-icon">
+                <i class="ri-search-line"></i>
+              </div>
+              <div class="notification-icon">
+                <i class="ri-notification-3-line"></i>
+                <div class="notification-badge"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 顶部导航栏 -->
+          <div class="tab-navigation">
+            <div class="tab-item active">推荐</div>
+            <div class="tab-item">关注</div>
+            <div class="tab-item">朋友圈</div>
+            <div class="tab-item">同城</div>
+            <div class="tab-item">组织</div>
+          </div>
+          
+          <div class="social-content">
+            <!-- 家庭中心入口 -->
+            <div class="family-center-card">
+              <div class="family-center-header">
+                <div class="family-center-title">
+                  <i class="ri-home-heart-line"></i>
+                  家庭中心
+                </div>
+                <div class="notification-count">2</div>
+              </div>
+              
+              <div class="family-center-content">
+                <div class="family-members">
+                  <div class="family-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="你的头像">
+                  </div>
+                  <div class="family-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="家人头像">
+                  </div>
+                  <div class="family-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="家人头像">
+                  </div>
+                </div>
+                
+                <div class="family-stats">
+                  <div class="family-stat">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">家庭成员</div>
+                  </div>
+                  <div class="family-stat">
+                    <div class="stat-value">68%</div>
+                    <div class="stat-label">互动活跃度</div>
+                  </div>
+                  <div class="family-stat">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">未读鼓励</div>
+                  </div>
+                </div>
+                
+                <a href="family.html" class="enter-button">
+                  进入家庭中心 <i class="ri-arrow-right-line"></i>
+                </a>
+              </div>
+            </div>
+            
+            <!-- 家人鼓励消息区 -->
+            <div class="family-encouragement">
+              <div class="section-header">
+                <div class="section-title">
+                  <i class="ri-heart-3-line"></i>
+                  家人鼓励
+                </div>
+                <a href="#" class="view-all">查看全部</a>
+              </div>
+              
+              <div class="message-card">
+                <div class="message-header">
+                  <div class="sender-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="家人头像">
+                  </div>
+                  <div class="sender-info">
+                    <div class="sender-name">
+                      李妈妈
+                      <span class="relation-tag">监督者</span>
+                    </div>
+                    <div class="message-time">10分钟前</div>
+                  </div>
+                </div>
+                
+                <div class="message-content">
+                  宝贝，看到你今天戒断时间达到了4小时，真为你感到骄傲！坚持下去，加油！
+                </div>
+                
+                <div class="message-footer">
+                  <div class="voice-message">
+                    <i class="ri-play-circle-line voice-icon"></i>
+                    <div class="voice-waves">
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                    </div>
+                    <div class="voice-duration">0:18"</div>
+                  </div>
+                  
+                  <div class="message-actions">
+                    <div class="action-button">
+                      <i class="ri-heart-line"></i>
+                      感谢
+                    </div>
+                    <div class="action-button">
+                      <i class="ri-chat-1-line"></i>
+                      回复
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="message-card">
+                <div class="message-header">
+                  <div class="sender-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="家人头像">
+                  </div>
+                  <div class="sender-info">
+                    <div class="sender-name">
+                      李爸爸
+                      <span class="relation-tag">监督者</span>
+                    </div>
+                    <div class="message-time">昨天 19:30</div>
+                  </div>
+                </div>
+                
+                <div class="message-content">
+                  儿子，专注力很好！看到你短视频使用时间减少了，周末带你去爬山。
+                </div>
+                
+                <div class="message-footer">
+                  <div class="message-actions" style="margin-left: auto;">
+                    <div class="action-button">
+                      <i class="ri-heart-line"></i>
+                      感谢
+                    </div>
+                    <div class="action-button">
+                      <i class="ri-chat-1-line"></i>
+                      回复
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 社区动态区 -->
+            <div class="community-posts">
+              <div class="section-header">
+                <div class="section-title">
+                  <i class="ri-chat-4-line"></i>
+                  社区动态
+                </div>
+                <a href="#" class="view-all">更多</a>
+              </div>
+              
+              <div class="post-card">
+                <div class="post-header">
+                  <div class="poster-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="用户头像">
+                  </div>
+                  <div class="poster-info">
+                    <div class="poster-name">
+                      张小月
+                      <i class="ri-verified-badge-fill verified-badge"></i>
+                    </div>
+                    <div class="post-time">30分钟前</div>
+                  </div>
+                </div>
+                
+                <div class="post-content">
+                  <div class="post-text">今天成功没看短视频，改读了一小时书，感觉很充实！希望自己能坚持下去，养成良好的阅读习惯。</div>
+                  <div class="post-tags">
+                    <div class="post-tag">#戒短视频</div>
+                    <div class="post-tag">#读书打卡</div>
+                    <div class="post-tag">#时间管理</div>
+                  </div>
+                  <div class="post-image">
+                    <img src="https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1347&q=80" alt="阅读照片">
+                  </div>
+                </div>
+                
+                <div class="post-footer">
+                  <div class="post-stats">
+                    <div class="post-stat">
+                      <i class="ri-heart-line"></i>
+                      <span>42</span>
+                    </div>
+                    <div class="post-stat">
+                      <i class="ri-chat-1-line"></i>
+                      <span>12</span>
+                    </div>
+                    <div class="post-stat">
+                      <i class="ri-share-forward-line"></i>
+                      <span>5</span>
+                    </div>
+                  </div>
+                  <div class="post-actions">
+                    <i class="ri-more-2-fill"></i>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="post-card">
+                <div class="post-header">
+                  <div class="poster-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="用户头像">
+                  </div>
+                  <div class="poster-info">
+                    <div class="poster-name">王强</div>
+                    <div class="post-time">2小时前</div>
+                  </div>
+                </div>
+                
+                <div class="post-content">
+                  <div class="post-text">连续7天未使用短视频，今天终于获得了"坚持一周"勋章！感谢小组成员的监督和鼓励，我们一起加油！</div>
+                  <div class="post-tags">
+                    <div class="post-tag">#戒断成功</div>
+                    <div class="post-tag">#勋章收集</div>
+                  </div>
+                </div>
+                
+                <div class="post-footer">
+                  <div class="post-stats">
+                    <div class="post-stat">
+                      <i class="ri-heart-line"></i>
+                      <span>36</span>
+                    </div>
+                    <div class="post-stat">
+                      <i class="ri-chat-1-line"></i>
+                      <span>8</span>
+                    </div>
+                    <div class="post-stat">
+                      <i class="ri-share-forward-line"></i>
+                      <span>3</span>
+                    </div>
+                  </div>
+                  <div class="post-actions">
+                    <i class="ri-more-2-fill"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 发布按钮 -->
+          <div class="publish-btn">
+            <i class="ri-add-line"></i>
+          </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <a href="home.html" style="text-decoration: none; color: inherit;">
+              <i class="ri-home-5-line"></i>
+              <div class="label">首页</div>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="statistics.html" style="text-decoration: none; color: inherit;">
+              <i class="ri-bar-chart-line"></i>
+              <div class="label">统计</div>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="ai.html" style="text-decoration: none; color: inherit;">
+              <i class="ri-cpu-line"></i>
+              <div class="label">AI助手</div>
+            </a>
+          </div>
+          <div class="nav-item active">
+            <i class="ri-group-line"></i>
+            <div class="label">社交圈</div>
+          </div>
+          <div class="nav-item">
+            <a href="profile.html" style="text-decoration: none; color: inherit;">
+              <i class="ri-user-line"></i>
+              <div class="label">我的</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html> 

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - AI助手</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .ai-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #04142c;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 176, 255, 0.3) transparent;
+    }
+    
+    .ai-screen::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .ai-screen::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .ai-screen::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 176, 255, 0.3);
+      border-radius: 4px;
+    }
+    
+    .ai-content {
+      flex: 1;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      position: relative;
+      padding-bottom: 85px; /* 确保底部导航不遮挡内容 */
+      overflow-y: auto;
+      height: calc(100% - 70px); /* 减去底部导航的高度 */
+    }
+    
+    /* 调整滚动阴影效果位置 */
+    .ai-content::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: linear-gradient(to top, rgba(4, 20, 44, 0.9), transparent);
+      pointer-events: none;
+      z-index: 5;
+    }
+    
+    /* 动态星云数据场背景 */
+    .ai-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .neural-particle {
+      position: absolute;
+      background-color: rgba(0, 176, 255, 0.4);
+      border-radius: 50%;
+      animation: floatParticle 15s linear infinite;
+    }
+    
+    @keyframes floatParticle {
+      0% {
+        transform: translate(0, 0);
+        opacity: 0;
+      }
+      25% {
+        opacity: 0.7;
+      }
+      75% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translate(200px, -200px); 
+        opacity: 0;
+      }
+    }
+    
+    .data-stream {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00B0FF, transparent);
+      animation: dataFlow 6s linear infinite;
+    }
+    
+    @keyframes dataFlow {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+    
+    /* AI助手中央形象 */
+    .ai-assistant-container {
+      position: relative;
+      height: 280px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+    }
+    
+    .ai-hologram {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(0, 176, 255, 0.3), transparent 70%);
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 50px rgba(0, 176, 255, 0.5);
+    }
+    
+    .ai-hologram::before {
+      content: '';
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 176, 255, 0.3);
+      animation: pulseRing 2s linear infinite;
+    }
+    
+    .ai-hologram::after {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 40px;
+      bottom: -20px;
+      background: radial-gradient(ellipse at center, rgba(0, 176, 255, 0.3), transparent 70%);
+      border-radius: 50%;
+      filter: blur(5px);
+    }
+    
+    @keyframes pulseRing {
+      0% {
+        transform: scale(0.8);
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(1.2);
+        opacity: 0;
+      }
+    }
+    
+    .ai-avatar {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.1), rgba(124, 77, 255, 0.1));
+      border: 1px solid rgba(0, 176, 255, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    
+    .ai-head {
+      width: 100px;
+      height: 100px;
+      position: relative;
+      background: url('https://via.placeholder.com/100x100/00345c/FFFFFF?text=AI') center/cover;
+      border-radius: 50%;
+      opacity: 0.8;
+    }
+    
+    .data-vortex {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    
+    .vortex-line {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px dashed rgba(0, 176, 255, 0.3);
+      animation: spinVortex 10s linear infinite;
+    }
+    
+    .vortex-line:nth-child(2) {
+      width: 80%;
+      height: 80%;
+      top: 10%;
+      left: 10%;
+      animation-duration: 8s;
+      animation-direction: reverse;
+    }
+    
+    .vortex-line:nth-child(3) {
+      width: 60%;
+      height: 60%;
+      top: 20%;
+      left: 20%;
+      animation-duration: 6s;
+    }
+    
+    @keyframes spinVortex {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .ai-greeting {
+      position: absolute;
+      bottom: 30px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 300;
+      letter-spacing: 1px;
+      animation: fadeInUp 1s ease;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .voice-wave {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 20px;
+      margin: 10px auto;
+      width: 100px;
+      justify-content: center;
+    }
+    
+    .wave-bar {
+      width: 4px;
+      height: 15px;
+      background-color: #00B0FF;
+      border-radius: 2px;
+      animation: wave-animation 1.5s infinite ease-in-out;
+    }
+    
+    .wave-bar:nth-child(2) { animation-delay: 0.2s; height: 10px; }
+    .wave-bar:nth-child(3) { animation-delay: 0.4s; height: 20px; }
+    .wave-bar:nth-child(4) { animation-delay: 0.6s; height: 12px; }
+    .wave-bar:nth-child(5) { animation-delay: 0.8s; height: 18px; }
+    
+    @keyframes wave-animation {
+      0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
+      50% { transform: scaleY(1); opacity: 1; }
+    }
+    
+    /* 功能菜单区 */
+    .ai-menu {
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .ai-functions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    
+    .ai-function-card {
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.1), rgba(124, 77, 255, 0.1));
+      border-radius: 15px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      border: 1px solid rgba(0, 176, 255, 0.3);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      overflow: hidden;
+      cursor: pointer;
+      height: 150px;
+    }
+    
+    .ai-function-card:hover {
+      box-shadow: 0 8px 25px rgba(0, 176, 255, 0.3);
+      transform: translateY(-5px);
+    }
+    
+    .ai-function-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 0%;
+      background: linear-gradient(to top, rgba(0, 176, 255, 0.3), transparent);
+      transition: height 0.6s ease;
+      z-index: 1;
+    }
+    
+    .ai-function-card:hover::before {
+      height: 100%;
+    }
+    
+    .function-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #04142c, #082d5e);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .function-icon::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px solid #00B0FF;
+      opacity: 0.5;
+      box-sizing: border-box;
+    }
+    
+    .function-icon i {
+      font-size: 24px;
+      color: #00B0FF;
+      filter: drop-shadow(0 0 2px rgba(0, 176, 255, 0.5));
+    }
+    
+    .function-name {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .function-description {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      text-align: center;
+      margin-top: 10px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    /* 最近咨询历史 */
+    .recent-queries {
+      margin-top: 30px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .section-title {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-title i {
+      font-size: 20px;
+      margin-right: 8px;
+      color: #00B0FF;
+    }
+    
+    .query-card {
+      background: rgba(0, 176, 255, 0.05);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 2px solid #00B0FF;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .query-text {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    
+    .query-time {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .query-time i {
+      font-size: 14px;
+      margin-right: 5px;
+    }
+    
+    /* 浮动交互按钮 - 固定在手机框架内 */
+    .floating-mic {
+      position: absolute;
+      bottom: 85px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00B0FF, #7C4DFF);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 5px 15px rgba(0, 176, 255, 0.5);
+      z-index: 100;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(0, 176, 255, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(0, 176, 255, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(0, 176, 255, 0);
+      }
+    }
+    
+    .floating-mic i {
+      font-size: 26px;
+      color: white;
+    }
+    
+    /* 底部导航栏 - 固定在框架底部 */
+    .bottom-nav {
+      height: 70px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(4, 20, 44, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 176, 255, 0.2);
+      z-index: 100;
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      box-sizing: border-box;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 20%;
+      height: 100%;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+    }
+    
+    .nav-item.active {
+      color: #00B0FF;
+    }
+    
+    .nav-item.active.ai-item {
+      position: relative;
+    }
+    
+    .nav-item.active.ai-item::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50%;
+      height: 3px;
+      background: linear-gradient(90deg, #00B0FF, #7C4DFF);
+      border-radius: 3px 3px 0 0;
+    }
+    
+    .nav-item i {
+      font-size: 24px;
+      margin-bottom: 5px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .nav-item .label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .nav-item.ai-item i {
+      background: linear-gradient(135deg, #00B0FF, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 2px rgba(0, 176, 255, 0.5));
+    }
+    
+    /* 返回按钮 - 修改为框架外 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.5), rgba(124, 77, 255, 0.5));
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+      backdrop-filter: blur(5px);
+    }
+    
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+    
+    .back-button i {
+      font-size: 24px;
+    }
+    
+    /* 设置设备屏幕为相对定位，确保内部元素能够相对于它定位 */
+    .device-screen {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <!-- 将返回按钮移动到框架外 -->
+  <a href="index.html" class="back-button" title="返回预览页">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+  
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="ai-screen">
+          <!-- 动态星云数据场背景 -->
+          <div class="ai-background" id="neural-background">
+            <!-- JS动态生成神经网络粒子和数据流 -->
+          </div>
+          
+          <div class="ai-content">
+            <!-- AI助手中央形象 -->
+            <div class="ai-assistant-container">
+              <div class="ai-hologram">
+                <div class="ai-avatar">
+                  <div class="ai-head"></div>
+                  <div class="data-vortex">
+                    <div class="vortex-line"></div>
+                    <div class="vortex-line"></div>
+                    <div class="vortex-line"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ai-greeting">
+                你好，我是戒视AI助手
+                <div class="voice-wave">
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                </div>
+                有什么可以帮到你？
+              </div>
+            </div>
+            
+            <!-- 功能菜单区 -->
+            <div class="ai-menu">
+              <div class="ai-functions">
+                <div class="ai-function-card" id="addiction-analysis">
+                  <div class="function-icon">
+                    <i class="ri-radar-line"></i>
+                  </div>
+                  <div class="function-name">成瘾分析</div>
+                  <div class="function-description">智能评估使用风险，生成多维分析报告</div>
+                </div>
+                
+                <div class="ai-function-card" id="plan-customization">
+                  <div class="function-icon">
+                    <i class="ri-road-map-line"></i>
+                  </div>
+                  <div class="function-name">方案定制</div>
+                  <div class="function-description">生成个性化阶梯式戒断计划</div>
+                </div>
+                
+                <div class="ai-function-card" id="real-time-supervision">
+                  <div class="function-icon">
+                    <i class="ri-shield-keyhole-line"></i>
+                  </div>
+                  <div class="function-name">实时监督</div>
+                  <div class="function-description">智能识别风险行为，及时干预引导</div>
+                </div>
+                
+                <div class="ai-function-card" id="psychological-companion">
+                  <div class="function-icon">
+                    <i class="ri-psychotherapy-line"></i>
+                  </div>
+                  <div class="function-name">心理陪伴</div>
+                  <div class="function-description">AI情感机器人，缓解戒断焦虑</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 最近咨询历史 -->
+            <div class="recent-queries">
+              <div class="section-title">
+                <i class="ri-history-line"></i>
+                最近咨询
+              </div>
+              
+              <div class="query-card">
+                <div class="query-text">如何克服睡前刷视频的习惯？我总是熬到很晚才睡。</div>
+                <div class="query-time">
+                  <i class="ri-time-line"></i>
+                  30分钟前
+                </div>
+              </div>
+              
+              <div class="query-card">
+                <div class="query-text">帮我分析一下我的短视频使用模式，我想了解自己属于哪种成瘾类型。</div>
+                <div class="query-time">
+                  <i class="ri-time-line"></i>
+                  昨天 19:45
+                </div>
+              </div>
+            </div>
+            
+            <!-- 浮动交互按钮 -->
+            <div class="floating-mic">
+              <i class="ri-mic-line"></i>
+            </div>
+          </div>
+          
+          <!-- 底部导航栏 -->
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <a href="home.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-home-5-line"></i>
+                <div class="label">首页</div>
+              </a>
+            </div>
+            <div class="nav-item">
+              <a href="statistics.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-bar-chart-line"></i>
+                <div class="label">统计</div>
+              </a>
+            </div>
+            <div class="nav-item active ai-item">
+              <i class="ri-cpu-line"></i>
+              <div class="label">AI助手</div>
+            </div>
+            <div class="nav-item">
+              <a href="social.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-group-line"></i>
+                <div class="label">社交圈</div>
+              </a>
+            </div>
+            <div class="nav-item">
+              <a href="profile.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-user-line"></i>
+                <div class="label">我的</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // 动态生成神经网络粒子
+    function createNeuralBackground() {
+      const background = document.getElementById('neural-background');
+      
+      // 创建粒子
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('neural-particle');
+        
+        // 随机粒子大小和位置
+        const size = Math.random() * 5 + 2;
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        const delay = Math.random() * 10;
+        const duration = Math.random() * 10 + 10;
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}%`;
+        particle.style.top = `${posY}%`;
+        particle.style.animationDuration = `${duration}s`;
+        particle.style.animationDelay = `${delay}s`;
+        
+        background.appendChild(particle);
+      }
+      
+      // 创建数据流
+      for (let i = 0; i < 15; i++) {
+        const stream = document.createElement('div');
+        stream.classList.add('data-stream');
+        
+        // 随机数据流位置和样式
+        const height = Math.random() * 1 + 1;
+        const posY = Math.random() * 100;
+        const width = Math.random() * 50 + 50;
+        const delay = Math.random() * 5;
+        const duration = Math.random() * 4 + 4;
+        
+        stream.style.height = `${height}px`;
+        stream.style.top = `${posY}%`;
+        stream.style.width = `${width}%`;
+        stream.style.animationDuration = `${duration}s`;
+        stream.style.animationDelay = `${delay}s`;
+        
+        background.appendChild(stream);
+      }
+    }
+    
+    // 页面加载时初始化背景
+    window.addEventListener('load', function() {
+      createNeuralBackground();
+      
+      // 功能卡点击事件
+      const functionCards = document.querySelectorAll('.ai-function-card');
+      functionCards.forEach(card => {
+        card.addEventListener('click', function() {
+          // 这里添加实际功能跳转逻辑
+          const functionId = this.id;
+          console.log(`功能 ${functionId} 被点击`);
+          
+          // 可以添加点击动画
+          this.classList.add('clicked');
+          setTimeout(() => {
+            this.classList.remove('clicked');
+          }, 300);
+        });
+      });
+      
+      // 语音按钮点击事件
+      const micButton = document.querySelector('.floating-mic');
+      micButton.addEventListener('click', function() {
+        // 这里添加语音识别逻辑
+        console.log('语音按钮被点击');
+        
+        // 模拟语音识别激活状态
+        this.classList.add('active');
+        document.querySelector('.voice-wave').style.display = 'flex';
+        
+        // 模拟3秒后识别完成
+        setTimeout(() => {
+          this.classList.remove('active');
+          document.querySelector('.voice-wave').style.display = 'none';
+        }, 3000);
+      });
+    });
+  </script>
+</body>
+</html> 

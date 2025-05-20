@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 成瘾分析</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* 设置设备屏幕为相对定位，确保内部元素能够相对于它定位 */
+    .device-screen {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    
+    .analysis-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #04142c;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 176, 255, 0.3) transparent;
+    }
+    
+    .analysis-screen::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .analysis-screen::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .analysis-screen::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 176, 255, 0.3);
+      border-radius: 4px;
+    }
+    
+    .analysis-content {
+      flex: 1;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      position: relative;
+      padding-bottom: 85px; /* 确保底部导航不遮挡内容 */
+      overflow-y: auto;
+      height: calc(100% - 70px - 60px); /* 减去底部导航和顶部导航的高度 */
+    }
+    
+    /* 调整滚动阴影效果位置 */
+    .analysis-content::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: linear-gradient(to top, rgba(4, 20, 44, 0.9), transparent);
+      pointer-events: none;
+      z-index: 5;
+    }
+    
+    /* 动态星云数据场背景 */
+    .ai-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .neural-particle {
+      position: absolute;
+      background-color: rgba(0, 176, 255, 0.4);
+      border-radius: 50%;
+      animation: floatParticle 15s linear infinite;
+    }
+    
+    @keyframes floatParticle {
+      0% {
+        transform: translate(0, 0);
+        opacity: 0;
+      }
+      25% {
+        opacity: 0.7;
+      }
+      75% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translate(200px, -200px); 
+        opacity: 0;
+      }
+    }
+    
+    .data-stream {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00B0FF, transparent);
+      animation: dataFlow 6s linear infinite;
+    }
+    
+    @keyframes dataFlow {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+    
+    /* 顶部导航 */
+    .analysis-header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      background: rgba(4, 20, 44, 0.8);
+      backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 5;
+      border-bottom: 1px solid rgba(0, 176, 255, 0.2);
+    }
+    
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: rgba(0, 176, 255, 0.1);
+    }
+    
+    .back-btn i {
+      font-size: 24px;
+      color: #00B0FF;
+    }
+    
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    /* 风险雷达图 */
+    .radar-container {
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .radar-heading {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+    }
+    
+    .radar-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .radar-subtitle {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    
+    .radar-chart {
+      width: 100%;
+      height: 300px;
+      position: relative;
+      margin: 0 auto;
+    }
+    
+    .radar-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .radar-gradient {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(0, 176, 255, 0.2), transparent 70%);
+      animation: pulse 3s infinite alternate;
+    }
+    
+    @keyframes pulse {
+      0% {
+        opacity: 0.5;
+        transform: scale(0.95);
+      }
+      100% {
+        opacity: 0.8;
+        transform: scale(1.05);
+      }
+    }
+    
+    /* 风险类型诊断书 */
+    .diagnosis-container {
+      margin: 20px;
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.1), rgba(124, 77, 255, 0.1));
+      border-radius: 15px;
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+      border: 1px solid rgba(0, 176, 255, 0.3);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    
+    .diagnosis-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #00B0FF, #7C4DFF);
+    }
+    
+    .diagnosis-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(0, 176, 255, 0.2);
+    }
+    
+    .diagnosis-title {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+    
+    .diagnosis-title i {
+      margin-right: 8px;
+      font-size: 20px;
+      color: #00B0FF;
+    }
+    
+    .diagnosis-date {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+    
+    .diagnosis-result {
+      color: white;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+      background: linear-gradient(90deg, #00B0FF, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 2px rgba(0, 176, 255, 0.5));
+    }
+    
+    .diagnosis-desc {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .diagnosis-characteristics {
+      background: rgba(0, 176, 255, 0.05);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .characteristic-title {
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    
+    .characteristic-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .characteristic-item {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .characteristic-item i {
+      color: #00B0FF;
+      margin-right: 8px;
+      font-size: 16px;
+    }
+    
+    .diagnosis-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(0, 176, 255, 0.2);
+    }
+    
+    .share-btn, .plan-btn {
+      background: rgba(0, 176, 255, 0.1);
+      border: 1px solid rgba(0, 176, 255, 0.3);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .share-btn:hover, .plan-btn:hover {
+      background: rgba(0, 176, 255, 0.2);
+    }
+    
+    .share-btn i, .plan-btn i {
+      margin-right: 5px;
+      font-size: 16px;
+    }
+    
+    .plan-btn {
+      background: linear-gradient(90deg, rgba(0, 176, 255, 0.3), rgba(124, 77, 255, 0.3));
+    }
+    
+    /* 详细报告部分 */
+    .report-container {
+      margin: 20px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .section-title {
+      color: white;
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-title i {
+      font-size: 20px;
+      margin-right: 8px;
+      color: #00B0FF;
+    }
+    
+    .report-card {
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.1), rgba(124, 77, 255, 0.1));
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-left: 2px solid #00B0FF;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .report-dimension {
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .risk-level {
+      display: flex;
+      align-items: center;
+    }
+    
+    .risk-stars {
+      display: flex;
+      margin-right: 8px;
+    }
+    
+    .risk-star {
+      color: #00B0FF;
+      font-size: 12px;
+      margin-right: 2px;
+    }
+    
+    .risk-text {
+      color: #FF4081;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .report-detail {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .data-highlight {
+      color: #00B0FF;
+      font-weight: 500;
+    }
+    
+    /* 底部导航栏 */
+    .bottom-nav {
+      height: 70px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(4, 20, 44, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0, 176, 255, 0.2);
+      z-index: 100;
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      box-sizing: border-box;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 20%;
+      height: 100%;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+    }
+    
+    .nav-item.active {
+      color: #00B0FF;
+    }
+    
+    .nav-item.active.ai-item {
+      position: relative;
+    }
+    
+    .nav-item.active.ai-item::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50%;
+      height: 3px;
+      background: linear-gradient(90deg, #00B0FF, #7C4DFF);
+      border-radius: 3px 3px 0 0;
+    }
+    
+    /* 返回按钮 - 框架外 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.5), rgba(124, 77, 255, 0.5));
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+      backdrop-filter: blur(5px);
+    }
+    
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+    
+    .back-button i {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 将返回按钮移动到框架外 -->
+  <a href="ai.html" class="back-button" title="返回AI助手">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+  
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="analysis-screen">
+          <!-- 动态星云数据场背景 -->
+          <div class="ai-background" id="neural-background">
+            <!-- JS动态生成神经网络粒子和数据流 -->
+          </div>
+          
+          <!-- 顶部导航 -->
+          <div class="analysis-header">
+            <div style="width: 40px;"></div> <!-- 占位，移除原返回按钮 -->
+            <div class="header-title">成瘾分析</div>
+            <div style="width: 40px;"></div> <!-- 占位 -->
+          </div>
+          
+          <div class="analysis-content">
+            <!-- 风险雷达图 -->
+            <div class="radar-container">
+              <div class="radar-heading">
+                <div class="radar-title">三维风险雷达图</div>
+                <div class="radar-subtitle">基于LSTM神经网络模型分析</div>
+              </div>
+              
+              <div class="radar-chart">
+                <div class="radar-wrapper">
+                  <div class="radar-gradient"></div>
+                  <svg width="280" height="280" viewBox="0 0 280 280">
+                    <!-- 背景网格 -->
+                    <polygon points="140,40 230,100 200,210 80,210 50,100" 
+                            fill="none" stroke="rgba(0, 176, 255, 0.2)" stroke-width="1" />
+                    <polygon points="140,70 205,115 185,190 95,190 75,115" 
+                            fill="none" stroke="rgba(0, 176, 255, 0.15)" stroke-width="1" stroke-dasharray="4,4" />
+                    <polygon points="140,100 180,130 165,170 115,170 100,130" 
+                            fill="none" stroke="rgba(0, 176, 255, 0.1)" stroke-width="1" stroke-dasharray="4,4" />
+                    
+                    <!-- 数据多边形 -->
+                    <polygon points="140,50 215,105 180,200 90,190 60,95" 
+                            fill="rgba(255, 64, 129, 0.2)" stroke="#FF4081" stroke-width="2" />
+                    
+                    <!-- 坐标轴 -->
+                    <line x1="140" y1="140" x2="140" y2="20" stroke="rgba(0, 176, 255, 0.5)" stroke-width="1" />
+                    <line x1="140" y1="140" x2="240" y2="90" stroke="rgba(0, 176, 255, 0.5)" stroke-width="1" />
+                    <line x1="140" y1="140" x2="200" y2="220" stroke="rgba(0, 176, 255, 0.5)" stroke-width="1" />
+                    <line x1="140" y1="140" x2="80" y2="220" stroke="rgba(0, 176, 255, 0.5)" stroke-width="1" />
+                    <line x1="140" y1="140" x2="40" y2="90" stroke="rgba(0, 176, 255, 0.5)" stroke-width="1" />
+                    
+                    <!-- 坐标点 -->
+                    <circle cx="140" cy="50" r="4" fill="#00B0FF" />
+                    <circle cx="215" cy="105" r="4" fill="#FF4081" />
+                    <circle cx="180" cy="200" r="4" fill="#FF4081" />
+                    <circle cx="90" cy="190" r="4" fill="#00B0FF" />
+                    <circle cx="60" cy="95" r="4" fill="#7C4DFF" />
+                    
+                    <!-- 坐标标签 -->
+                    <text x="140" y="15" text-anchor="middle" fill="white" font-size="12">生理依赖</text>
+                    <text x="250" y="85" text-anchor="start" fill="white" font-size="12">心理依赖</text>
+                    <text x="210" y="230" text-anchor="middle" fill="white" font-size="12">时间占用</text>
+                    <text x="70" y="230" text-anchor="middle" fill="white" font-size="12">社交影响</text>
+                    <text x="30" y="85" text-anchor="end" fill="white" font-size="12">睡眠影响</text>
+                    
+                    <!-- 中心点 -->
+                    <circle cx="140" cy="140" r="3" fill="#00B0FF" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 风险类型诊断书 -->
+            <div class="diagnosis-container">
+              <div class="diagnosis-header">
+                <div class="diagnosis-title">
+                  <i class="ri-file-chart-line"></i>
+                  成瘾类型诊断书
+                </div>
+                <div class="diagnosis-date">2024/05/19</div>
+              </div>
+              
+              <div class="diagnosis-result">娱乐逃避型成瘾</div>
+              
+              <div class="diagnosis-desc">
+                基于对你近30天的使用数据分析，AI检测到你属于典型的"娱乐逃避型成瘾"。这类成瘾通常源于对现实压力的回避，通过短视频获取即时的多巴胺反馈。
+              </div>
+              
+              <div class="diagnosis-characteristics">
+                <div class="characteristic-title">主要特征：</div>
+                <ul class="characteristic-list">
+                  <li class="characteristic-item">
+                    <i class="ri-time-line"></i>
+                    工作/学习压力增大时，短视频使用时长明显增加
+                  </li>
+                  <li class="characteristic-item">
+                    <i class="ri-time-line"></i>
+                    夜间使用频率高，21:00-24:00是高峰期
+                  </li>
+                  <li class="characteristic-item">
+                    <i class="ri-time-line"></i>
+                    短视频内容多为搞笑、放松类，减少思考负担
+                  </li>
+                  <li class="characteristic-item">
+                    <i class="ri-time-line"></i>
+                    常出现"计划外使用"，原定5分钟变成1小时以上
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="diagnosis-footer">
+                <button class="share-btn">
+                  <i class="ri-share-line"></i>
+                  分享给家人
+                </button>
+                <button class="plan-btn">
+                  <i class="ri-road-map-line"></i>
+                  制定戒断方案
+                </button>
+              </div>
+            </div>
+            
+            <!-- 详细报告部分 -->
+            <div class="report-container">
+              <div class="section-title">
+                <i class="ri-file-list-3-line"></i>
+                详细维度报告
+              </div>
+              
+              <div class="report-card">
+                <div class="report-header">
+                  <div class="report-dimension">生理依赖</div>
+                  <div class="risk-level">
+                    <div class="risk-stars">
+                      <i class="ri-star-fill risk-star"></i>
+                      <i class="ri-star-fill risk-star"></i>
+                      <i class="ri-star-fill risk-star"></i>
+                      <i class="ri-star-line risk-star"></i>
+                      <i class="ri-star-line risk-star"></i>
+                    </div>
+                    <div class="risk-text">中等风险</div>
+                  </div>
+                </div>
+                <div class="report-detail">
+                  检测到你每天平均解锁手机<span class="data-highlight">58次</span>，其中<span class="data-highlight">32次</span>是为了打开短视频应用。当无法使用短视频时，你的焦虑情绪标记高于平均水平，建议关注这一依赖倾向。
+                </div>
+              </div>
+              
+              <div class="report-card">
+                <div class="report-header">
+                  <div class="report-dimension">心理依赖</div>
+                  <div class="risk-level">
+                    <div class="risk-stars">
+                      <i class="ri-star-fill risk-star"></i>
+                      <i class="ri-star-fill risk-star"></i>
+                      <i class="ri-star-fill risk-star"></i>
+                      <i class="ri-star-fill risk-star"></i>
+                      <i class="ri-star-line risk-star"></i>
+                    </div>
+                    <div class="risk-text">较高风险</div>
+                  </div>
+                </div>
+                <div class="report-detail">
+                  检测到连续<span class="data-highlight">7天</span>你在感到压力或无聊时立即打开短视频APP。社交媒体已成为你情绪调节的主要工具，这种依赖模式风险等级为<span class="data-highlight">★★★★</span>。
+                </div>
+              </div>
+              
+              <div class="report-card">
+                <div class="report-header">
+                  <div class="report-dimension">睡眠影响</div>
+                  <div class="risk-level">
+                    <div class="risk-stars">
+                      <i class="ri-star-fill risk-star"></i>
+                      <i class="ri-star-fill risk-star"></i>
+                      <i class="ri-star-line risk-star"></i>
+                      <i class="ri-star-line risk-star"></i>
+                      <i class="ri-star-line risk-star"></i>
+                    </div>
+                    <div class="risk-text">低风险</div>
+                  </div>
+                </div>
+                <div class="report-detail">
+                  数据显示你的短视频使用通常在<span class="data-highlight">23:30前</span>结束，睡眠时间相对规律。但仍有<span class="data-highlight">3天</span>检测到凌晨1点后的使用记录，建议避免这种情况。
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 底部导航栏 -->
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <a href="home.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-home-5-line"></i>
+                <div class="label">首页</div>
+              </a>
+            </div>
+            <div class="nav-item">
+              <a href="statistics.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-bar-chart-line"></i>
+                <div class="label">统计</div>
+              </a>
+            </div>
+            <div class="nav-item active ai-item">
+              <a href="ai.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-cpu-line"></i>
+                <div class="label">AI助手</div>
+              </a>
+            </div>
+            <div class="nav-item">
+              <a href="social.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-group-line"></i>
+                <div class="label">社交圈</div>
+              </a>
+            </div>
+            <div class="nav-item">
+              <a href="profile.html" style="text-decoration: none; color: inherit;">
+                <i class="ri-user-line"></i>
+                <div class="label">我的</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // 动态生成神经网络粒子
+    function createNeuralBackground() {
+      const background = document.getElementById('neural-background');
+      
+      // 创建粒子
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('neural-particle');
+        
+        // 随机粒子大小和位置
+        const size = Math.random() * 5 + 2;
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        const delay = Math.random() * 10;
+        const duration = Math.random() * 10 + 10;
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}%`;
+        particle.style.top = `${posY}%`;
+        particle.style.animationDuration = `${duration}s`;
+        particle.style.animationDelay = `${delay}s`;
+        
+        background.appendChild(particle);
+      }
+      
+      // 创建数据流
+      for (let i = 0; i < 15; i++) {
+        const stream = document.createElement('div');
+        stream.classList.add('data-stream');
+        
+        // 随机数据流位置和样式
+        const height = Math.random() * 1 + 1;
+        const posY = Math.random() * 100;
+        const width = Math.random() * 50 + 50;
+        const delay = Math.random() * 5;
+        const duration = Math.random() * 4 + 4;
+        
+        stream.style.height = `${height}px`;
+        stream.style.top = `${posY}%`;
+        stream.style.width = `${width}%`;
+        stream.style.animationDuration = `${duration}s`;
+        stream.style.animationDelay = `${delay}s`;
+        
+        background.appendChild(stream);
+      }
+    }
+    
+    // 页面加载时初始化背景
+    window.addEventListener('load', function() {
+      createNeuralBackground();
+      
+      // 其他交互逻辑可以添加在这里
+      document.querySelector('.plan-btn').addEventListener('click', function() {
+        console.log('跳转至方案定制页面');
+        window.location.href = 'ai.html';
+      });
+      
+      document.querySelector('.share-btn').addEventListener('click', function() {
+        console.log('分享诊断书给家人');
+        // 分享逻辑
+      });
+    });
+  </script>
+</body>
+</html> 
