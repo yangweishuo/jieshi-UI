@@ -250,6 +250,129 @@
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
     
+    /* 勋章墙入口按钮 */
+    .medal-wall-entry {
+      margin: 15px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .gear-border {
+      width: 180px;
+      height: 50px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .gear-border::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 16% 50%, transparent 12px, #00B0FF 13px, #00B0FF 16px, transparent 17px),
+        radial-gradient(circle at 84% 50%, transparent 12px, #00B0FF 13px, #00B0FF 16px, transparent 17px),
+        radial-gradient(circle at 50% 16%, transparent 12px, #00B0FF 13px, #00B0FF 16px, transparent 17px),
+        radial-gradient(circle at 50% 84%, transparent 12px, #00B0FF 13px, #00B0FF 16px, transparent 17px),
+        radial-gradient(circle at 16% 16%, transparent 12px, #00B0FF 13px, #00B0FF 16px, transparent 17px),
+        radial-gradient(circle at 84% 16%, transparent 12px, #00B0FF 13px, #00B0FF 16px, transparent 17px),
+        radial-gradient(circle at 16% 84%, transparent 12px, #00B0FF 13px, #00B0FF 16px, transparent 17px),
+        radial-gradient(circle at 84% 84%, transparent 12px, #00B0FF 13px, #00B0FF 16px, transparent 17px);
+      border-radius: 25px;
+      animation: rotate-gear 10s linear infinite;
+      z-index: -1;
+    }
+    
+    @keyframes rotate-gear {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .medal-btn {
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.3), rgba(124, 77, 255, 0.3));
+      border: 1px solid rgba(0, 176, 255, 0.6);
+      width: 170px;
+      height: 45px;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+      font-weight: bold;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0, 176, 255, 0.3);
+      backdrop-filter: blur(5px);
+    }
+    
+    .medal-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+    
+    .medal-btn:hover::before {
+      left: 100%;
+    }
+    
+    .medal-btn i {
+      font-size: 20px;
+      margin-right: 8px;
+      color: #00B0FF;
+      text-shadow: 0 0 5px rgba(0, 176, 255, 0.5);
+    }
+    
+    .medal-count {
+      font-size: 14px;
+    }
+    
+    .badge-notification {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 20px;
+      height: 20px;
+      background: #00B0FF;
+      border-radius: 50%;
+      font-size: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 5px rgba(0, 176, 255, 0.5);
+      animation: pulse-notification 1.5s infinite;
+    }
+    
+    @keyframes pulse-notification {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(0, 176, 255, 0.5);
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 8px rgba(0, 176, 255, 0.7);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(0, 176, 255, 0.5);
+      }
+    }
+    
     /* 勋章墙与设置区 */
     .profile-section {
       background: white;
@@ -853,15 +976,16 @@
             <div class="profile-bio">专注生活，拒绝沉迷</div>
           </div>
           
+          
           <div class="profile-content">
-            <!-- 勋章墙 -->
+            <!-- 勋章墙展示区 -->
             <div class="profile-section">
               <div class="section-header">
                 <div class="section-title">
                   <i class="ri-medal-line"></i>
                   勋章墙
                 </div>
-                <a href="#" class="view-all">
+                <a href="medal-wall.html" class="view-all">
                   查看全部 <i class="ri-arrow-right-s-line"></i>
                 </a>
               </div>
@@ -1109,6 +1233,96 @@
       const avatar = this.querySelector('.hexagon-avatar');
       avatar.style.transform = avatar.style.transform === 'rotateY(180deg)' ? 'rotateY(0deg)' : 'rotateY(180deg)';
     });
+    
+    // 勋章墙入口按钮点击事件
+    document.querySelector('.medal-wall-entry').addEventListener('click', function() {
+      // 创建粒子效果动画
+      createMedalParticles();
+      // 跳转到勋章墙页面
+      setTimeout(() => {
+        window.location.href = 'medal-wall.html';
+      }, 800);
+    });
+    
+    // 创建勋章粒子汇聚动画
+    function createMedalParticles() {
+      const container = document.querySelector('.profile-header');
+      const button = document.querySelector('.medal-btn');
+      const buttonRect = button.getBoundingClientRect();
+      const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+      const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+      
+      // 创建30个粒子
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'medal-particle';
+        
+        // 随机位置
+        const randomX = Math.random() * window.innerWidth;
+        const randomY = Math.random() * window.innerHeight * 0.6;
+        
+        // 计算移动方向
+        const targetX = buttonCenterX - randomX;
+        const targetY = buttonCenterY - randomY;
+        
+        // 随机大小
+        const size = Math.random() * 3 + 2;
+        
+        // 随机颜色（蓝色系）
+        const colors = ['#00B0FF', '#1E88E5', '#7C4DFF', '#3498db'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        // 随机延迟
+        const delay = Math.random() * 0.5;
+        
+        // 设置样式
+        particle.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          background-color: ${color};
+          position: fixed;
+          top: ${randomY}px;
+          left: ${randomX}px;
+          border-radius: 50%;
+          z-index: 100;
+          pointer-events: none;
+          opacity: 0;
+          transform: translate(0, 0);
+          animation: particleMove 0.8s ease-in forwards ${delay}s;
+        `;
+        
+        // 设置自定义属性存储目标坐标
+        particle.style.setProperty('--target-x', `${targetX}px`);
+        particle.style.setProperty('--target-y', `${targetY}px`);
+        
+        // 添加粒子到页面
+        document.body.appendChild(particle);
+        
+        // 动画结束后移除粒子
+        setTimeout(() => {
+          particle.remove();
+        }, (delay + 0.8) * 1000);
+      }
+    }
+    
+    // 添加动画关键帧
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes particleMove {
+        0% {
+          opacity: 0;
+          transform: translate(0, 0);
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate(var(--target-x), var(--target-y));
+        }
+      }
+    `;
+    document.head.appendChild(style);
     
     // 主题切换
     document.querySelectorAll('.theme-option').forEach(option => {

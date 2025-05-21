@@ -2,18 +2,18 @@
 
 :root {
   /* 主色调 */
-  --primary-color: #2ECC71; /* 健康绿 */
-  --secondary-color: #1E88E5; /* 科技蓝 */
-  --accent-color: #7C4DFF; /* 紫色 */
-  --warning-color: #E74C3C; /* 警示红 */
-  --dark-blue: #333F50; /* 深邃蓝灰 */
+  --primary-color: #3498db; /* 更换为蓝色主调 */
+  --secondary-color: #00B0FF; /* 鲜亮蓝 */
+  --accent-color: #7C4DFF; /* 保留紫色强调色 */
+  --warning-color: #FF5252; /* 更明亮的警示红 */
+  --dark-blue: #04142c; /* 更深的深蓝色调 */
   --light-text: #FFFFFF;
   --dark-text: #333333;
   
   /* 渐变 */
-  --primary-gradient: linear-gradient(135deg, #2ECC71, #1E88E5);
-  --blue-gradient: linear-gradient(135deg, #304FFE, #7C4DFF);
-  --dark-gradient: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+  --primary-gradient: linear-gradient(135deg, #3498db, #00B0FF);
+  --blue-gradient: linear-gradient(135deg, #00B0FF, #7C4DFF);
+  --dark-gradient: linear-gradient(to bottom, rgba(4, 20, 44, 0.8), rgba(4, 20, 44, 0.4));
   
   /* 字体 */
   --main-font: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;

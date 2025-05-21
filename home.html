@@ -99,16 +99,16 @@
       justify-content: center;
       align-items: center;
       font-weight: bold;
-      box-shadow: 0 2px 5px rgba(231, 76, 60, 0.3);
+      box-shadow: 0 2px 5px rgba(255, 82, 82, 0.3);
     }
     
     /* 视频限制状态 */
     .video-limit-status {
       padding: 20px;
-      background: linear-gradient(135deg, rgba(30, 136, 229, 0.8), rgba(124, 77, 255, 0.8));
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.8), rgba(124, 77, 255, 0.8));
       margin: 15px;
       border-radius: 15px;
-      box-shadow: 0 5px 15px rgba(30, 136, 229, 0.2);
+      box-shadow: 0 5px 15px rgba(0, 176, 255, 0.2);
       color: white;
       position: relative;
       overflow: hidden;
@@ -186,7 +186,7 @@
     }
     
     .check-in-card.checked {
-      background: linear-gradient(135deg, rgba(46, 204, 113, 0.8), rgba(26, 188, 156, 0.8));
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.8), rgba(0, 176, 255, 0.8));
       color: white;
     }
     
@@ -238,7 +238,7 @@
     .check-in-btn {
       width: 100%;
       padding: 12px;
-      background: linear-gradient(135deg, #2ECC71, #1ABC9C);
+      background: linear-gradient(135deg, #3498db, #00B0FF);
       color: white;
       border: none;
       border-radius: 8px;
@@ -252,7 +252,7 @@
     
     .check-in-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+      box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
     }
     
     .check-in-card.checked .check-in-btn {
@@ -477,7 +477,7 @@
       top: 20px;
       left: 20px;
       z-index: 1000;
-      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      background: linear-gradient(135deg, #3498db, #00B0FF);
       color: white;
       border: none;
       border-radius: 50%;
@@ -508,6 +508,124 @@
         transform: translate(var(--tx), var(--ty));
         opacity: 0;
       }
+    }
+    
+    .feature-card {
+      background-color: white;
+      border-radius: 15px;
+      margin: 15px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+    
+    .feature-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .feature-title {
+      display: flex;
+      align-items: center;
+    }
+    
+    .feature-title i {
+      font-size: 22px;
+      margin-right: 10px;
+      color: var(--secondary-color);
+      background: linear-gradient(135deg, #00B0FF, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .feature-title h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+    
+    .feature-action {
+      font-size: 14px;
+      color: var(--secondary-color);
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    
+    .feature-action i {
+      font-size: 16px;
+      margin-left: 3px;
+    }
+    
+    .badges-preview {
+      padding: 5px 0;
+    }
+    
+    .badge-row {
+      display: flex;
+      overflow-x: auto;
+      gap: 15px;
+      padding: 10px 0;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    
+    .badge-row::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .badge-item {
+      min-width: 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    
+    .badge-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .badge-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.1), rgba(124, 77, 255, 0.1));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .badge-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .badge-name {
+      font-size: 12px;
+      color: #666;
+      max-width: 80px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .new-badge .badge-img {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    
+    .new-badge .badge-img i {
+      font-size: 24px;
+      color: #999;
     }
   </style>
 </head>
@@ -598,46 +716,51 @@
             </div>
           </div>
           
-          <!-- 徽章成就预览 -->
-          <div class="achievement-preview">
-            <div class="achievement-header">
-              <div class="achievement-title">
+        
+           <!-- 在home.html中添加成就徽章卡片，放在适当位置 -->
+           <div class="feature-card">
+            <div class="feature-header">
+              <div class="feature-title">
                 <i class="ri-medal-line"></i>
-                成就徽章
+                <h3>成就徽章</h3>
               </div>
-              <a href="#" class="view-all">查看全部</a>
+              <a href="badges.html?source=home" class="feature-action">
+                查看全部 <i class="ri-arrow-right-s-line"></i>
+              </a>
             </div>
             
-            <div class="badges-container">
-              <div class="badge-item">
-                <div class="badge-icon">
-                  <div class="holographic-badge">
-                    <i class="ri-seedling-line" style="color: white; font-size: 30px;"></i>
+            <div class="badges-preview">
+              <div class="badge-row">
+                <div class="badge-item" data-badge-id="1">
+                  <div class="badge-img">
+                    <img src="https://via.placeholder.com/60/3498DB/FFFFFF?text=B1" alt="破晓勋章">
                   </div>
+                  <div class="badge-name">破晓勋章</div>
                 </div>
-                <div class="badge-name">初心者</div>
-              </div>
-              
-              <div class="badge-item">
-                <div class="badge-icon">
-                  <div class="holographic-badge">
-                    <i class="ri-calendar-check-line" style="color: white; font-size: 30px;"></i>
+                
+                <div class="badge-item" data-badge-id="2">
+                  <div class="badge-img">
+                    <img src="https://via.placeholder.com/60/2980B9/FFFFFF?text=B2" alt="里程碑·白银">
                   </div>
+                  <div class="badge-name">里程碑·白银</div>
                 </div>
-                <div class="badge-name">坚持7天</div>
-              </div>
-              
-              <div class="badge-item">
-                <div class="badge-icon">
-                  <div class="holographic-badge" style="background: linear-gradient(135deg, #bdc3c7, #95a5a6);">
-                    <i class="ri-group-line" style="color: white; font-size: 30px;"></i>
+                
+                <div class="badge-item" data-badge-id="3">
+                  <div class="badge-img">
+                    <img src="https://via.placeholder.com/60/00B0FF/FFFFFF?text=B3" alt="AI训练师">
                   </div>
+                  <div class="badge-name">AI训练师</div>
                 </div>
-                <div class="badge-name">社交达人</div>
+                
+                <div class="badge-item new-badge">
+                  <div class="badge-img">
+                    <i class="ri-add-line"></i>
+                  </div>
+                  <div class="badge-name">查看更多</div>
+                </div>
               </div>
             </div>
           </div>
-          
           <!-- 底部导航栏 -->
           <div class="bottom-nav">
             <div class="nav-item active">
@@ -669,11 +792,32 @@
               </a>
             </div>
           </div>
+          
+         
         </div>
       </div>
     </div>
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // 在页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      // 为徽章项添加点击事件
+      document.querySelectorAll('.badge-item').forEach(function(badge) {
+        badge.addEventListener('click', function() {
+          const badgeId = this.getAttribute('data-badge-id');
+          
+          if (badgeId) {
+            // 跳转到徽章详情页并传递参数
+            window.location.href = `badges.html?source=home&badge=${badgeId}`;
+          } else {
+            // 查看更多按钮，直接跳转到徽章页面
+            window.location.href = 'badges.html?source=home';
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html> 

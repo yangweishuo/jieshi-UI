@@ -13,7 +13,7 @@
       font-family: var(--main-font);
       background-color: #f5f5f5;
     }
-
+    
     /* 导航栏 */
     .navbar {
       width: 100%;
@@ -29,7 +29,7 @@
       justify-content: center;
       backdrop-filter: blur(10px);
     }
-
+    
     .navbar-content {
       max-width: 1200px;
       width: 100%;
@@ -38,12 +38,12 @@
       align-items: center;
       padding: 0 20px;
     }
-
+    
     .navbar-logo {
       display: flex;
       align-items: center;
     }
-
+    
     .logo-icon {
       width: 40px;
       height: 40px;
@@ -55,12 +55,12 @@
       margin-right: 10px;
       box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
     }
-
+    
     .logo-icon i {
       font-size: 24px;
       color: white;
     }
-
+    
     .logo-text {
       font-weight: bold;
       font-size: 22px;
@@ -68,12 +68,12 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
+    
     .navbar-links {
       display: flex;
       gap: 20px;
     }
-
+    
     .navbar-link {
       color: #666;
       text-decoration: none;
@@ -83,26 +83,26 @@
       display: flex;
       align-items: center;
     }
-
+    
     .navbar-link i {
       margin-right: 5px;
     }
-
+    
     .navbar-link:hover {
       color: var(--secondary-color);
     }
-
+    
     .container {
       max-width: 1200px;
       margin: 90px auto 0;
       padding: 30px 20px;
     }
-
+    
     .header {
       text-align: center;
       margin-bottom: 40px;
     }
-
+    
     .project-title {
       font-size: 36px;
       font-weight: bold;
@@ -113,13 +113,13 @@
       position: relative;
       display: inline-block;
     }
-
+    
     .project-subtitle {
       font-size: 18px;
       color: #666;
       margin-bottom: 20px;
     }
-
+    
     .project-description {
       max-width: 800px;
       margin: 0 auto;
@@ -127,14 +127,14 @@
       color: #666;
       text-align: left;
     }
-
+    
     .pages-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
       gap: 30px;
       margin-top: 40px;
     }
-
+    
     .page-item {
       background-color: white;
       border-radius: 15px;
@@ -142,12 +142,12 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s, box-shadow 0.3s;
     }
-
+    
     .page-item:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
-
+    
     .page-preview {
       width: 100%;
       height: 280px;
@@ -158,18 +158,18 @@
       justify-content: center;
       align-items: center;
     }
-
+    
     .page-preview img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.5s;
     }
-
+    
     .page-item:hover .page-preview img {
       transform: scale(1.05);
     }
-
+    
     .page-preview::after {
       content: '';
       position: absolute;
@@ -182,16 +182,16 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-
+    
     .page-item:hover .page-preview::after {
       opacity: 1;
     }
-
+    
     .page-info {
       padding: 20px;
       border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
-
+    
     .page-title {
       font-size: 20px;
       font-weight: 600;
@@ -200,7 +200,7 @@
       display: flex;
       align-items: center;
     }
-
+    
     .page-title i {
       margin-right: 10px;
       font-size: 24px;
@@ -208,14 +208,14 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
+    
     .page-description {
       font-size: 14px;
       color: #666;
       line-height: 1.5;
       margin-bottom: 20px;
     }
-
+    
     .view-button {
       display: inline-flex;
       align-items: center;
@@ -231,12 +231,12 @@
       position: relative;
       overflow: hidden;
     }
-
+    
     .view-button i {
       margin-right: 8px;
       font-size: 16px;
     }
-
+    
     .view-button::before {
       content: '';
       position: absolute;
@@ -248,7 +248,7 @@
       transform: rotate(45deg);
       animation: button-shine 3s infinite;
     }
-
+    
     @keyframes button-shine {
       0% {
         transform: translateX(-300%) rotate(45deg);
@@ -257,12 +257,12 @@
         transform: translateX(300%) rotate(45deg);
       }
     }
-
+    
     .view-button:hover {
       transform: translateY(-3px);
       box-shadow: 0 5px 15px rgba(30, 136, 229, 0.5);
     }
-
+    
     .footer {
       margin-top: 60px;
       text-align: center;
@@ -271,7 +271,7 @@
       font-size: 14px;
       border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
-
+    
     /* 返回顶部按钮 */
     .back-to-top {
       width: 50px;
@@ -292,31 +292,31 @@
       opacity: 0;
       visibility: hidden;
     }
-
+    
     .back-to-top.visible {
       opacity: 1;
       visibility: visible;
     }
-
+    
     .back-to-top:hover {
       transform: translateY(-5px);
       box-shadow: 0 5px 20px rgba(30, 136, 229, 0.6);
     }
-
+    
     .back-to-top i {
       font-size: 24px;
     }
-
+    
     /* 响应式调整 */
     @media (max-width: 768px) {
       .navbar-links {
         display: none;
       }
-
+      
       .pages-grid {
         grid-template-columns: 1fr;
       }
-
+      
       .back-to-top {
         width: 40px;
         height: 40px;
@@ -339,7 +339,7 @@
       <div class="navbar-links">
         <a href="#" class="navbar-link"><i class="ri-home-5-line"></i> 首页</a>
         <a href="#pages" class="navbar-link"><i class="ri-pages-line"></i> 页面预览</a>
-        <a href="https://github.com/yangweishuo/jieshi-UI" target="_blank" class="navbar-link"><i class="ri-github-line"></i> 源码</a>
+        <a href="https://github.com/" target="_blank" class="navbar-link"><i class="ri-github-line"></i> 源码</a>
       </div>
     </div>
   </div>
@@ -352,7 +352,7 @@
         <p>戒视是一款专注于帮助用户控制短视频使用时间的移动应用。采用社交激励机制、数据可视化和成就系统，促使用户形成健康的数字使用习惯。应用提供时间监控、社交互助、成就奖励等功能，让用户在愉悦的环境中逐步减少对短视频的依赖。</p>
       </div>
     </div>
-
+    
     <div id="pages" class="pages-grid">
       <div class="page-item">
         <div class="page-preview">
@@ -369,7 +369,7 @@
           </a>
         </div>
       </div>
-
+      
       <div class="page-item">
         <div class="page-preview">
           <img src="https://dummyimage.com/360x280/1E88E5/ffffff&text=登录注册页" alt="登录注册页预览">
@@ -385,7 +385,7 @@
           </a>
         </div>
       </div>
-
+      
       <div class="page-item">
         <div class="page-preview">
           <img src="https://dummyimage.com/360x280/7C4DFF/ffffff&text=首页" alt="首页预览">
@@ -401,7 +401,7 @@
           </a>
         </div>
       </div>
-
+      
       <div class="page-item">
         <div class="page-preview">
           <img src="https://dummyimage.com/360x280/2ECC71/ffffff&text=打卡详情页" alt="打卡详情页预览">
@@ -417,7 +417,7 @@
           </a>
         </div>
       </div>
-
+      
       <div class="page-item">
         <div class="page-preview">
           <img src="https://dummyimage.com/360x280/304FFE/ffffff&text=统计页" alt="统计页预览">
@@ -433,39 +433,39 @@
           </a>
         </div>
       </div>
-
-      <div class="page-item">
-        <div class="page-preview">
-          <img src="https://dummyimage.com/360x280/3498DB/ffffff&text=社交圈" alt="社交圈预览">
-        </div>
-        <div class="page-info">
-          <h3 class="page-title">
-            <i class="ri-group-line"></i>
-            社交圈
-          </h3>
-          <p class="page-description">分享戒断心得、查看好友动态，通过社交连接增强戒断效果和用户粘性。</p>
-          <a href="social.html" class="view-button" target="_blank">
-            <i class="ri-eye-line"></i> 查看页面
-          </a>
-        </div>
+      
+      <div class="page-item">        
+        <div class="page-preview">          
+          <img src="https://dummyimage.com/360x280/3498DB/ffffff&text=社交圈" alt="社交圈预览">        
+        </div>        
+        <div class="page-info">          
+          <h3 class="page-title">            
+            <i class="ri-group-line"></i>            
+            社交圈          
+          </h3>          
+          <p class="page-description">分享戒断心得、查看好友动态，通过社交连接增强戒断效果和用户粘性。</p>          
+          <a href="social.html" class="view-button" target="_blank">            
+            <i class="ri-eye-line"></i> 查看页面          
+          </a>        
+        </div>      
+      </div>            
+      
+      <div class="page-item">        
+        <div class="page-preview">          
+          <img src="https://dummyimage.com/360x280/FF4081/ffffff&text=家庭中心" alt="家庭中心预览">        
+        </div>        
+        <div class="page-info">          
+          <h3 class="page-title">            
+            <i class="ri-home-heart-line"></i>            
+            家庭中心          
+          </h3>          
+          <p class="page-description">家人监督鼓励功能，结合科技感界面与家庭情感连接，强化互动和监督效率。</p>          
+          <a href="family.html" class="view-button" target="_blank">            
+            <i class="ri-eye-line"></i> 查看页面          
+          </a>        
+        </div>      
       </div>
-
-      <div class="page-item">
-        <div class="page-preview">
-          <img src="https://dummyimage.com/360x280/FF4081/ffffff&text=家庭中心" alt="家庭中心预览">
-        </div>
-        <div class="page-info">
-          <h3 class="page-title">
-            <i class="ri-home-heart-line"></i>
-            家庭中心
-          </h3>
-          <p class="page-description">家人监督鼓励功能，结合科技感界面与家庭情感连接，强化互动和监督效率。</p>
-          <a href="family.html" class="view-button" target="_blank">
-            <i class="ri-eye-line"></i> 查看页面
-          </a>
-        </div>
-      </div>
-
+      
       <div class="page-item">
         <div class="page-preview">
           <img src="https://dummyimage.com/360x280/7C4DFF/ffffff&text=时长排行榜页" alt="时长排行榜页预览">
@@ -481,7 +481,7 @@
           </a>
         </div>
       </div>
-
+      
       <div class="page-item">
         <div class="page-preview">
           <img src="https://dummyimage.com/360x280/7C4DFF/ffffff&text=我的页面" alt="我的页面预览">
@@ -497,7 +497,7 @@
           </a>
         </div>
       </div>
-
+      
       <div class="page-item">
         <div class="page-preview">
           <img src="https://dummyimage.com/360x280/00B0FF/ffffff&text=AI助手" alt="AI助手预览">
@@ -513,7 +513,7 @@
           </a>
         </div>
       </div>
-
+      
       <div class="page-item">
         <div class="page-preview">
           <img src="https://dummyimage.com/360x280/7C4DFF/ffffff&text=成瘾分析" alt="成瘾分析预览">
@@ -530,21 +530,21 @@
         </div>
       </div>
     </div>
-
+    
     <div class="footer">
-      <p>© 2025 戒视APP - UI/UX设计</p>
+      <p>© 2024 戒视APP - UI/UX设计</p>
     </div>
   </div>
-
+  
   <!-- 返回顶部按钮 -->
   <div class="back-to-top">
     <i class="ri-arrow-up-line"></i>
   </div>
-
+  
   <script>
     // 返回顶部按钮逻辑
     const backToTopButton = document.querySelector('.back-to-top');
-
+    
     window.addEventListener('scroll', () => {
       if (window.scrollY > 300) {
         backToTopButton.classList.add('visible');
@@ -552,7 +552,7 @@
         backToTopButton.classList.remove('visible');
       }
     });
-
+    
     backToTopButton.addEventListener('click', () => {
       window.scrollTo({
         top: 0,
@@ -561,4 +561,4 @@
     });
   </script>
 </body>
-</html>
+</html> 

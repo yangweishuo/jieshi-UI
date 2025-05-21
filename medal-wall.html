@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 个人勋章墙</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* 3D勋章墙基础样式 */
+    .medal-wall-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #04142c;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* 返回按钮 - 修改为框架外 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.5), rgba(124, 77, 255, 0.5));
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+      backdrop-filter: blur(5px);
+    }
+    
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+    
+    .back-button i {
+      font-size: 24px;
+    }
+    
+    /* 3D场景容器 */
+    .three-d-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    
+    /* 2D界面层 */
+    .ui-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+    
+    /* 顶部UI */
+    .top-ui {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: auto;
+    }
+    
+    .wall-title {
+      color: white;
+      font-size: 24px;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 176, 255, 0.8);
+      letter-spacing: 2px;
+      position: relative;
+      padding: 0 20px;
+    }
+    
+    .wall-title::before, .wall-title::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 30px;
+      height: 2px;
+      background: linear-gradient(to right, transparent, #00B0FF, transparent);
+    }
+    
+    .wall-title::before {
+      left: -40px;
+    }
+    
+    .wall-title::after {
+      right: -40px;
+    }
+    
+    /* 底部UI */
+    .bottom-ui {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: auto;
+    }
+    
+    .controls-info {
+      background: rgba(0, 176, 255, 0.1);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(0, 176, 255, 0.3);
+      border-radius: 50px;
+      padding: 8px 20px;
+      color: white;
+      font-size: 14px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .controls-info i {
+      margin-right: 5px;
+      color: #00B0FF;
+    }
+    
+    /* 2D模式切换 */
+    .view-mode-toggle {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 176, 255, 0.15);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(0, 176, 255, 0.3);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+      pointer-events: auto;
+      z-index: 20;
+    }
+    
+    .view-mode-toggle i {
+      font-size: 20px;
+      color: #00B0FF;
+    }
+    
+    /* 加载提示 */
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #04142c;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      transition: opacity 0.5s;
+    }
+    
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #00B0FF;
+      border-right-color: #00B0FF;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      color: white;
+      font-size: 16px;
+      letter-spacing: 1px;
+    }
+    
+    /* 勋章详情模态框样式 */
+    .medal-detail-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 200;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .medal-detail-modal.active {
+      display: flex;
+    }
+    
+    .modal-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(4, 20, 44, 0.9);
+      backdrop-filter: blur(10px);
+    }
+    
+    .hologram-container {
+      position: relative;
+      width: 90%;
+      max-width: 360px;
+      height: 80vh;
+      max-height: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      z-index: 210;
+      overflow: hidden;
+      padding: 20px;
+      transform: translateY(50px);
+      opacity: 0;
+      transition: transform 0.6s cubic-bezier(0.17, 0.89, 0.32, 1.28), 
+                  opacity 0.6s ease;
+    }
+    
+    .medal-detail-modal.active .hologram-container {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    /* 全息投影效果 */
+    .hologram-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(0, 176, 255, 0.3);
+      overflow: hidden;
+      z-index: -1;
+    }
+    
+    .hologram-ring::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      background: linear-gradient(135deg, rgba(0, 176, 255, 0.1), rgba(124, 77, 255, 0.1));
+      border-radius: 15px;
+      border: 1px solid rgba(0, 176, 255, 0.3);
+      z-index: -1;
+    }
+    
+    .hologram-ring::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(0, 176, 255, 0.2) 0%, transparent 70%);
+      z-index: -1;
+      animation: rotate-holo 20s linear infinite;
+    }
+    
+    .hologram-rings {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    
+    .h-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed rgba(0, 176, 255, 0.3);
+      animation: rotate-holo 20s linear infinite;
+    }
+    
+    .h-ring-1 {
+      top: 10%;
+      left: 10%;
+      width: 80%;
+      height: 80%;
+      animation-duration: 60s;
+    }
+    
+    .h-ring-2 {
+      top: 20%;
+      left: 20%;
+      width: 60%;
+      height: 60%;
+      animation-duration: 45s;
+    }
+    
+    .h-ring-3 {
+      top: 30%;
+      left: 30%;
+      width: 40%;
+      height: 40%;
+      animation-duration: 30s;
+    }
+    
+    @keyframes rotate-holo {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    /* 勋章展示区 */
+    .hologram-medal {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    
+    .medal-3d-container {
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(0, 176, 255, 0.2), transparent 70%);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin-bottom: 15px;
+    }
+    
+    .medal-3d-container::before,
+    .medal-3d-container::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 10px;
+      background: linear-gradient(90deg, transparent, rgba(0, 176, 255, 0.5), transparent);
+      animation: scan-line 3s ease-in-out infinite;
+      opacity: 0.5;
+    }
+    
+    .medal-3d-container::before {
+      top: 0;
+    }
+    
+    .medal-3d-container::after {
+      bottom: 0;
+      animation-delay: 1.5s;
+    }
+    
+    @keyframes scan-line {
+      0% {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      50% {
+        transform: translateY(70px);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(160px);
+        opacity: 0;
+      }
+    }
+    
+    .medal-info {
+      text-align: center;
+      color: white;
+    }
+    
+    .medal-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 5px;
+      background: linear-gradient(to right, #00B0FF, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+    }
+    
+    .medal-id {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: monospace;
+      margin-bottom: 5px;
+    }
+    
+    .medal-unlock-date {
+      font-size: 14px;
+      color: #00B0FF;
+      font-weight: 500;
+    }
+    
+    /* 成就数据 */
+    .achievement-data {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin: 30px 0;
+    }
+    
+    .data-ring {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+    
+    .progress-ring {
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 1s ease;
+    }
+    
+    .data-content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .data-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #00B0FF;
+    }
+    
+    .data-label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    /* AI评语 */
+    .ai-comment {
+      width: 100%;
+      background: rgba(124, 77, 255, 0.1);
+      border: 1px solid rgba(124, 77, 255, 0.3);
+      border-radius: 10px;
+      padding: 15px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+    
+    .comment-title {
+      font-size: 16px;
+      color: #7C4DFF;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    
+    .comment-content {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.5;
+    }
+    
+    .comment-light {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(to right, transparent, #7C4DFF, transparent);
+      animation: light-flow 3s ease infinite;
+    }
+    
+    @keyframes light-flow {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+    
+    /* 按钮区 */
+    .modal-buttons {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    
+    .share-btn, .upgrade-btn {
+      flex: 1;
+      height: 45px;
+      border: none;
+      border-radius: 22.5px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .share-btn {
+      background: linear-gradient(135deg, #00B0FF, #3498db);
+      box-shadow: 0 5px 15px rgba(0, 176, 255, 0.3);
+    }
+    
+    .upgrade-btn {
+      background: linear-gradient(135deg, #7C4DFF, #3498db);
+      box-shadow: 0 5px 15px rgba(124, 77, 255, 0.3);
+    }
+    
+    .share-btn:hover, .upgrade-btn:hover {
+      transform: translateY(-3px);
+    }
+    
+    .share-btn:active, .upgrade-btn:active {
+      transform: translateY(0);
+    }
+    
+    .share-btn i, .upgrade-btn i {
+      margin-right: 5px;
+      font-size: 16px;
+    }
+    
+    /* 关闭按钮 */
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 1;
+    }
+    
+    .modal-close i {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .modal-close:hover {
+      background: rgba(0, 0, 0, 0.4);
+      transform: rotate(90deg);
+    }
+    
+    /* 添加2D视图样式 */
+    .medal-2d-mode {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #04142c;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 5;
+    }
+    
+    .mode-2d-title {
+      color: white;
+      font-size: 18px;
+      margin: 10px 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .mode-2d-title i {
+      margin-right: 8px;
+      color: #00B0FF;
+    }
+    
+    .mode-2d-categories {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 5px;
+      margin-bottom: 70px;
+    }
+    
+    .mode-2d-section {
+      margin-bottom: 30px;
+    }
+    
+    .section-2d-title {
+      color: #00B0FF;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      position: relative;
+      padding-left: 12px;
+    }
+    
+    .section-2d-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 2px;
+      bottom: 2px;
+      width: 3px;
+      background: #00B0FF;
+      border-radius: 2px;
+    }
+    
+    .medals-2d-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    
+    .medal-2d-item {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid rgba(0, 176, 255, 0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .medal-2d-item:hover {
+      border-color: rgba(0, 176, 255, 0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .medal-2d-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background: rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    
+    .medal-2d-icon > div {
+      width: 80%;
+      height: 80%;
+      border-radius: 50%;
+      opacity: 0.8;
+    }
+    
+    .medal-2d-name {
+      font-size: 14px;
+      color: white;
+      text-align: center;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .medal-2d-date {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      text-align: center;
+    }
+    
+    .medal-2d-item.locked {
+      opacity: 0.7;
+      cursor: default;
+      filter: grayscale(1);
+    }
+    
+    .lock-icon {
+      position: absolute;
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <!-- 返回按钮 -->
+  <a href="profile.html" class="back-button" title="返回个人页面">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+  
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="medal-wall-screen">
+          <!-- 加载提示 -->
+          <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在构建勋章空间...</div>
+          </div>
+          
+          <!-- 3D场景容器 -->
+          <div class="three-d-container" id="medalWall3D"></div>
+          
+          <!-- 2D界面层 -->
+          <div class="ui-layer">
+            <!-- 顶部UI -->
+            <div class="top-ui">
+              <div class="wall-title">个人勋章墙</div>
+            </div>
+            
+            <!-- 底部UI -->
+            <div class="bottom-ui">
+              <div class="controls-info">
+                <i class="ri-drag-move-line"></i>拖动查看 • 滚轮缩放 • 点击查看详情
+              </div>
+            </div>
+            
+            <!-- 2D模式切换 -->
+            <div class="view-mode-toggle" id="viewModeToggle">
+              <i class="ri-list-check-2"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 勋章详情模态框 -->
+  <div class="medal-detail-modal" id="medalDetailModal">
+    <div class="modal-backdrop"></div>
+    <div class="hologram-container">
+      <!-- 全息投影效果 -->
+      <div class="hologram-ring"></div>
+      <div class="hologram-rings">
+        <div class="h-ring h-ring-1"></div>
+        <div class="h-ring h-ring-2"></div>
+        <div class="h-ring h-ring-3"></div>
+      </div>
+      
+      <!-- 勋章展示 -->
+      <div class="hologram-medal">
+        <div class="medal-3d-container" id="medal3DView"></div>
+        <div class="medal-info">
+          <h2 class="medal-title" id="medalTitle">LV.6 自律导师</h2>
+          <div class="medal-id" id="medalID">NO.20250521001</div>
+          <div class="medal-unlock-date" id="medalDate">解锁日期: 2025.05.21</div>
+        </div>
+      </div>
+      
+      <!-- 成就数据 -->
+      <div class="achievement-data">
+        <div class="data-ring">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0,176,255,0.2)" stroke-width="6" />
+            <circle cx="60" cy="60" r="54" fill="none" stroke="url(#blueGradient)" stroke-width="6" stroke-dasharray="339.292" stroke-dashoffset="50" class="progress-ring" />
+            <defs>
+              <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#00B0FF" />
+                <stop offset="100%" stop-color="#7C4DFF" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="data-content">
+            <div class="data-value" id="dataValue">85%</div>
+            <div class="data-label" id="dataLabel">完成率</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- AI评语 -->
+      <div class="ai-comment">
+        <div class="comment-title">AI评语</div>
+        <div class="comment-content" id="aiComment">
+          你的坚持让时间产生了复利效应！累计300小时的自律，超越了85%的用户，形成了稳定的生活习惯链。
+        </div>
+        <div class="comment-light"></div>
+      </div>
+      
+      <!-- 按钮区 -->
+      <div class="modal-buttons">
+        <button class="share-btn">
+          <i class="ri-share-line"></i>
+          分享成就
+        </button>
+        <button class="upgrade-btn">
+          <i class="ri-arrow-up-line"></i>
+          挑战升级
+        </button>
+      </div>
+      
+      <!-- 关闭按钮 -->
+      <div class="modal-close" id="modalClose">
+        <i class="ri-close-line"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- 加载Three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+  
+  <script>
+    // 勋章数据函数 - 添加到全局作用域，让所有函数都能访问
+    // 获取勋章名称（示例数据）
+    function getMedalName(layer, index) {
+      const names = [
+        // 核心勋章
+        ['LV.10 传奇', 'LV.8 大师', 'LV.6 导师', 'LV.4 先锋'],
+        // 分类勋章
+        ['破晓勋章', '暗夜守护者', '家庭纽带', 'AI训练师', '社交引导者', '专注大师', '意志坚定', '持续进步'],
+        // 历史勋章
+        ['初心者', '连续7天', '连续30天', '里程碑·白银', '里程碑·黄金', '无屏周末', '社交达人', '睡眠守护者', 
+         '时间管理', '解锁全家福', '知识探索者', '健康生活', '注意力大师', '反馈先锋', '稀有发现', '午间自律']
+      ];
+      
+      return names[layer][index % names[layer].length];
+    }
+    
+    // 获取勋章描述（示例数据）
+    function getMedalDescription(layer, index) {
+      const descriptions = [
+        // 核心勋章
+        ['累计戒断时间超过1000小时，成为传奇自律者', 
+         '累计戒断时间超过500小时，达到大师级别', 
+         '累计戒断时间超过300小时，成为自律导师', 
+         '累计戒断时间超过100小时，成为戒断先锋'],
+        // 分类勋章
+        ['在06:00-09:00时段累计戒断20天',
+         '连续30天晚上21:00后不使用短视频',
+         '与家人共同完成30天无屏周末计划',
+         '完成10次AI方案的全部步骤',
+         '成功帮助3名好友开始戒断计划',
+         '单次专注时长达到3小时',
+         '意志力测试得分超过80分',
+         '连续60天保持时间规划'],
+        // 历史勋章
+        ['完成注册并设置首个戒断目标',
+         '连续打卡7天',
+         '连续打卡30天',
+         '连续打卡90天',
+         '连续打卡180天',
+         '完成首个无屏周末挑战',
+         '社交圈互动超过50次',
+         '连续30天保持良好睡眠',
+         '使用时间管理功能30天',
+         '邀请所有家庭成员加入',
+         '阅读10篇戒断科学文章',
+         '完成健康生活7日挑战',
+         '注意力测试满分',
+         '提交5条有效的产品反馈',
+         '发现一个产品彩蛋',
+         '午休时间不使用短视频累计30天']
+      ];
+      
+      return descriptions[layer][index % descriptions[layer].length];
+    }
+    
+    // 页面加载完成后初始化3D场景
+    window.addEventListener('load', function() {
+      // 不再需要调用add2DViewStyles函数，因为样式已经在CSS中定义
+      
+      // 模拟加载延迟
+      setTimeout(() => {
+        document.getElementById('loadingOverlay').style.opacity = '0';
+        
+        setTimeout(() => {
+          document.getElementById('loadingOverlay').style.display = 'none';
+          
+          // 初始化3D场景
+          initMedalWall();
+          
+          // 显示新手引导
+          showBeginnersGuide();
+          
+        }, 500);
+      }, 1500);
+    });
+    
+    // 视图模式切换
+    document.getElementById('viewModeToggle').addEventListener('click', function() {
+      const icon = this.querySelector('i');
+      if (icon.classList.contains('ri-list-check-2')) {
+        // 切换到2D列表模式
+        icon.classList.remove('ri-list-check-2');
+        icon.classList.add('ri-cube-line');
+        show2DMode();
+      } else {
+        // 切换到3D视图模式
+        icon.classList.remove('ri-cube-line');
+        icon.classList.add('ri-list-check-2');
+        show3DMode();
+      }
+    });
+    
+    // 显示2D列表模式
+    function show2DMode() {
+      // 隐藏3D场景
+      document.getElementById('medalWall3D').style.opacity = '0';
+      
+      // 如果不存在2D视图，则创建
+      if (!document.getElementById('medal2DView')) {
+        // 创建2D视图
+        const view2D = document.createElement('div');
+        view2D.id = 'medal2DView';
+        view2D.className = 'medal-2d-mode';
+        
+        // 创建标题
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'mode-2d-title';
+        titleDiv.innerHTML = '<i class="ri-list-check-2"></i> 精简列表模式';
+        view2D.appendChild(titleDiv);
+        
+        // 创建分类容器
+        const categoriesDiv = document.createElement('div');
+        categoriesDiv.className = 'mode-2d-categories';
+        
+        // 创建核心勋章区
+        const coreSection = createCategorySection('核心勋章', 0);
+        categoriesDiv.appendChild(coreSection);
+        
+        // 创建分类勋章区
+        const classSection = createCategorySection('分类勋章', 1);
+        categoriesDiv.appendChild(classSection);
+        
+        // 创建历史勋章区
+        const historySection = createCategorySection('历史勋章', 2);
+        categoriesDiv.appendChild(historySection);
+        
+        view2D.appendChild(categoriesDiv);
+        
+        // 添加到容器
+        document.querySelector('.medal-wall-screen').appendChild(view2D);
+        
+        // 为2D视图中的勋章添加点击事件
+        setupMedal2DInteraction();
+      } else {
+        // 显示已存在的2D视图
+        document.getElementById('medal2DView').style.display = 'block';
+      }
+      
+      // 延迟显示2D视图（等待3D视图淡出）
+      setTimeout(() => {
+        document.getElementById('medalWall3D').style.display = 'none';
+        document.getElementById('medal2DView').style.opacity = '1';
+      }, 300);
+    }
+    
+    // 显示3D视图模式
+    function show3DMode() {
+      // 隐藏2D视图
+      const medal2DView = document.getElementById('medal2DView');
+      if (medal2DView) {
+        medal2DView.style.opacity = '0';
+        
+        // 显示3D场景
+        const medalWall3D = document.getElementById('medalWall3D');
+        if (medalWall3D) {
+          medalWall3D.style.display = 'block';
+          
+          // 延迟显示3D视图（等待2D视图淡出）
+          setTimeout(() => {
+            medal2DView.style.display = 'none';
+            medalWall3D.style.opacity = '1';
+          }, 300);
+        }
+      }
+    }
+    
+    // 创建分类部分
+    function createCategorySection(title, layer) {
+      const section = document.createElement('div');
+      section.className = 'mode-2d-section';
+      
+      // 创建分类标题
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'section-2d-title';
+      titleDiv.textContent = title;
+      section.appendChild(titleDiv);
+      
+      // 创建勋章网格
+      const gridDiv = document.createElement('div');
+      gridDiv.className = 'medals-2d-grid';
+      
+      // 获取该层级的勋章数据
+      const medalCount = layer === 0 ? 4 : (layer === 1 ? 8 : 16);
+      
+      // 创建勋章项
+      for (let i = 0; i < medalCount; i++) {
+        const medalItem = document.createElement('div');
+        medalItem.className = 'medal-2d-item';
+        medalItem.dataset.layer = layer;
+        medalItem.dataset.index = i;
+        
+        // 随机决定勋章是否解锁
+        const isUnlocked = Math.random() > 0.3;
+        if (!isUnlocked) {
+          medalItem.classList.add('locked');
+        }
+        
+        // 勋章图标
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'medal-2d-icon';
+        
+        // 勋章图标内容
+        const iconColor = layer === 0 ? '#00B0FF' : (layer === 1 ? '#3498db' : '#7C4DFF');
+        iconDiv.innerHTML = `<div style="background:${iconColor}"></div>`;
+        
+        // 锁定图标
+        if (!isUnlocked) {
+          const lockIcon = document.createElement('i');
+          lockIcon.className = 'ri-lock-line lock-icon';
+          iconDiv.appendChild(lockIcon);
+        }
+        
+        medalItem.appendChild(iconDiv);
+        
+        // 勋章名称
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'medal-2d-name';
+        nameDiv.textContent = getMedalName(layer, i);
+        medalItem.appendChild(nameDiv);
+        
+        // 勋章日期
+        const dateDiv = document.createElement('div');
+        dateDiv.className = 'medal-2d-date';
+        
+        if (isUnlocked) {
+          // 生成随机日期
+          const now = new Date();
+          const randomDaysAgo = Math.floor(Math.random() * 180); // 最多6个月前
+          const date = new Date(now.getTime() - randomDaysAgo * 24 * 60 * 60 * 1000);
+          
+          dateDiv.textContent = date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        } else {
+          dateDiv.textContent = '未解锁';
+        }
+        
+        medalItem.appendChild(dateDiv);
+        
+        // 添加到网格
+        gridDiv.appendChild(medalItem);
+      }
+      
+      section.appendChild(gridDiv);
+      return section;
+    }
+    
+    // 为2D视图中的勋章添加点击事件
+    function setupMedal2DInteraction() {
+      document.querySelectorAll('.medal-2d-item').forEach(item => {
+        item.addEventListener('click', function() {
+          // 跳过锁定的勋章
+          if (this.classList.contains('locked')) return;
+          
+          // 获取勋章数据
+          const layer = parseInt(this.dataset.layer);
+          const index = parseInt(this.dataset.index);
+          
+          // 创建勋章数据对象
+          const medalData = {
+            layer: layer,
+            index: index,
+            name: getMedalName(layer, index),
+            description: getMedalDescription(layer, index),
+            date: this.querySelector('.medal-2d-date').textContent,
+            unlocked: true
+          };
+          
+          // 显示勋章详情
+          showMedalDetails(medalData);
+        });
+      });
+    }
+    
+    // 添加新手引导功能
+    function showBeginnersGuide() {
+      // 检查是否是首次访问
+      const isFirstVisit = !localStorage.getItem('medalWallVisited');
+      
+      if (isFirstVisit) {
+        // 设置已访问标记
+        localStorage.setItem('medalWallVisited', 'true');
+        
+        // 创建引导元素
+        const guideContainer = document.createElement('div');
+        guideContainer.className = 'guide-container';
+        
+        // 引导内容
+        guideContainer.innerHTML = `
+          <div class="guide-content">
+            <div class="guide-avatar">
+              <div class="avatar-pulse"></div>
+              <i class="ri-robot-line"></i>
+            </div>
+            <div class="guide-text">
+              <h3>欢迎来到你的勋章墙！</h3>
+              <p>这里展示了你的自律旅程中获得的所有成就。</p>
+              <p>• 拖动屏幕可以旋转查看不同角度</p>
+              <p>• 点击勋章可以查看详细信息</p>
+              <p>• 完成打卡任务解锁你的第一枚勋章！</p>
+            </div>
+            <button class="guide-start-btn">开始探索</button>
+          </div>
+        `;
+        
+        // 添加到页面
+        document.body.appendChild(guideContainer);
+        
+        // 添加点击事件
+        document.querySelector('.guide-start-btn').addEventListener('click', function() {
+          // 隐藏引导
+          guideContainer.style.opacity = '0';
+          
+          // 赠送「探索者勋章」动画
+          setTimeout(() => {
+            guideContainer.remove();
+            showAchievementUnlock('探索者勋章', '首次访问个人勋章墙');
+          }, 500);
+        });
+        
+        // 添加引导样式
+        const guideStyle = document.createElement('style');
+        guideStyle.textContent = `
+          .guide-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(4, 20, 44, 0.9);
+            z-index: 300;
+            transition: opacity 0.5s ease;
+          }
+          
+          .guide-content {
+            width: 90%;
+            max-width: 330px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(0, 176, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 176, 255, 0.3);
+            text-align: center;
+            color: white;
+          }
+          
+          .guide-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00B0FF, #7C4DFF);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+          }
+          
+          .avatar-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(0, 176, 255, 0.3);
+            animation: pulse 2s infinite;
+          }
+          
+          .guide-avatar i {
+            font-size: 40px;
+            color: white;
+            z-index: 1;
+          }
+          
+          .guide-text h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #00B0FF;
+          }
+          
+          .guide-text p {
+            margin: 10px 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: left;
+          }
+          
+          .guide-start-btn {
+            background: linear-gradient(135deg, #00B0FF, #7C4DFF);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+          
+          .guide-start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 176, 255, 0.3);
+          }
+          
+          @keyframes pulse {
+            0% {
+              transform: scale(1);
+              opacity: 0.6;
+            }
+            70% {
+              transform: scale(1.2);
+              opacity: 0;
+            }
+            100% {
+              transform: scale(1);
+              opacity: 0;
+            }
+          }
+        `;
+        
+        document.head.appendChild(guideStyle);
+      }
+    }
+    
+    // 勋章解锁动画
+    function showAchievementUnlock(name, description) {
+      // 创建解锁动画容器
+      const unlockContainer = document.createElement('div');
+      unlockContainer.className = 'achievement-unlock';
+      
+      // 解锁动画内容
+      unlockContainer.innerHTML = `
+        <div class="unlock-content">
+          <div class="unlock-icon">
+            <i class="ri-medal-line"></i>
+          </div>
+          <div class="unlock-pulse"></div>
+          <div class="unlock-text">
+            <div class="unlock-title">成就解锁</div>
+            <div class="unlock-name">${name}</div>
+            <div class="unlock-desc">${description}</div>
+          </div>
+        </div>
+      `;
+      
+      // 添加到页面
+      document.body.appendChild(unlockContainer);
+      
+      // 添加动画样式
+      const unlockStyle = document.createElement('style');
+      unlockStyle.textContent = `
+        .achievement-unlock {
+          position: fixed;
+          bottom: 50px;
+          left: 50%;
+          transform: translateX(-50%) translateY(100px);
+          z-index: 500;
+          animation: slideUp 0.5s forwards, slideDown 0.5s forwards 4.5s;
+        }
+        
+        .unlock-content {
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(10px);
+          border-radius: 15px;
+          padding: 15px;
+          display: flex;
+          align-items: center;
+          width: 300px;
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(0, 176, 255, 0.3);
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .unlock-content::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: linear-gradient(to right, transparent, #00B0FF, transparent);
+          animation: shimmer 2s infinite;
+        }
+        
+        .unlock-icon {
+          width: 50px;
+          height: 50px;
+          background: linear-gradient(135deg, #00B0FF, #7C4DFF);
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-right: 15px;
+          position: relative;
+          z-index: 1;
+        }
+        
+        .unlock-icon i {
+          font-size: 28px;
+          color: white;
+        }
+        
+        .unlock-pulse {
+          position: absolute;
+          width: 50px;
+          height: 50px;
+          left: 15px;
+          border-radius: 50%;
+          background: rgba(0, 176, 255, 0.5);
+          animation: unlockPulse 2s infinite;
+        }
+        
+        .unlock-text {
+          flex: 1;
+        }
+        
+        .unlock-title {
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.7);
+          margin-bottom: 5px;
+        }
+        
+        .unlock-name {
+          font-size: 18px;
+          font-weight: 600;
+          color: #00B0FF;
+          margin-bottom: 3px;
+        }
+        
+        .unlock-desc {
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.9);
+        }
+        
+        @keyframes slideUp {
+          0% {
+            transform: translateX(-50%) translateY(100px);
+            opacity: 0;
+          }
+          100% {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideDown {
+          0% {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+          }
+          100% {
+            transform: translateX(-50%) translateY(100px);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+        
+        @keyframes unlockPulse {
+          0% {
+            transform: scale(1);
+            opacity: 0.7;
+          }
+          100% {
+            transform: scale(2);
+            opacity: 0;
+          }
+        }
+      `;
+      
+      document.head.appendChild(unlockStyle);
+      
+      // 一段时间后移除
+      setTimeout(() => {
+        unlockContainer.remove();
+        unlockStyle.remove();
+      }, 5000);
+    }
+    
+    // 初始化3D勋章墙
+    function initMedalWall() {
+      // 获取容器元素
+      const container = document.getElementById('medalWall3D');
+      
+      // 创建场景
+      const scene = new THREE.Scene();
+      
+      // 创建相机
+      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 1.6, 5);
+      
+      // 创建渲染器
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setClearColor(0x04142c, 1);
+      container.appendChild(renderer.domElement);
+      
+      // 添加轨道控制器
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.rotateSpeed = 0.5;
+      controls.minDistance = 3;
+      controls.maxDistance = 10;
+      controls.maxPolarAngle = Math.PI / 1.5;
+      controls.minPolarAngle = Math.PI / 4;
+      
+      // 创建环境光
+      const ambientLight = new THREE.AmbientLight(0x2c3e50, 0.5);
+      scene.add(ambientLight);
+      
+      // 创建方向光
+      const directionalLight = new THREE.DirectionalLight(0x00B0FF, 0.8);
+      directionalLight.position.set(1, 1, 1);
+      scene.add(directionalLight);
+      
+      // 创建点光源
+      const pointLight = new THREE.PointLight(0x7C4DFF, 0.8, 10);
+      pointLight.position.set(-1, 3, 2);
+      scene.add(pointLight);
+      
+      // 创建数据穹顶地面
+      createDataFloor();
+      
+      // 创建三层环形展柜
+      createShowcases();
+      
+      // 创建戒视之星
+      createCentralStar();
+      
+      // 创建粒子效果
+      createParticleSystem();
+      
+      // 窗口大小变化时调整
+      window.addEventListener('resize', onWindowResize);
+      
+      // 动画循环
+      animate();
+      
+      // 创建数据穹顶地面
+      function createDataFloor() {
+        // 创建地面几何体
+        const floorGeometry = new THREE.CircleGeometry(15, 64);
+        
+        // 创建地面材质
+        const floorMaterial = new THREE.MeshStandardMaterial({
+          color: 0x1E88E5,
+          transparent: true,
+          opacity: 0.3,
+          roughness: 0.7,
+          metalness: 0.5,
+          wireframe: true
+        });
+        
+        // 创建地面网格
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.y = -0.5;
+        scene.add(floor);
+        
+        // 创建发光网格线
+        const gridHelper = new THREE.GridHelper(30, 30, 0x00B0FF, 0x004080);
+        gridHelper.position.y = -0.49;
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.3;
+        scene.add(gridHelper);
+      }
+      
+      // 创建三层环形展柜
+      function createShowcases() {
+        // 第一层（核心勋章）
+        createShowcaseRing(0, 1.5, 4, 0);
+        
+        // 第二层（分类勋章）
+        createShowcaseRing(3, 0.5, 8, 1);
+        
+        // 第三层（历史勋章）
+        createShowcaseRing(6, -0.5, 16, 2);
+      }
+      
+      // 创建环形展柜
+      function createShowcaseRing(radius, height, count, layer) {
+        const angleDelta = (Math.PI * 2) / count;
+        
+        for (let i = 0; i < count; i++) {
+          const angle = i * angleDelta;
+          const x = Math.sin(angle) * radius;
+          const z = Math.cos(angle) * radius;
+          
+          // 创建勋章展示台
+          createMedalPedestal(x, height, z, layer, i);
+        }
+      }
+      
+      // 创建勋章展示台
+      function createMedalPedestal(x, y, z, layer, index) {
+        // 展示台几何体
+        const pedestalGeometry = new THREE.CylinderGeometry(0.2, 0.3, 0.1, 8);
+        
+        // 展示台材质
+        const pedestalMaterial = new THREE.MeshStandardMaterial({
+          color: 0x00B0FF,
+          transparent: true,
+          opacity: 0.6,
+          roughness: 0.3,
+          metalness: 0.8
+        });
+        
+        // 创建展示台
+        const pedestal = new THREE.Mesh(pedestalGeometry, pedestalMaterial);
+        pedestal.position.set(x, y - 0.1, z);
+        scene.add(pedestal);
+        
+        // 创建光束
+        const beamGeometry = new THREE.CylinderGeometry(0.03, 0.03, 0.5, 8);
+        const beamMaterial = new THREE.MeshBasicMaterial({
+          color: 0x00B0FF,
+          transparent: true,
+          opacity: 0.4
+        });
+        
+        const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+        beam.position.set(x, y + 0.15, z);
+        scene.add(beam);
+        
+        // 根据层级创建不同的勋章
+        createMedal(x, y + 0.4, z, layer, index);
+      }
+      
+      // 创建勋章模型
+      function createMedal(x, y, z, layer, index) {
+        let geometry, material, scale;
+        
+        // 根据层级设置不同的勋章样式
+        if (layer === 0) {
+          // 核心勋章 - 使用十二面体
+          geometry = new THREE.DodecahedronGeometry(0.3, 0);
+          material = new THREE.MeshStandardMaterial({
+            color: 0x00B0FF,
+            roughness: 0.2,
+            metalness: 0.9,
+            emissive: 0x00B0FF,
+            emissiveIntensity: 0.2
+          });
+          scale = 1.5;
+        } else if (layer === 1) {
+          // 分类勋章 - 使用八面体
+          geometry = new THREE.OctahedronGeometry(0.25, 0);
+          material = new THREE.MeshStandardMaterial({
+            color: 0x3498db,
+            roughness: 0.3,
+            metalness: 0.8,
+            emissive: 0x3498db,
+            emissiveIntensity: 0.1
+          });
+          scale = 1.2;
+        } else {
+          // 历史勋章 - 使用四面体
+          geometry = new THREE.TetrahedronGeometry(0.2, 0);
+          material = new THREE.MeshStandardMaterial({
+            color: 0x7C4DFF,
+            roughness: 0.4,
+            metalness: 0.7,
+            emissive: 0x7C4DFF,
+            emissiveIntensity: 0.1
+          });
+          scale = 1.0;
+        }
+        
+        const medal = new THREE.Mesh(geometry, material);
+        medal.position.set(x, y, z);
+        medal.scale.set(scale, scale, scale);
+        
+        // 添加自定义属性存储勋章数据
+        medal.userData = {
+          layer: layer,
+          index: index,
+          name: getMedalName(layer, index),
+          description: getMedalDescription(layer, index),
+          date: getMedalDate(layer, index),
+          unlocked: isMedalUnlocked(layer, index)
+        };
+        
+        // 如果未解锁，应用灰色效果
+        if (!medal.userData.unlocked) {
+          medal.material = medal.material.clone();
+          medal.material.color.set(0x666666);
+          medal.material.emissive.set(0x222222);
+          medal.material.opacity = 0.6;
+          medal.material.transparent = true;
+        }
+        
+        scene.add(medal);
+        
+        // 添加悬浮动画
+        animateMedal(medal, layer);
+      }
+      
+      // 为勋章添加悬浮动画
+      function animateMedal(medal, layer) {
+        // 为每个勋章设置唯一的动画偏移
+        const offset = Math.random() * Math.PI * 2;
+        
+        // 将动画参数存储在userData中
+        medal.userData.animation = {
+          speed: 0.5 + layer * 0.3, // 层级越高，动画速度越快
+          height: 0.1 - layer * 0.03, // 层级越高，浮动高度越小
+          rotation: 0.005 - layer * 0.001, // 层级越高，旋转速度越慢
+          offset: offset
+        };
+      }
+      
+      // 创建中央"戒视之星"
+      function createCentralStar() {
+        // 创建暂停符号的两个立方体
+        const pauseGeometry = new THREE.BoxGeometry(0.3, 1.2, 0.3);
+        const pauseMaterial = new THREE.MeshStandardMaterial({
+          color: 0x00B0FF,
+          transparent: true,
+          opacity: 0.8,
+          roughness: 0.2,
+          metalness: 0.9,
+          emissive: 0x00B0FF,
+          emissiveIntensity: 0.3
+        });
+        
+        const pauseLeft = new THREE.Mesh(pauseGeometry, pauseMaterial);
+        pauseLeft.position.set(-0.3, 3, 0);
+        scene.add(pauseLeft);
+        
+        const pauseRight = new THREE.Mesh(pauseGeometry, pauseMaterial);
+        pauseRight.position.set(0.3, 3, 0);
+        scene.add(pauseRight);
+        
+        // 添加光环
+        const ringGeometry = new THREE.TorusGeometry(1, 0.05, 16, 50);
+        const ringMaterial = new THREE.MeshBasicMaterial({
+          color: 0x00B0FF,
+          transparent: true,
+          opacity: 0.5
+        });
+        
+        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+        ring.position.set(0, 3, 0);
+        ring.rotation.x = Math.PI / 2;
+        scene.add(ring);
+      }
+      
+      // 创建粒子系统
+      function createParticleSystem() {
+        // 创建粒子几何体
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particleCount = 1000;
+        
+        // 创建粒子位置数组
+        const positions = new Float32Array(particleCount * 3);
+        const scales = new Float32Array(particleCount);
+        
+        // 为每个粒子设置随机位置
+        for (let i = 0; i < particleCount; i++) {
+          // 分布在球形空间中
+          const radius = 10 + Math.random() * 10;
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.acos(2 * Math.random() - 1);
+          
+          positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+          positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta) - 5; // 向下偏移，让上部视觉更开阔
+          positions[i * 3 + 2] = radius * Math.cos(phi);
+          
+          // 随机大小
+          scales[i] = Math.random() * 0.04 + 0.01;
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        particlesGeometry.setAttribute('scale', new THREE.BufferAttribute(scales, 1));
+        
+        // 创建粒子材质
+        const particlesMaterial = new THREE.PointsMaterial({
+          color: 0x00B0FF,
+          size: 0.1,
+          transparent: true,
+          opacity: 0.6,
+          sizeAttenuation: true
+        });
+        
+        // 创建粒子系统
+        const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particleSystem);
+        
+        // 存储引用以便在动画循环中更新
+        window.particleSystem = particleSystem;
+      }
+      
+      // 窗口大小变化时调整
+      function onWindowResize() {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      }
+      
+      // 动画循环
+      function animate() {
+        requestAnimationFrame(animate);
+        
+        // 更新控制器
+        controls.update();
+        
+        // 更新勋章动画
+        scene.traverse(function(object) {
+          if (object.type === 'Mesh' && object.userData.animation) {
+            const anim = object.userData.animation;
+            // 悬浮动画
+            object.position.y += Math.sin(Date.now() * 0.001 * anim.speed + anim.offset) * 0.001 * anim.height;
+            // 旋转动画
+            object.rotation.y += anim.rotation;
+          }
+        });
+        
+        // 更新粒子系统旋转
+        if (window.particleSystem) {
+          window.particleSystem.rotation.y += 0.0003;
+        }
+        
+        // 渲染场景
+        renderer.render(scene, camera);
+      }
+      
+      // 获取勋章解锁日期（示例数据）
+      function getMedalDate(layer, index) {
+        // 为已解锁勋章生成随机日期
+        if (isMedalUnlocked(layer, index)) {
+          const now = new Date();
+          const randomDaysAgo = Math.floor(Math.random() * 180); // 最多6个月前
+          const date = new Date(now.getTime() - randomDaysAgo * 24 * 60 * 60 * 1000);
+          
+          return date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        }
+        
+        return '未解锁';
+      }
+      
+      // 判断勋章是否解锁（示例数据）
+      function isMedalUnlocked(layer, index) {
+        // 简单逻辑：30%的勋章未解锁
+        return Math.random() > 0.3;
+      }
+      
+      // 绑定点击事件处理器，用于勋章交互
+      setupMedalInteraction();
+      
+      // 设置勋章交互
+      function setupMedalInteraction() {
+        // 创建射线投射器
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        
+        // 处理点击事件
+        renderer.domElement.addEventListener('click', onMedalClick);
+        
+        // 处理移动设备的触摸事件
+        renderer.domElement.addEventListener('touchend', function(event) {
+          event.preventDefault();
+          // 转换为鼠标事件
+          event.clientX = event.changedTouches[0].clientX;
+          event.clientY = event.changedTouches[0].clientY;
+          onMedalClick(event);
+        });
+        
+        function onMedalClick(event) {
+          // 计算鼠标在归一化设备坐标中的位置
+          const rect = renderer.domElement.getBoundingClientRect();
+          mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+          
+          // 更新射线投射器
+          raycaster.setFromCamera(mouse, camera);
+          
+          // 计算与射线相交的对象
+          const intersects = raycaster.intersectObjects(scene.children);
+          
+          // 查找第一个有勋章数据的对象
+          for (let i = 0; i < intersects.length; i++) {
+            const object = intersects[i].object;
+            if (object.userData && object.userData.name) {
+              // 显示勋章详情
+              showMedalDetails(object.userData);
+              break;
+            }
+          }
+        }
+      }
+      
+      // 显示勋章详情
+      function showMedalDetails(medalData) {
+        // 获取勋章详情模态框
+        const modal = document.getElementById('medalDetailModal');
+        
+        // 更新勋章信息
+        document.getElementById('medalTitle').textContent = medalData.name;
+        // 生成随机勋章ID
+        const randomID = generateMedalID(medalData);
+        document.getElementById('medalID').textContent = randomID;
+        document.getElementById('medalDate').textContent = `解锁日期: ${medalData.date}`;
+        
+        // 设置成就数据
+        const achievementPercent = generateAchievementData(medalData);
+        updateAchievementRing(achievementPercent);
+        
+        // 生成AI评语
+        const aiComment = generateAIComment(medalData);
+        document.getElementById('aiComment').textContent = aiComment;
+        
+        // 创建3D模型展示
+        createMedal3DView(medalData);
+        
+        // 显示模态框
+        modal.classList.add('active');
+        
+        // 绑定关闭按钮事件
+        document.getElementById('modalClose').addEventListener('click', function() {
+          modal.classList.remove('active');
+          
+          // 清除3D视图
+          const container = document.getElementById('medal3DView');
+          if (container && container.firstChild) {
+            container.removeChild(container.firstChild);
+          }
+        });
+        
+        // 绑定分享和升级按钮事件
+        setupModalButtons(medalData);
+      }
+      
+      // 生成勋章ID
+      function generateMedalID(medalData) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        
+        return `NO.${year}${month}${day}${randomNum}`;
+      }
+      
+      // 生成成就数据
+      function generateAchievementData(medalData) {
+        // 根据层级和索引生成不同的成就数据
+        const base = 60 + medalData.layer * 10; // 基础值随层级提高
+        const random = Math.floor(Math.random() * 30); // 随机偏差
+        const percent = Math.min(95, base + random); // 不超过95%
+        
+        // 更新数据标签和值
+        document.getElementById('dataValue').textContent = `${percent}%`;
+        
+        // 根据勋章类型设置不同的数据标签
+        const labels = ['超越用户', '完成率', '戒断成长'];
+        const labelIndex = medalData.index % 3;
+        document.getElementById('dataLabel').textContent = labels[labelIndex];
+        
+        return percent;
+      }
+      
+      // 更新成就环形图
+      function updateAchievementRing(percent) {
+        const circumference = 2 * Math.PI * 54; // 圆周长
+        const offset = circumference - (percent / 100) * circumference;
+        document.querySelector('.progress-ring').style.strokeDasharray = circumference;
+        document.querySelector('.progress-ring').style.strokeDashoffset = offset;
+      }
+      
+      // 生成AI评语
+      function generateAIComment(medalData) {
+        // 根据勋章类型生成不同的评语
+        const comments = [
+          // 核心勋章评语
+          [
+            "你的坚持让时间产生了复利效应！累计戒断时间达到惊人的成就。",
+            "大师级的自律，彻底重塑了你的生活方式。这不只是戒断，是生活的重生。",
+            "你已经成为了自律的导师，你的经验可以帮助更多人踏上戒断之路。",
+            "先锋不是天生的，而是在每一次拒绝诱惑中锻造而成。你做到了！"
+          ],
+          // 分类勋章评语
+          [
+            "早晨6-9点是大脑最活跃的时段，你已经成功地将这段时间从短视频手中夺回。",
+            "夜间模式已成为你的生活常态，睡眠质量的提升让你整个人焕然一新。",
+            "家庭纽带因你的努力而更加紧密，无屏时光创造了更多美好回忆。",
+            "你与AI的配合堪称完美，科技不再是沉迷的源头，而是自律的助手。",
+            "引导他人的过程也是提升自己的旅程，你的影响力正在悄悄扩大。"
+          ],
+          // 历史勋章评语
+          [
+            "每一次伟大的旅程都始于第一步，你已经踏上了自律之路。",
+            "7天看似短暂，却是习惯养成的关键期，你已经越过了最困难的阶段。",
+            "30天的坚持足以改变一个习惯，你的大脑正在重新布线。",
+            "90天！这不再是尝试，而是生活方式的彻底转变，恭喜你！",
+            "半年的坚持让戒断成为了你的第二天性，这是真正的内在变革。"
+          ]
+        ];
+        
+        return comments[medalData.layer][medalData.index % comments[medalData.layer].length];
+      }
+      
+      // 创建3D模型展示
+      function createMedal3DView(medalData) {
+        // 获取容器
+        const container = document.getElementById('medal3DView');
+        
+        // 清除现有内容
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+        
+        // 创建小型3D场景
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        
+        // 创建场景
+        const scene = new THREE.Scene();
+        
+        // 创建相机
+        const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
+        camera.position.set(0, 0, 3);
+        
+        // 创建渲染器
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(width, height);
+        renderer.setClearColor(0x000000, 0);
+        container.appendChild(renderer.domElement);
+        
+        // 添加环境光
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        // 添加方向光
+        const directionalLight = new THREE.DirectionalLight(0x00B0FF, 1);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+        
+        // 创建勋章几何体
+        let geometry;
+        
+        if (medalData.layer === 0) {
+          // 核心勋章 - 使用十二面体
+          geometry = new THREE.DodecahedronGeometry(1, 0);
+        } else if (medalData.layer === 1) {
+          // 分类勋章 - 使用八面体
+          geometry = new THREE.OctahedronGeometry(1, 0);
+        } else {
+          // 历史勋章 - 使用四面体
+          geometry = new THREE.TetrahedronGeometry(1, 0);
+        }
+        
+        // 创建勋章材质
+        const material = new THREE.MeshStandardMaterial({
+          color: 0x00B0FF,
+          metalness: 0.9,
+          roughness: 0.2,
+          emissive: 0x00B0FF,
+          emissiveIntensity: 0.2
+        });
+        
+        // 创建勋章网格
+        const medal = new THREE.Mesh(geometry, material);
+        scene.add(medal);
+        
+        // 自动旋转动画
+        function animate() {
+          requestAnimationFrame(animate);
+          
+          medal.rotation.y += 0.01;
+          medal.rotation.x += 0.005;
+          
+          renderer.render(scene, camera);
+        }
+        
+        // 开始动画
+        animate();
+      }
+      
+      // 设置模态框按钮事件
+      function setupModalButtons(medalData) {
+        // 分享按钮
+        const shareBtn = document.querySelector('.share-btn');
+        shareBtn.addEventListener('click', function() {
+          // 在实际应用中，这里会调用原生分享API
+          alert('分享功能将在此处调用原生API，生成AR滤镜视频分享！');
+        });
+        
+        // 升级按钮
+        const upgradeBtn = document.querySelector('.upgrade-btn');
+        
+        // 如果是最高级别勋章，隐藏升级按钮
+        if (medalData.layer === 0 && medalData.index === 0) {
+          upgradeBtn.style.display = 'none';
+        } else {
+          upgradeBtn.style.display = 'flex';
+          upgradeBtn.addEventListener('click', function() {
+            // 跳转到AI助手挑战页面
+            alert('将跳转到AI助手的定制化挑战页面，帮助你获得更高级别的勋章！');
+          });
+        }
+      }
+    }
+  </script>
+</body>
+</html> 
