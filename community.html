@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 社区</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .community-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(52, 152, 219, 0.3) transparent;
+    }
+    
+    .community-screen::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .community-screen::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .community-screen::-webkit-scrollbar-thumb {
+      background-color: rgba(52, 152, 219, 0.3);
+      border-radius: 4px;
+    }
+    
+    .community-content {
+      padding-bottom: 85px; /* 确保底部导航不遮挡内容 */
+    }
+    
+    /* 顶部栏 */
+    .community-header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.95), rgba(30, 136, 229, 0.95));
+      color: white;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 5;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+    }
+    
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      position: relative;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-title::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 40%;
+      height: 2px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 1px;
+    }
+    
+    .search-icon, .notification-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.15);
+      transition: all 0.3s ease;
+    }
+    
+    .search-icon:hover, .notification-icon:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .notification-icon {
+      position: relative;
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #FF4081;
+      border: 2px solid white;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 64, 129, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 6px rgba(255, 64, 129, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 64, 129, 0);
+      }
+    }
+    
+    .search-icon i, .notification-icon i {
+      font-size: 22px;
+      color: white;
+    }
+    
+    /* 搜索区域 */
+    .search-area {
+      margin: 15px;
+      position: relative;
+    }
+    
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background-color: white;
+      border-radius: 50px;
+      padding: 5px 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .search-input {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      font-size: 14px;
+      color: #333;
+      background: transparent;
+    }
+    
+    .search-input:focus {
+      outline: none;
+    }
+    
+    .search-input::placeholder {
+      color: #aaa;
+    }
+    
+    .search-button {
+      width: 35px;
+      height: 35px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: #3498DB;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .search-button:hover {
+      background-color: #2980B9;
+      transform: scale(1.05);
+    }
+    
+    .search-tags {
+      display: flex;
+      margin-top: 10px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+      scrollbar-width: none;
+    }
+    
+    .search-tags::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .search-tag {
+      flex-shrink: 0;
+      padding: 5px 12px;
+      background-color: rgba(52, 152, 219, 0.1);
+      color: #3498DB;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-right: 8px;
+      font-weight: 500;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .search-tag:hover {
+      background-color: rgba(52, 152, 219, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    /* 分类导航 */
+    .category-nav {
+      display: flex;
+      margin: 0 15px 15px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+      scrollbar-width: none;
+    }
+    
+    .category-nav::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .category-item {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 20px;
+    }
+    
+    .category-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .category-icon i {
+      font-size: 24px;
+      color: #3498DB;
+      transition: all 0.3s ease;
+    }
+    
+    .category-item:hover .category-icon {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .category-item:hover .category-icon i {
+      background: linear-gradient(135deg, #3498DB, #2980B9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transform: scale(1.1);
+    }
+    
+    .category-name {
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    /* 内容卡片基础样式 */
+    .content-card {
+      margin: 15px;
+      border-radius: 15px;
+      background-color: rgba(18, 18, 18, 0.6);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      border: 0.5px solid rgba(52, 152, 219, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .content-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.5), transparent);
+    }
+    
+    .content-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.5), transparent);
+    }
+    
+    .content-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      border-color: rgba(52, 152, 219, 0.5);
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 10px;
+      border: 2px solid rgba(52, 152, 219, 0.3);
+    }
+    
+    .author-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .author-info {
+      flex: 1;
+    }
+    
+    .author-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      display: flex;
+      align-items: center;
+    }
+    
+    .author-badge {
+      margin-left: 5px;
+      font-size: 10px;
+      background-color: rgba(52, 152, 219, 0.2);
+      color: #3498DB;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+    
+    .publish-time {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* 文章卡片样式 */
+    .article-card .card-content {
+      margin-bottom: 15px;
+    }
+    
+    .article-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #3498DB;
+      text-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    }
+    
+    .article-summary {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+    
+    .article-image {
+      width: 100%;
+      height: 180px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .article-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.5s ease;
+    }
+    
+    .article-card:hover .article-image img {
+      transform: scale(1.05);
+    }
+    
+    /* 视频卡片样式 */
+    .video-card .video-thumbnail {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .video-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      background-color: rgba(52, 152, 219, 0.7);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      animation: pulse-glow 2s infinite;
+    }
+    
+    @keyframes pulse-glow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+      }
+    }
+    
+    .play-button i {
+      font-size: 20px;
+      color: white;
+    }
+    
+    .video-duration {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+    
+    .video-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 5px;
+    }
+    
+    .video-views {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* 问答卡片样式 */
+    .qa-card .question {
+      background-color: rgba(52, 152, 219, 0.1);
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-left: 3px solid #3498DB;
+    }
+    
+    .question-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 5px;
+    }
+    
+    .question-meta {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .answer {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 15px;
+      border-left: 3px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .answer-text {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+    }
+    
+    .highlight {
+      background-color: rgba(52, 152, 219, 0.2);
+      padding: 0 3px;
+      border-radius: 3px;
+      color: #3498DB;
+      font-weight: 500;
+    }
+    
+    /* 卡片底部 */
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .card-stats {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .card-stat {
+      display: flex;
+      align-items: center;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .card-stat:hover {
+      color: #3498DB;
+    }
+    
+    .card-stat i {
+      font-size: 16px;
+      margin-right: 5px;
+    }
+    
+    .card-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .card-action {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .card-action:hover {
+      background-color: rgba(52, 152, 219, 0.2);
+      color: #3498DB;
+      transform: scale(1.1);
+    }
+    
+    /* 发布按钮 */
+    .publish-btn {
+      position: fixed;
+      bottom: 85px;
+      right: 20px;
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3498DB, #1E88E5);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+    
+    .publish-btn:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+    }
+    
+    .publish-btn i {
+      font-size: 28px;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .publish-btn:hover i {
+      transform: rotate(90deg);
+    }
+    
+    /* AI推荐区 */
+    .ai-recommendations {
+      margin: 20px 15px;
+      padding: 20px;
+      background-color: rgba(18, 18, 18, 0.6);
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      border: 0.5px solid rgba(52, 152, 219, 0.3);
+    }
+    
+    .ai-recommendations .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .ai-recommendations .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      display: flex;
+      align-items: center;
+    }
+    
+    .ai-recommendations .section-title i {
+      font-size: 18px;
+      margin-right: 8px;
+      color: #00B0FF;
+    }
+    
+    .algorithm-info {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: rgba(52, 152, 219, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #3498DB;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .algorithm-info:hover {
+      background-color: rgba(52, 152, 219, 0.2);
+      transform: scale(1.1);
+    }
+    
+    .recommendation-scroll {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px 0;
+      gap: 15px;
+      scrollbar-width: none;
+    }
+    
+    .recommendation-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .recommendation-card {
+      flex-shrink: 0;
+      width: 160px;
+      background-color: rgba(52, 152, 219, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(52, 152, 219, 0.1);
+    }
+    
+    .recommendation-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      border-color: rgba(52, 152, 219, 0.3);
+    }
+    
+    .recommendation-image {
+      width: 100%;
+      height: 100px;
+      overflow: hidden;
+    }
+    
+    .recommendation-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.5s ease;
+    }
+    
+    .recommendation-card:hover .recommendation-image img {
+      transform: scale(1.1);
+    }
+    
+    .recommendation-title {
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      line-height: 1.4;
+    }
+    
+    .recommendation-author {
+      padding: 0 10px 10px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* 返回按钮 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+    }
+    
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+    
+    .back-button i {
+      font-size: 24px;
+    }
+    
+    /* 创作菜单 */
+    .create-menu {
+      position: fixed;
+      bottom: 160px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 9;
+      transition: all 0.3s ease;
+    }
+    
+    .create-option {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(52, 152, 219, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .create-option i {
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+    
+    .create-option span {
+      position: absolute;
+      right: 60px;
+      background: rgba(52, 152, 219, 0.9);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      white-space: nowrap;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: all 0.3s ease;
+    }
+    
+    .create-option:hover span {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .create-option:nth-child(1) {
+      transition-delay: 0.1s;
+    }
+    
+    .create-option:nth-child(2) {
+      transition-delay: 0.2s;
+    }
+    
+    .create-option:nth-child(3) {
+      transition-delay: 0.3s;
+    }
+    
+    .create-option:nth-child(4) {
+      transition-delay: 0.4s;
+    }
+    
+    .create-menu.show .create-option {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <a href="social.html" class="back-button" title="返回社交圈">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+  
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="community-screen">
+          <!-- 顶部栏 -->
+          <div class="community-header">
+            <div class="header-title">社区</div>
+            <div class="actions" style="display: flex; gap: 10px;">
+              <div class="search-icon">
+                <i class="ri-search-line"></i>
+              </div>
+              <div class="notification-icon">
+                <i class="ri-notification-3-line"></i>
+                <div class="notification-badge"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="community-content">
+            <!-- 搜索区域 -->
+            <div class="search-area">
+              <div class="search-bar">
+                <input type="text" class="search-input" placeholder="搜索戒断经验、心理技巧...">
+                <div class="search-button">
+                  <i class="ri-search-line"></i>
+                </div>
+              </div>
+              <div class="search-tags">
+                <div class="search-tag">时间管理</div>
+                <div class="search-tag">焦虑缓解</div>
+                <div class="search-tag">家庭监督</div>
+                <div class="search-tag">替代活动</div>
+                <div class="search-tag">戒断反应</div>
+                <div class="search-tag">社交技巧</div>
+              </div>
+            </div>
+            
+            <!-- 分类导航 -->
+            <div class="category-nav">
+              <div class="category-item">
+                <div class="category-icon">
+                  <i class="ri-compass-3-line"></i>
+                </div>
+                <div class="category-name">推荐</div>
+              </div>
+              <div class="category-item">
+                <div class="category-icon">
+                  <i class="ri-book-open-line"></i>
+                </div>
+                <div class="category-name">经验分享</div>
+              </div>
+              <div class="category-item">
+                <div class="category-icon">
+                  <i class="ri-mental-health-line"></i>
+                </div>
+                <div class="category-name">心理课堂</div>
+              </div>
+              <div class="category-item">
+                <div class="category-icon">
+                  <i class="ri-team-line"></i>
+                </div>
+                <div class="category-name">小组活动</div>
+              </div>
+              <div class="category-item">
+                <div class="category-icon">
+                  <i class="ri-tools-line"></i>
+                </div>
+                <div class="category-name">工具测评</div>
+              </div>
+            </div>
+            
+            <!-- 其他内容将在下一步添加 -->
+            
+            <!-- 文章卡片 -->
+            <a href="community-article.html" style="text-decoration: none;">
+              <div class="content-card article-card">
+                <div class="card-header">
+                  <div class="author-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="作者头像">
+                  </div>
+                  <div class="author-info">
+                    <div class="author-name">
+                      心理学专家
+                      <span class="author-badge">认证戒断导师</span>
+                    </div>
+                    <div class="publish-time">2小时前</div>
+                  </div>
+                </div>
+                
+                <div class="card-content">
+                  <div class="article-title">如何用3招克服睡前刷手机的习惯</div>
+                  <div class="article-summary">睡前刷手机已成为许多人的习惯，但这会影响睡眠质量。本文介绍3个科学方法，帮助你改变这一习惯，提高睡眠质量，增强精力和注意力。</div>
+                  <div class="article-image">
+                    <img src="https://images.unsplash.com/photo-1611784728558-6a7645661ead?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="文章配图">
+                  </div>
+                </div>
+                
+                <div class="card-footer">
+                  <div class="card-stats">
+                    <div class="card-stat">
+                      <i class="ri-heart-line"></i>
+                      <span>132</span>
+                    </div>
+                    <div class="card-stat">
+                      <i class="ri-chat-1-line"></i>
+                      <span>28</span>
+                    </div>
+                    <div class="card-stat">
+                      <i class="ri-bookmark-line"></i>
+                      <span>45</span>
+                    </div>
+                  </div>
+                  <div class="card-actions">
+                    <div class="card-action">
+                      <i class="ri-share-forward-line"></i>
+                    </div>
+                    <div class="card-action">
+                      <i class="ri-more-2-fill"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            
+            <!-- 视频卡片 -->
+            <a href="#" style="text-decoration: none;">
+              <div class="content-card video-card">
+                <div class="card-header">
+                  <div class="author-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="作者头像">
+                  </div>
+                  <div class="author-info">
+                    <div class="author-name">
+                      戒断达人李明
+                      <span class="author-badge">优质创作者</span>
+                    </div>
+                    <div class="publish-time">昨天 14:30</div>
+                  </div>
+                </div>
+                
+                <div class="card-content">
+                  <div class="video-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1579403124614-197f69d8187b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="视频缩略图">
+                    <div class="play-button">
+                      <i class="ri-play-fill"></i>
+                    </div>
+                    <div class="video-duration">8:45</div>
+                  </div>
+                  <div class="video-title">我是如何21天戒掉短视频瘾的 | 亲身经历分享</div>
+                  <div class="video-views">24,567次观看</div>
+                </div>
+                
+                <div class="card-footer">
+                  <div class="card-stats">
+                    <div class="card-stat">
+                      <i class="ri-heart-line"></i>
+                      <span>876</span>
+                    </div>
+                    <div class="card-stat">
+                      <i class="ri-chat-1-line"></i>
+                      <span>142</span>
+                    </div>
+                    <div class="card-stat">
+                      <i class="ri-bookmark-line"></i>
+                      <span>215</span>
+                    </div>
+                  </div>
+                  <div class="card-actions">
+                    <div class="card-action">
+                      <i class="ri-share-forward-line"></i>
+                    </div>
+                    <div class="card-action">
+                      <i class="ri-more-2-fill"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            
+            <!-- 问答卡片 -->
+            <a href="#" style="text-decoration: none;">
+              <div class="content-card qa-card">
+                <div class="card-header">
+                  <div class="author-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="提问者头像">
+                  </div>
+                  <div class="author-info">
+                    <div class="author-name">
+                      戒断新手小张
+                    </div>
+                    <div class="publish-time">3天前</div>
+                  </div>
+                </div>
+                
+                <div class="card-content">
+                  <div class="question">
+                    <div class="question-text">第一周戒断时出现焦虑和烦躁，该如何缓解？</div>
+                    <div class="question-meta">已有23人回答 · 128人关注</div>
+                  </div>
+                  
+                  <div class="answer">
+                    <div class="answer-text">
+                      戒断初期出现焦虑和烦躁是很正常的生理反应。建议：1. <span class="highlight">增加运动量</span>，每天30分钟有氧运动可以释放压力；2. <span class="highlight">冥想放松</span>，使用"戒视"APP中的冥想指导；3. <span class="highlight">找替代活动</span>，如阅读、绘画等；4. 与家人朋友多交流，获取社会支持。
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="card-footer">
+                  <div class="card-stats">
+                    <div class="card-stat">
+                      <i class="ri-heart-line"></i>
+                      <span>56</span>
+                    </div>
+                    <div class="card-stat">
+                      <i class="ri-chat-1-line"></i>
+                      <span>23</span>
+                    </div>
+                    <div class="card-stat">
+                      <i class="ri-bookmark-line"></i>
+                      <span>18</span>
+                    </div>
+                  </div>
+                  <div class="card-actions">
+                    <div class="card-action">
+                      <i class="ri-share-forward-line"></i>
+                    </div>
+                    <div class="card-action">
+                      <i class="ri-more-2-fill"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            
+            <!-- AI推荐区 -->
+            <div class="ai-recommendations">
+              <div class="section-header">
+                <div class="section-title">
+                  <i class="ri-robot-line"></i>
+                  为你推荐
+                </div>
+                <div class="algorithm-info">
+                  <i class="ri-information-line"></i>
+                </div>
+              </div>
+              
+              <div class="recommendation-scroll">
+                <div class="recommendation-card">
+                  <div class="recommendation-image">
+                    <img src="https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="推荐内容">
+                  </div>
+                  <div class="recommendation-title">番茄工作法与戒断结合指南</div>
+                  <div class="recommendation-author">时间管理专家</div>
+                </div>
+                
+                <div class="recommendation-card">
+                  <div class="recommendation-image">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="推荐内容">
+                  </div>
+                  <div class="recommendation-title">亲子共同建立屏幕使用规则</div>
+                  <div class="recommendation-author">家庭教育顾问</div>
+                </div>
+                
+                <div class="recommendation-card">
+                  <div class="recommendation-image">
+                    <img src="https://images.unsplash.com/photo-1602192509154-0b900ee1f851?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="推荐内容">
+                  </div>
+                  <div class="recommendation-title">认知行为疗法应对网瘾</div>
+                  <div class="recommendation-author">心理咨询师</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 发布按钮 -->
+          <div class="publish-btn" id="publishBtn">
+            <i class="ri-add-line"></i>
+          </div>
+          
+          <!-- 创作菜单 -->
+          <div class="create-menu" id="createMenu" style="display: none;">
+            <div class="create-option" data-type="article">
+              <i class="ri-article-line"></i>
+              <span>文章</span>
+            </div>
+            <div class="create-option" data-type="video">
+              <i class="ri-video-line"></i>
+              <span>视频</span>
+            </div>
+            <div class="create-option" data-type="question">
+              <i class="ri-question-answer-line"></i>
+              <span>问答</span>
+            </div>
+            <div class="create-option" data-type="post">
+              <i class="ri-chat-1-line"></i>
+              <span>动态</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <a href="home.html" style="text-decoration: none; color: inherit;">
+              <i class="ri-home-5-line"></i>
+              <div class="label">首页</div>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="statistics.html" style="text-decoration: none; color: inherit;">
+              <i class="ri-bar-chart-line"></i>
+              <div class="label">统计</div>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="ai.html" style="text-decoration: none; color: inherit;">
+              <i class="ri-cpu-line"></i>
+              <div class="label">AI助手</div>
+            </a>
+          </div>
+          <div class="nav-item active">
+            <a href="social.html" style="text-decoration: none; color: inherit;">
+              <i class="ri-group-line"></i>
+              <div class="label">社交圈</div>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="profile.html" style="text-decoration: none; color: inherit;">
+              <i class="ri-user-line"></i>
+              <div class="label">我的</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // 发布按钮交互
+    document.addEventListener('DOMContentLoaded', function() {
+      const publishBtn = document.getElementById('publishBtn');
+      const createMenu = document.getElementById('createMenu');
+      let isMenuOpen = false;
+      
+      publishBtn.addEventListener('click', function() {
+        if (!isMenuOpen) {
+          createMenu.style.display = 'flex';
+          setTimeout(() => {
+            createMenu.classList.add('show');
+          }, 10);
+        } else {
+          createMenu.classList.remove('show');
+          setTimeout(() => {
+            createMenu.style.display = 'none';
+          }, 300);
+        }
+        isMenuOpen = !isMenuOpen;
+      });
+      
+      // 点击创作选项
+      const createOptions = document.querySelectorAll('.create-option');
+      createOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          const type = this.getAttribute('data-type');
+          console.log(`创建${type}内容`);
+          // 这里可以添加跳转到对应创作页面的逻辑
+          createMenu.classList.remove('show');
+          setTimeout(() => {
+            createMenu.style.display = 'none';
+          }, 300);
+          isMenuOpen = false;
+        });
+      });
+      
+      // 点击其他区域关闭菜单
+      document.addEventListener('click', function(event) {
+        if (isMenuOpen && !createMenu.contains(event.target) && event.target !== publishBtn) {
+          createMenu.classList.remove('show');
+          setTimeout(() => {
+            createMenu.style.display = 'none';
+          }, 300);
+          isMenuOpen = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html> 

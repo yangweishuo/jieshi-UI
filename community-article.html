@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 文章详情</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .article-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #121212;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(52, 152, 219, 0.3) transparent;
+    }
+    
+    .article-screen::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .article-screen::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .article-screen::-webkit-scrollbar-thumb {
+      background-color: rgba(52, 152, 219, 0.3);
+      border-radius: 4px;
+    }
+    
+    .article-content {
+      padding: 20px 15px 85px;
+    }
+    
+    /* 文章标题 */
+    .article-header {
+      margin-bottom: 25px;
+    }
+    
+    .article-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #3498DB;
+      line-height: 1.4;
+      margin-bottom: 15px;
+      text-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .article-title::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, #3498DB, transparent);
+      border-radius: 3px;
+    }
+    
+    .article-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .article-author {
+      display: flex;
+      align-items: center;
+    }
+    
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 10px;
+      border: 2px solid rgba(52, 152, 219, 0.3);
+    }
+    
+    .author-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .author-info {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .author-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      display: flex;
+      align-items: center;
+    }
+    
+    .author-badge {
+      margin-left: 5px;
+      font-size: 10px;
+      background-color: rgba(52, 152, 219, 0.2);
+      color: #3498DB;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+    
+    .publish-time {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .article-info {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .article-info-item {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .article-info-item i {
+      font-size: 16px;
+      margin-right: 5px;
+    }
+    
+    /* 文章正文 */
+    .article-body {
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+    
+    .article-section {
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 15px;
+      position: relative;
+      padding-left: 15px;
+    }
+    
+    .section-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 5px;
+      bottom: 5px;
+      width: 4px;
+      background: linear-gradient(to bottom, #3498DB, #00B0FF);
+      border-radius: 2px;
+    }
+    
+    .article-paragraph {
+      margin-bottom: 15px;
+    }
+    
+    .key-point {
+      background-color: rgba(52, 152, 219, 0.1);
+      border-left: 3px solid #3498DB;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .key-point-title {
+      font-weight: 600;
+      color: #3498DB;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .key-point-title i {
+      margin-right: 8px;
+    }
+    
+    .article-image {
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 20px 0;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .article-image img {
+      width: 100%;
+      object-fit: cover;
+    }
+    
+    .image-caption {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 8px;
+    }
+    
+    /* 相关推荐 */
+    .related-content {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px dashed rgba(52, 152, 219, 0.3);
+    }
+    
+    .related-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .related-title i {
+      font-size: 20px;
+      margin-right: 8px;
+      color: #3498DB;
+    }
+    
+    .related-articles {
+      display: flex;
+      overflow-x: auto;
+      gap: 15px;
+      padding-bottom: 10px;
+      scrollbar-width: none;
+    }
+    
+    .related-articles::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .related-article {
+      flex-shrink: 0;
+      width: 160px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .related-article:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .related-article-image {
+      width: 100%;
+      height: 100px;
+      overflow: hidden;
+    }
+    
+    .related-article-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.5s ease;
+    }
+    
+    .related-article:hover .related-article-image img {
+      transform: scale(1.1);
+    }
+    
+    .related-article-title {
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+      line-height: 1.4;
+    }
+    
+    /* 底部操作栏 */
+    .bottom-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: rgba(18, 18, 18, 0.9);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      border-top: 1px solid rgba(52, 152, 219, 0.2);
+      z-index: 10;
+    }
+    
+    .action-left {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .action-button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .action-button i {
+      font-size: 22px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 3px;
+      transition: all 0.3s ease;
+    }
+    
+    .action-button span {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .action-button:hover i {
+      color: #3498DB;
+    }
+    
+    .add-comment {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 8px 15px;
+      margin: 0 15px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
+    
+    .add-comment i {
+      margin-right: 8px;
+      font-size: 18px;
+    }
+    
+    .share-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(52, 152, 219, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .share-button i {
+      font-size: 20px;
+      color: #3498DB;
+    }
+    
+    /* 返回按钮 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+    }
+    
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+    
+    .back-button i {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <a href="community.html" class="back-button" title="返回社区">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+  
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="article-screen">
+          <div class="article-content">
+            <div class="article-header">
+              <h1 class="article-title">如何用3招克服睡前刷手机的习惯</h1>
+              
+              <div class="article-meta">
+                <div class="article-author">
+                  <div class="author-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="作者头像">
+                  </div>
+                  <div class="author-info">
+                    <div class="author-name">
+                      心理学专家
+                      <span class="author-badge">认证戒断导师</span>
+                    </div>
+                    <div class="publish-time">2023-10-15 发布</div>
+                  </div>
+                </div>
+                
+                <div class="article-info">
+                  <div class="article-info-item">
+                    <i class="ri-time-line"></i>
+                    <span>5分钟阅读</span>
+                  </div>
+                  <div class="article-info-item">
+                    <i class="ri-eye-line"></i>
+                    <span>2,356</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="article-body">
+              <div class="article-section">
+                <p class="article-paragraph">睡前刷手机已经成为现代人的习惯，但这种行为会严重影响睡眠质量，进而对我们的身心健康产生负面影响。科学研究表明，蓝光会抑制褪黑素的分泌，使人难以入睡，而社交媒体和短视频的信息轰炸则会增加大脑活跃度，让我们更难安静下来。</p>
+                
+                <div class="article-image">
+                  <img src="https://images.unsplash.com/photo-1611784728558-6a7645661ead?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="睡前刷手机">
+                  <div class="image-caption">睡前刷手机会影响睡眠质量</div>
+                </div>
+                
+                <p class="article-paragraph">本文将介绍三个科学有效的方法，帮助你改变睡前刷手机的习惯，提高睡眠质量，从而增强精力和注意力。</p>
+              </div>
+              
+              <div class="article-section">
+                <h2 class="section-title">方法一：建立新的睡前习惯</h2>
+                
+                <p class="article-paragraph">要戒掉一个旧习惯，最有效的方法是用新习惯替代它。睡前刷手机的行为通常源于我们需要放松和休息，因此，我们可以寻找其他能满足这一需求的活动。</p>
+                
+                <div class="key-point">
+                  <div class="key-point-title">
+                    <i class="ri-lightbulb-flash-line"></i>
+                    关键技巧
+                  </div>
+                  <p>尝试以下睡前活动替代刷手机：</p>
+                  <ul>
+                    <li>阅读纸质书籍（避免使用电子阅读器）</li>
+                    <li>进行5-10分钟的冥想或深呼吸练习</li>
+                    <li>写日记，记录当天的感想或明天的计划</li>
+                    <li>伸展或轻柔的瑜伽动作</li>
+                  </ul>
+                </div>
+                
+                <p class="article-paragraph">坚持执行新的睡前习惯至少21天，这是形成新习惯所需的最短时间。开始时可能会感到不适应，但随着时间推移，你会发现这些活动能带来更好的睡眠质量和生活质量。</p>
+              </div>
+              
+              <div class="article-section">
+                <h2 class="section-title">方法二：创建手机禁区和时间</h2>
+                
+                <p class="article-paragraph">环境对我们的行为有很大影响。通过调整物理环境和设定明确的规则，我们可以减少对手机的依赖。</p>
+                
+                <div class="key-point">
+                  <div class="key-point-title">
+                    <i class="ri-lightbulb-flash-line"></i>
+                    关键技巧
+                  </div>
+                  <p>尝试以下策略：</p>
+                  <ul>
+                    <li>将卧室设为"手机禁区"，在入睡前至少一小时将手机放在其他房间</li>
+                    <li>购买一个传统闹钟，避免用手机作为闹钟的借口</li>
+                    <li>设定"数字日落"时间，比如晚上9点后不再使用电子设备</li>
+                    <li>使用手机的"就寝时间"功能或专门的应用，在设定时间后自动限制应用使用</li>
+                  </ul>
+                </div>
+                
+                <p class="article-paragraph">这些物理屏障和时间限制可以帮助你逐渐减少对手机的依赖，为更健康的睡眠习惯奠定基础。</p>
+              </div>
+              
+              <div class="article-section">
+                <h2 class="section-title">方法三：利用社交支持和问责制</h2>
+                
+                <p class="article-paragraph">行为改变通常需要外部支持和监督。当我们向他人承诺某个目标时，我们更有可能坚持执行，因为这涉及到社交责任和自我形象。</p>
+                
+                <div class="key-point">
+                  <div class="key-point-title">
+                    <i class="ri-lightbulb-flash-line"></i>
+                    关键技巧
+                  </div>
+                  <p>尝试以下方法：</p>
+                  <ul>
+                    <li>告诉家人或朋友你的目标，请他们定期检查你的进展</li>
+                    <li>找一个"戒断伙伴"，共同挑战睡前不刷手机</li>
+                    <li>使用"戒视"应用的家庭监督功能，让家人了解你的使用情况</li>
+                    <li>加入相关的线上或线下社区，分享经验和挑战</li>
+                  </ul>
+                </div>
+                
+                <p class="article-paragraph">社交支持不仅能提供监督，还能提供情感支持和解决问题的思路，帮助你度过最困难的戒断期。</p>
+              </div>
+              
+              <div class="article-section">
+                <h2 class="section-title">总结</h2>
+                
+                <p class="article-paragraph">改变睡前刷手机的习惯并不容易，但通过建立新的睡前习惯、创建手机禁区和时间，以及利用社交支持和问责制，你可以逐步减少对手机的依赖，改善睡眠质量，提高生活质量。</p>
+                
+                <p class="article-paragraph">记住，行为改变是一个过程，不要期望一蹴而就。允许自己有失败的时候，但不要因此放弃。每一次尝试都是向更健康生活方式迈进的一步。</p>
+                
+                <p class="article-paragraph">如果你有自己的戒断经验或问题，欢迎在评论区分享和讨论。</p>
+              </div>
+            </div>
+            
+            <div class="related-content">
+              <div class="related-title">
+                <i class="ri-links-line"></i>
+                猜你喜欢
+              </div>
+              
+              <div class="related-articles">
+                <div class="related-article">
+                  <div class="related-article-image">
+                    <img src="https://images.unsplash.com/photo-1512076249812-fd58fb2c7882?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="相关文章">
+                  </div>
+                  <div class="related-article-title">数字戒断的5个阶段：从焦虑到自由</div>
+                </div>
+                
+                <div class="related-article">
+                  <div class="related-article-image">
+                    <img src="https://images.unsplash.com/photo-1579403124614-197f69d8187b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="相关文章">
+                  </div>
+                  <div class="related-article-title">手机成瘾背后的心理机制解析</div>
+                </div>
+                
+                <div class="related-article">
+                  <div class="related-article-image">
+                    <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="相关文章">
+                  </div>
+                  <div class="related-article-title">亲子共建：如何帮助孩子合理使用电子设备</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bottom-actions">
+            <div class="action-left">
+              <div class="action-button">
+                <i class="ri-heart-line"></i>
+                <span>132</span>
+              </div>
+              <div class="action-button">
+                <i class="ri-chat-1-line"></i>
+                <span>28</span>
+              </div>
+              <div class="action-button">
+                <i class="ri-bookmark-line"></i>
+                <span>收藏</span>
+              </div>
+            </div>
+            
+            <div class="add-comment">
+              <i class="ri-message-2-line"></i>
+              写评论...
+            </div>
+            
+            <div class="share-button">
+              <i class="ri-share-forward-line"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html> 

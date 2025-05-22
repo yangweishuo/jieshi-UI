@@ -182,6 +182,20 @@
       transform: translateY(-2px);
     }
     
+    .hot-badge {
+      position: absolute;
+      top: 10px;
+      right: 5px;
+      font-size: 12px;
+      background-color: #00B0FF;
+      color: white;
+      padding: 2px 5px;
+      border-radius: 10px;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      animation: pulse-subtle 2s infinite;
+    }
+    
     /* 家庭中心入口 */
     .family-center-card {
       margin: 15px;
@@ -382,6 +396,227 @@
       50% {
         transform: translateX(5px);
       }
+    }
+    
+    /* 戒视时长排行榜卡片 */
+    .ranking-card {
+      margin: 20px 15px;
+      border-radius: 18px;
+      background-color: white;
+      padding: 25px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .ranking-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #3498DB, #1E88E5);
+    }
+    
+    .ranking-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .ranking-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    
+    .ranking-card-title i {
+      font-size: 22px;
+      margin-right: 10px;
+      background: linear-gradient(135deg, #3498DB, #1E88E5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+    }
+    
+    .ranking-refresh {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background: rgba(52, 152, 219, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .ranking-refresh:hover {
+      background: rgba(52, 152, 219, 0.2);
+      transform: rotate(45deg);
+    }
+    
+    .ranking-refresh i {
+      font-size: 20px;
+      color: #3498DB;
+    }
+    
+    .ranking-card-content {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .ranking-preview {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .ranking-preview-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-radius: 15px;
+      background: rgba(248, 249, 250, 0.5);
+      transition: all 0.3s ease;
+      width: 30%;
+      position: relative;
+    }
+    
+    .ranking-preview-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      background: rgba(248, 249, 250, 0.8);
+    }
+    
+    .ranking-preview-item.first {
+      background: rgba(52, 152, 219, 0.1);
+    }
+    
+    .ranking-preview-item.first:hover {
+      background: rgba(52, 152, 219, 0.15);
+    }
+    
+    .rank-number {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f8f9fa;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 14px;
+      color: #666;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+    }
+    
+    .ranking-preview-item.first .rank-number {
+      background-color: #FFD700;
+      color: white;
+    }
+    
+    .rank-user-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 10px;
+      border: 2px solid white;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    
+    .rank-user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.3s ease;
+    }
+    
+    .ranking-preview-item:hover .rank-user-avatar img {
+      transform: scale(1.1);
+    }
+    
+    .crown-icon {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 20px;
+      height: 20px;
+      background-color: #FFD700;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .crown-icon i {
+      font-size: 12px;
+      color: white;
+    }
+    
+    .rank-user-info {
+      flex: 1;
+    }
+    
+    .rank-user-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 3px;
+    }
+    
+    .rank-user-value {
+      font-size: 12px;
+      color: #3498DB;
+      font-weight: 500;
+    }
+    
+    .ranking-preview-item.first .rank-user-value {
+      color: #2980B9;
+      font-weight: 600;
+    }
+    
+    .view-ranking-button {
+      background-color: rgba(52, 152, 219, 0.1);
+      color: #3498DB;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      font-size: 15px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .view-ranking-button:hover {
+      background-color: rgba(52, 152, 219, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .view-ranking-button i {
+      margin-left: 8px;
+      font-size: 18px;
+      animation: bounce 1.5s infinite;
     }
     
     /* 家人鼓励消息区 */
@@ -971,6 +1206,10 @@
             <div class="tab-item">朋友圈</div>
             <div class="tab-item">同城</div>
             <div class="tab-item">组织</div>
+            <a href="community.html" class="tab-item" style="text-decoration: none;">
+              社区
+              <span class="hot-badge">+5</span>
+            </a>
           </div>
           
           <div class="social-content">
@@ -1014,6 +1253,63 @@
                 
                 <a href="family.html" class="enter-button">
                   进入家庭中心 <i class="ri-arrow-right-line"></i>
+                </a>
+              </div>
+            </div>
+            
+            <!-- 戒视时长排行榜卡片 -->
+            <div class="ranking-card">
+              <div class="ranking-card-header">
+                <div class="ranking-card-title">
+                  <i class="ri-trophy-line"></i>
+                  戒视时长排行榜
+                </div>
+                <div class="ranking-refresh">
+                  <i class="ri-refresh-line"></i>
+                </div>
+              </div>
+              
+              <div class="ranking-card-content">
+                <div class="ranking-preview">
+                  <div class="ranking-preview-item first">
+                    <div class="rank-number">1</div>
+                    <div class="rank-user-avatar">
+                      <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="用户头像">
+                      <div class="crown-icon">
+                        <i class="ri-crown-fill"></i>
+                      </div>
+                    </div>
+                    <div class="rank-user-info">
+                      <div class="rank-user-name">张小月</div>
+                      <div class="rank-user-value">26小时</div>
+                    </div>
+                  </div>
+                  
+                  <div class="ranking-preview-item">
+                    <div class="rank-number">2</div>
+                    <div class="rank-user-avatar">
+                      <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="用户头像">
+                    </div>
+                    <div class="rank-user-info">
+                      <div class="rank-user-name">王强</div>
+                      <div class="rank-user-value">23小时</div>
+                    </div>
+                  </div>
+                  
+                  <div class="ranking-preview-item">
+                    <div class="rank-number">3</div>
+                    <div class="rank-user-avatar">
+                      <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+                    </div>
+                    <div class="rank-user-info">
+                      <div class="rank-user-name">你</div>
+                      <div class="rank-user-value">21小时</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <a href="ranking.html" class="view-ranking-button">
+                  查看完整排行榜 <i class="ri-arrow-right-line"></i>
                 </a>
               </div>
             </div>
@@ -1112,7 +1408,7 @@
                   <i class="ri-chat-4-line"></i>
                   社区动态
                 </div>
-                <a href="#" class="view-all">更多</a>
+                <a href="community.html" class="view-all">更多</a>
               </div>
               
               <div class="post-card">
