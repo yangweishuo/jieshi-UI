@@ -555,6 +555,27 @@
       transform: translateX(5px);
     }
     
+    .menu-item:active {
+      transform: translateX(8px) scale(0.98);
+      background-color: rgba(30, 136, 229, 0.08);
+    }
+    
+    /* 页面切换动画 */
+    .page-transition {
+      animation: pageTransition 0.5s ease-in-out;
+    }
+    
+    @keyframes pageTransition {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
     .menu-icon {
       width: 45px;
       height: 45px;
@@ -577,6 +598,39 @@
       background: linear-gradient(135deg, #1E88E5, #7C4DFF);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+    
+    /* 通知徽章 */
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #FF5252;
+      color: white;
+      font-size: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(255, 82, 82, 0.5);
+      animation: pulse-badge 1.5s infinite;
+    }
+    
+    @keyframes pulse-badge {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 2px 5px rgba(255, 82, 82, 0.5);
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 2px 8px rgba(255, 82, 82, 0.7);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 2px 5px rgba(255, 82, 82, 0.5);
+      }
     }
     
     .menu-content {
@@ -1037,7 +1091,7 @@
               </div>
               
               <div class="settings-menu">
-                <div class="menu-item">
+                <a href="account-security.html" class="menu-item" style="text-decoration: none; color: inherit;">
                   <div class="menu-icon">
                     <i class="ri-shield-user-line"></i>
                   </div>
@@ -1048,11 +1102,25 @@
                   <div class="menu-arrow">
                     <i class="ri-arrow-right-s-line"></i>
                   </div>
-                </div>
+                </a>
                 
-                <div class="menu-item">
+                <a href="creation-center.html" class="menu-item" style="text-decoration: none; color: inherit;">
+                  <div class="menu-icon">
+                    <i class="ri-edit-2-line"></i>
+                  </div>
+                  <div class="menu-content">
+                    <div class="menu-title">创作中心</div>
+                    <div class="menu-desc">我的文章、草稿箱、创作统计</div>
+                  </div>
+                  <div class="menu-arrow">
+                    <i class="ri-arrow-right-s-line"></i>
+                  </div>
+                </a>
+                
+                <a href="message-center.html" class="menu-item" style="text-decoration: none; color: inherit;">
                   <div class="menu-icon">
                     <i class="ri-notification-3-line"></i>
+                    <span class="notification-badge">5</span>
                   </div>
                   <div class="menu-content">
                     <div class="menu-title">通知管理</div>
@@ -1061,9 +1129,9 @@
                   <div class="menu-arrow">
                     <i class="ri-arrow-right-s-line"></i>
                   </div>
-                </div>
+                </a>
                 
-                <div class="menu-item">
+                <a href="theme-settings.html" class="menu-item" style="text-decoration: none; color: inherit;">
                   <div class="menu-icon">
                     <i class="ri-palette-line"></i>
                   </div>
@@ -1074,7 +1142,7 @@
                   <div class="menu-arrow">
                     <i class="ri-arrow-right-s-line"></i>
                   </div>
-                </div>
+                </a>
               </div>
             </div>
             
@@ -1228,6 +1296,29 @@
 
   <script src="script.js"></script>
   <script>
+    // 页面加载完成时应用过渡动画
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('.profile-screen').classList.add('page-transition');
+    });
+    
+    // 设置菜单项点击事件
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        // 由于菜单项现在是链接，我们需要在这里应用过渡动画
+        const targetHref = this.getAttribute('href');
+        if (targetHref) {
+          e.preventDefault();
+          document.querySelector('.profile-screen').style.opacity = '0';
+          document.querySelector('.profile-screen').style.transform = 'translateY(20px)';
+          
+          // 短暂延迟后再跳转，以便动画效果能够显示
+          setTimeout(() => {
+            window.location.href = targetHref;
+          }, 300);
+        }
+      });
+    });
+    
     // 头像翻转效果
     document.getElementById('rotateAvatar').addEventListener('click', function() {
       const avatar = this.querySelector('.hexagon-avatar');

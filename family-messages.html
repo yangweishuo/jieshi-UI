@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 家庭互动消息</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .messages-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 80px;
+    }
+    
+    /* 顶部导航 */
+    .messages-header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      background: linear-gradient(135deg, #3498DB, #2980B9);
+      color: white;
+      position: relative;
+      z-index: 5;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .back-btn:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .back-btn i {
+      font-size: 24px;
+      color: white;
+    }
+    
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      position: relative;
+      letter-spacing: 1px;
+    }
+    
+    .header-title::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.3);
+      animation: flow 3s linear infinite;
+      background-size: 200% 100%;
+      background-image: linear-gradient(to right, transparent, white, transparent);
+    }
+    
+    @keyframes flow {
+      0% {
+        background-position: -100% 0;
+      }
+      100% {
+        background-position: 100% 0;
+      }
+    }
+    
+    .filter-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-btn:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .filter-btn i {
+      font-size: 22px;
+      color: white;
+    }
+    
+    /* 筛选标签 */
+    .filter-tags {
+      display: flex;
+      overflow-x: auto;
+      padding: 15px 15px 10px;
+      gap: 10px;
+      scrollbar-width: none;
+    }
+    
+    .filter-tags::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .filter-tag {
+      flex-shrink: 0;
+      padding: 8px 15px;
+      border-radius: 30px;
+      background-color: #f5f5f5;
+      color: #707070;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .filter-tag.active {
+      background-color: #3498DB;
+      color: white;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
+    
+    .filter-tag:hover:not(.active) {
+      background-color: #e5e5e5;
+    }
+    
+    /* 消息列表 */
+    .message-list {
+      padding: 15px;
+    }
+    
+    .date-divider {
+      display: flex;
+      align-items: center;
+      margin: 25px 0;
+      color: #999;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    .date-divider::before, .date-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background-color: rgba(0, 0, 0, 0.08);
+    }
+    
+    .date-divider::before {
+      margin-right: 15px;
+    }
+    
+    .date-divider::after {
+      margin-left: 15px;
+    }
+    
+    .message-item {
+      display: flex;
+      margin-bottom: 25px;
+      max-width: 100%;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .message-item.received {
+      justify-content: flex-start;
+    }
+    
+    .message-item.sent {
+      justify-content: flex-end;
+      flex-direction: row-reverse;
+    }
+    
+    .message-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 10px;
+      flex-shrink: 0;
+      border: 2px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .message-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .message-avatar i {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      color: white;
+      background: linear-gradient(135deg, #F1C40F, #E67E22);
+    }
+    
+    .message-content {
+      max-width: 70%;
+    }
+    
+    .message-sender {
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #777;
+      font-weight: 500;
+    }
+    
+    .message-bubble {
+      padding: 12px 16px;
+      border-radius: 18px;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      transition: all 0.2s ease;
+    }
+    
+    .message-item:hover .message-bubble {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .message-item.received .message-bubble {
+      background-color: white;
+      border-bottom-left-radius: 5px;
+    }
+    
+    .message-item.sent .message-bubble {
+      background: linear-gradient(135deg, #3498DB, #2980B9);
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+    
+    .message-item.system .message-bubble {
+      background-color: rgba(241, 196, 15, 0.1);
+      border-left: 3px solid #F1C40F;
+      border-radius: 10px;
+    }
+    
+    .message-text {
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    
+    .message-time {
+      font-size: 11px;
+      margin-top: 6px;
+      color: rgba(0, 0, 0, 0.4);
+    }
+    
+    .message-item.sent .message-time {
+      color: rgba(255, 255, 255, 0.8);
+      text-align: right;
+    }
+    
+    /* 语音消息 */
+    .voice-message {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      padding: 8px 12px;
+      background-color: rgba(52, 152, 219, 0.05);
+      border-radius: 12px;
+    }
+    
+    .message-item.sent .voice-message {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .voice-icon {
+      font-size: 18px;
+    }
+    
+    .voice-wave {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    
+    .wave-bar {
+      width: 3px;
+      height: 15px;
+      background-color: #3498DB;
+      border-radius: 2px;
+      animation: wave-animation 1.5s infinite ease-in-out;
+    }
+    
+    .message-item.sent .wave-bar {
+      background-color: white;
+    }
+    
+    .wave-bar:nth-child(2) { animation-delay: 0.2s; height: 10px; }
+    .wave-bar:nth-child(3) { animation-delay: 0.4s; height: 18px; }
+    .wave-bar:nth-child(4) { animation-delay: 0.6s; height: 12px; }
+    .wave-bar:nth-child(5) { animation-delay: 0.8s; height: 16px; }
+    
+    @keyframes wave-animation {
+      0%, 100% { transform: scaleY(0.5); }
+      50% { transform: scaleY(1); }
+    }
+    
+    .voice-duration {
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    /* 图片和礼物 */
+    .message-image {
+      margin-top: 10px;
+      border-radius: 15px;
+      overflow: hidden;
+      max-width: 200px;
+    }
+    
+    .message-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    /* 底部输入区 */
+    .message-input-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: white;
+      padding: 12px 15px;
+      box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+    }
+    
+    .input-button {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f2f5;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .input-button:hover {
+      background-color: #e4e6eb;
+      transform: scale(1.05);
+    }
+    
+    .input-button i {
+      font-size: 20px;
+      color: #666;
+    }
+    
+    .message-input {
+      flex: 1;
+      height: 42px;
+      background-color: #f0f2f5;
+      border-radius: 21px;
+      border: none;
+      padding: 0 20px;
+      font-size: 15px;
+      color: #333;
+      transition: all 0.3s ease;
+    }
+    
+    .message-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+      background-color: #fff;
+    }
+    
+    .send-button {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #3498DB, #2980B9);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .send-button:hover {
+      transform: scale(1.08);
+      box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+    }
+    
+    .send-button i {
+      font-size: 20px;
+      color: white;
+    }
+    
+    /* 返回按钮 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #3498DB, #2980B9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+    }
+    
+    .back-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+    }
+    
+    .back-button i {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="messages-screen">
+          <!-- 顶部导航 -->
+          <div class="messages-header">
+            <a href="family.html" class="back-btn">
+              <i class="ri-arrow-left-s-line"></i>
+            </a>
+            <div class="header-title">互动消息</div>
+            <div class="filter-btn">
+              <i class="ri-filter-3-line"></i>
+            </div>
+          </div>
+          
+          <!-- 筛选标签 -->
+          <div class="filter-tags">
+            <div class="filter-tag active">全部</div>
+            <div class="filter-tag">鼓励消息</div>
+            <div class="filter-tag">系统提醒</div>
+            <div class="filter-tag">家庭挑战</div>
+            <div class="filter-tag">成长记录</div>
+          </div>
+          
+          <!-- 消息列表 -->
+          <div class="message-list">
+            <div class="date-divider">今天</div>
+            
+            <!-- 接收消息 - 鼓励消息 -->
+            <div class="message-item received">
+              <div class="message-avatar">
+                <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="家人头像">
+              </div>
+              <div class="message-content">
+                <div class="message-sender">李妈妈</div>
+                <div class="message-bubble">
+                  <div class="message-text">宝贝今天没刷视频，妈妈为你骄傲！继续保持，你正在变得越来越好！</div>
+                  <div class="voice-message">
+                    <div class="voice-icon">
+                      <i class="ri-volume-up-line"></i>
+                    </div>
+                    <div class="voice-wave">
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                    </div>
+                    <div class="voice-duration">0:12"</div>
+                  </div>
+                  <div class="message-time">10:30</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 发送消息 -->
+            <div class="message-item sent">
+              <div class="message-avatar">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+              </div>
+              <div class="message-content">
+                <div class="message-bubble">
+                  <div class="message-text">谢谢妈妈的鼓励！我会继续努力的~</div>
+                  <div class="message-time">10:32</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 系统提醒 -->
+            <div class="message-item system">
+              <div class="message-avatar">
+                <i class="ri-robot-line"></i>
+              </div>
+              <div class="message-content">
+                <div class="message-sender">系统提醒</div>
+                <div class="message-bubble">
+                  <div class="message-text">检测到您连续使用手机1小时，建议休息一下眼睛，可以远眺绿色植物或做眼保健操。</div>
+                  <div class="message-time">今天 18:45</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="date-divider">昨天</div>
+            
+            <!-- 接收消息 - 父亲发送 -->
+            <div class="message-item received">
+              <div class="message-avatar">
+                <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="家人头像">
+              </div>
+              <div class="message-content">
+                <div class="message-sender">李爸爸</div>
+                <div class="message-bubble">
+                  <div class="message-text">儿子，你昨天的戒断时间超过3小时，非常棒！爸爸为你感到骄傲！</div>
+                  <div class="message-time">昨天 20:15</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 发送消息 -->
+            <div class="message-item sent">
+              <div class="message-avatar">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+              </div>
+              <div class="message-content">
+                <div class="message-bubble">
+                  <div class="message-text">谢谢爸爸！我会继续努力的。</div>
+                  <div class="message-image">
+                    <img src="https://images.unsplash.com/photo-1536152470836-b943b246224c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="图片">
+                  </div>
+                  <div class="message-time">昨天 20:18</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="date-divider">3天前</div>
+            
+            <!-- 接收消息 - 姐姐发送 -->
+            <div class="message-item received">
+              <div class="message-avatar">
+                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="家人头像">
+              </div>
+              <div class="message-content">
+                <div class="message-sender">李姐姐</div>
+                <div class="message-bubble">
+                  <div class="message-text">弟弟，我看到你最近戒断做得很好，加油！姐姐给你分享一个好用的专注力训练app，我用了觉得挺不错的。</div>
+                  <div class="message-image">
+                    <img src="https://via.placeholder.com/200x120/3498DB/FFFFFF?text=专注力训练App" alt="应用截图">
+                  </div>
+                  <div class="message-time">3天前 14:05</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 发送消息 - 语音消息 -->
+            <div class="message-item sent">
+              <div class="message-avatar">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+              </div>
+              <div class="message-content">
+                <div class="message-bubble">
+                  <div class="voice-message">
+                    <div class="voice-icon">
+                      <i class="ri-volume-up-line"></i>
+                    </div>
+                    <div class="voice-wave">
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                      <div class="wave-bar"></div>
+                    </div>
+                    <div class="voice-duration">0:18"</div>
+                  </div>
+                  <div class="message-time">3天前 14:10</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 底部输入区 -->
+          <div class="message-input-container">
+            <div class="input-button">
+              <i class="ri-emotion-line"></i>
+            </div>
+            <div class="input-button">
+              <i class="ri-image-add-line"></i>
+            </div>
+            <div class="input-button">
+              <i class="ri-mic-line"></i>
+            </div>
+            <input type="text" class="message-input" placeholder="输入消息...">
+            <div class="send-button">
+              <i class="ri-send-plane-fill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html> 

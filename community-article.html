@@ -10,7 +10,7 @@
     .article-screen {
       width: 100%;
       height: 100%;
-      background-color: #121212;
+      background-color: #ffffff;
       position: relative;
       overflow-y: auto;
       overflow-x: hidden;
@@ -34,6 +34,58 @@
       border-radius: 4px;
     }
     
+    /* 顶部导航栏 */
+    .article-nav {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.95), rgba(30, 136, 229, 0.95));
+      color: white;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 5;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+    }
+    
+    .article-nav-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      position: relative;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .article-nav-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .nav-action-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.15);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .nav-action-button:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .nav-action-button i {
+      font-size: 22px;
+      color: white;
+    }
+    
     .article-content {
       padding: 20px 15px 85px;
     }
@@ -44,12 +96,11 @@
     }
     
     .article-title {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 700;
-      color: #3498DB;
+      color: #04142c;
       line-height: 1.4;
       margin-bottom: 15px;
-      text-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
       position: relative;
       overflow: hidden;
     }
@@ -78,12 +129,13 @@
     }
     
     .author-avatar {
-      width: 40px;
-      height: 40px;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
       overflow: hidden;
-      margin-right: 10px;
+      margin-right: 12px;
       border: 2px solid rgba(52, 152, 219, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     
     .author-avatar img {
@@ -98,9 +150,9 @@
     }
     
     .author-name {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
-      color: white;
+      color: #04142c;
       display: flex;
       align-items: center;
     }
@@ -108,7 +160,7 @@
     .author-badge {
       margin-left: 5px;
       font-size: 10px;
-      background-color: rgba(52, 152, 219, 0.2);
+      background-color: rgba(52, 152, 219, 0.1);
       color: #3498DB;
       padding: 2px 6px;
       border-radius: 10px;
@@ -117,7 +169,8 @@
     
     .publish-time {
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(0, 0, 0, 0.5);
+      margin-top: 2px;
     }
     
     .article-info {
@@ -129,17 +182,18 @@
       display: flex;
       align-items: center;
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(0, 0, 0, 0.5);
     }
     
     .article-info-item i {
       font-size: 16px;
       margin-right: 5px;
+      color: #3498DB;
     }
     
     /* 文章正文 */
     .article-body {
-      color: rgba(255, 255, 255, 0.8);
+      color: #333333;
       line-height: 1.8;
       font-size: 16px;
     }
@@ -151,7 +205,7 @@
     .section-title {
       font-size: 20px;
       font-weight: 600;
-      color: white;
+      color: #04142c;
       margin-bottom: 15px;
       position: relative;
       padding-left: 15px;
@@ -170,14 +224,16 @@
     
     .article-paragraph {
       margin-bottom: 15px;
+      color: #333333;
     }
     
     .key-point {
-      background-color: rgba(52, 152, 219, 0.1);
+      background-color: rgba(52, 152, 219, 0.05);
       border-left: 3px solid #3498DB;
       padding: 15px;
       margin: 20px 0;
       border-radius: 0 8px 8px 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
     
     .key-point-title {
@@ -192,24 +248,41 @@
       margin-right: 8px;
     }
     
+    .key-point p, .key-point ul {
+      color: #333333;
+    }
+    
+    .key-point ul {
+      padding-left: 18px;
+    }
+    
+    .key-point li {
+      margin-bottom: 5px;
+    }
+    
     .article-image {
       width: 100%;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
-      margin: 20px 0;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      margin: 25px 0;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
     }
     
     .article-image img {
       width: 100%;
       object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .article-image:hover img {
+      transform: scale(1.02);
     }
     
     .image-caption {
       text-align: center;
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
-      margin-top: 8px;
+      color: rgba(0, 0, 0, 0.5);
+      margin-top: 10px;
     }
     
     /* 相关推荐 */
@@ -222,7 +295,7 @@
     .related-title {
       font-size: 18px;
       font-weight: 600;
-      color: white;
+      color: #04142c;
       margin-bottom: 20px;
       display: flex;
       align-items: center;
@@ -248,17 +321,17 @@
     
     .related-article {
       flex-shrink: 0;
-      width: 160px;
-      background-color: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
+      width: 170px;
+      background-color: #f8f9fa;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
       transition: all 0.3s ease;
     }
     
     .related-article:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
     
     .related-article-image {
@@ -279,10 +352,10 @@
     }
     
     .related-article-title {
-      padding: 10px;
+      padding: 12px;
       font-size: 14px;
       font-weight: 500;
-      color: white;
+      color: #04142c;
       line-height: 1.4;
     }
     
@@ -293,7 +366,7 @@
       left: 0;
       right: 0;
       height: 60px;
-      background-color: rgba(18, 18, 18, 0.9);
+      background-color: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
@@ -301,6 +374,7 @@
       padding: 0 15px;
       border-top: 1px solid rgba(52, 152, 219, 0.2);
       z-index: 10;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
     }
     
     .action-left {
@@ -312,18 +386,19 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      cursor: pointer;
     }
     
     .action-button i {
       font-size: 22px;
-      color: rgba(255, 255, 255, 0.6);
+      color: #707070;
       margin-bottom: 3px;
       transition: all 0.3s ease;
     }
     
     .action-button span {
       font-size: 10px;
-      color: rgba(255, 255, 255, 0.5);
+      color: #707070;
     }
     
     .action-button:hover i {
@@ -334,27 +409,40 @@
       flex: 1;
       display: flex;
       align-items: center;
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: #f5f5f5;
       border-radius: 20px;
-      padding: 8px 15px;
+      padding: 10px 15px;
       margin: 0 15px;
-      color: rgba(255, 255, 255, 0.5);
+      color: #707070;
       font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .add-comment:hover {
+      background-color: #e8e8e8;
     }
     
     .add-comment i {
       margin-right: 8px;
       font-size: 18px;
+      color: #3498DB;
     }
     
     .share-button {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background-color: rgba(52, 152, 219, 0.2);
+      background-color: rgba(52, 152, 219, 0.1);
       display: flex;
       justify-content: center;
       align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .share-button:hover {
+      background-color: rgba(52, 152, 219, 0.2);
     }
     
     .share-button i {
@@ -368,12 +456,12 @@
       top: 20px;
       left: 20px;
       z-index: 1000;
-      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      background: linear-gradient(135deg, #3498DB, #00B0FF);
       color: white;
       border: none;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
+      width: 45px;
+      height: 45px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -384,10 +472,11 @@
     
     .back-button:hover {
       transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
     
     .back-button i {
-      font-size: 24px;
+      font-size: 22px;
     }
   </style>
 </head>
@@ -400,6 +489,19 @@
     <div class="device">
       <div class="device-screen">
         <div class="article-screen">
+          <!-- 添加顶部导航栏 -->
+          <div class="article-nav">
+            <div class="article-nav-title">文章详情</div>
+            <div class="article-nav-actions">
+              <div class="nav-action-button">
+                <i class="ri-search-line"></i>
+              </div>
+              <div class="nav-action-button">
+                <i class="ri-notification-3-line"></i>
+              </div>
+            </div>
+          </div>
+          
           <div class="article-content">
             <div class="article-header">
               <h1 class="article-title">如何用3招克服睡前刷手机的习惯</h1>

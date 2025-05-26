@@ -560,37 +560,31 @@
       transform: scale(1.1);
     }
     
-    /* 发布按钮 */
+    /* 发布按钮和创作菜单 */
     .publish-btn {
-      position: fixed;
-      bottom: 85px;
+      position: absolute;
+      bottom: 80px;
       right: 20px;
-      width: 65px;
-      height: 65px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #3498DB, #2980B9);
       border-radius: 50%;
-      background: linear-gradient(135deg, #3498DB, #1E88E5);
-      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+      box-shadow: 0 3px 10px rgba(52, 152, 219, 0.5);
       z-index: 10;
       transition: all 0.3s ease;
     }
     
-    .publish-btn:hover {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
-    }
-    
     .publish-btn i {
-      font-size: 28px;
+      font-size: 24px;
       color: white;
-      transition: all 0.3s ease;
     }
     
-    .publish-btn:hover i {
-      transform: rotate(90deg);
+    .publish-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(52, 152, 219, 0.7);
     }
     
     /* AI推荐区 */
@@ -732,8 +726,8 @@
     
     /* 创作菜单 */
     .create-menu {
-      position: fixed;
-      bottom: 160px;
+      position: absolute;
+      bottom: 140px;
       right: 20px;
       display: flex;
       flex-direction: column;
@@ -743,44 +737,27 @@
     }
     
     .create-option {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: rgba(52, 152, 219, 0.8);
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
-      color: white;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      background: white;
+      padding: 10px 15px;
+      border-radius: 20px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
       transform: translateY(20px);
       opacity: 0;
       transition: all 0.3s ease;
-      position: relative;
     }
     
     .create-option i {
       font-size: 18px;
-      margin-bottom: 2px;
+      color: #3498DB;
+      margin-right: 8px;
     }
     
     .create-option span {
-      position: absolute;
-      right: 60px;
-      background: rgba(52, 152, 219, 0.9);
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      white-space: nowrap;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      opacity: 0;
-      transform: translateX(-10px);
-      transition: all 0.3s ease;
-    }
-    
-    .create-option:hover span {
-      opacity: 1;
-      transform: translateX(0);
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
     }
     
     .create-option:nth-child(1) {
@@ -837,14 +814,14 @@
                   <i class="ri-search-line"></i>
                 </div>
               </div>
-              <div class="search-tags">
+              <!-- <div class="search-tags">
                 <div class="search-tag">时间管理</div>
                 <div class="search-tag">焦虑缓解</div>
                 <div class="search-tag">家庭监督</div>
                 <div class="search-tag">替代活动</div>
                 <div class="search-tag">戒断反应</div>
                 <div class="search-tag">社交技巧</div>
-              </div>
+              </div> -->
             </div>
             
             <!-- 分类导航 -->
@@ -935,7 +912,7 @@
             </a>
             
             <!-- 视频卡片 -->
-            <a href="#" style="text-decoration: none;">
+            <a href="community-video.html" style="text-decoration: none;">
               <div class="content-card video-card">
                 <div class="card-header">
                   <div class="author-avatar">
