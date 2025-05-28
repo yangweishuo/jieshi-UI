@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 通知设置</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .notification-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(30, 136, 229, 0.3) transparent;
+    }
+    
+    .notification-screen::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .notification-screen::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .notification-screen::-webkit-scrollbar-thumb {
+      background-color: rgba(30, 136, 229, 0.3);
+      border-radius: 4px;
+    }
+    
+    .notification-content {
+      padding-bottom: 20px;
+      flex: 1;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    
+    /* 顶部标题栏 */
+    .notification-header {
+      background: linear-gradient(135deg, rgba(30, 136, 229, 0.95), rgba(124, 77, 255, 0.95));
+      color: white;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      height: 60px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 5px 15px rgba(30, 136, 229, 0.2);
+    }
+    
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.15);
+      margin-right: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .back-btn i {
+      font-size: 22px;
+      color: white;
+    }
+    
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      flex: 1;
+    }
+    
+    /* 通知概览卡片 */
+    .notification-overview {
+      background: white;
+      border-radius: 18px;
+      margin: 20px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      position: relative;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .notification-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .status-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .toggle-all {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 26px;
+    }
+    
+    .toggle-all input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: var(--primary-color);
+    }
+    
+    input:focus + .slider {
+      box-shadow: 0 0 1px var(--primary-color);
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    
+    .status-desc {
+      font-size: 14px;
+      color: #666;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+    
+    /* 通知类别部分 */
+    .notification-section {
+      background: white;
+      border-radius: 18px;
+      margin: 20px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-title i {
+      font-size: 22px;
+      margin-right: 10px;
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .notification-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+    
+    .notification-info {
+      flex: 1;
+    }
+    
+    .notification-title {
+      font-size: 16px;
+      color: #333;
+      font-weight: 500;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .notification-title i {
+      font-size: 20px;
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+    
+    .notification-desc {
+      font-size: 12px;
+      color: #666;
+      padding-left: 30px;
+    }
+    
+    .notification-toggle {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+      margin-left: 15px;
+    }
+    
+    .notification-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .notification-toggle .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .3s;
+      border-radius: 24px;
+    }
+    
+    .notification-toggle .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    
+    .notification-toggle input:checked + .slider {
+      background-color: var(--primary-color);
+    }
+    
+    .notification-toggle input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+    
+    /* 勿扰模式设置 */
+    .do-not-disturb {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      padding: 15px 0;
+    }
+    
+    .time-range {
+      display: flex;
+      align-items: center;
+      margin-top: 15px;
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .time-input {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-size: 16px;
+      color: #333;
+      background-color: rgba(30, 136, 229, 0.05);
+      width: 45%;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .time-separator {
+      font-size: 16px;
+      color: #666;
+      margin: 0 10px;
+    }
+    
+    /* 高级设置区域 */
+    .advanced-settings {
+      margin-top: 15px;
+    }
+    
+    .advanced-settings-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .advanced-settings-title i {
+      font-size: 20px;
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+    
+    .custom-setting {
+      margin-top: 15px;
+      padding: 15px;
+      background-color: rgba(30, 136, 229, 0.05);
+      border-radius: 10px;
+    }
+    
+    .custom-setting-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .custom-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .custom-option {
+      padding: 8px 15px;
+      background-color: white;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #666;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .custom-option.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+    
+    /* 页面切换动画 */
+    .notification-content {
+      animation: pageTransition 0.5s ease-in-out;
+    }
+    
+    @keyframes pageTransition {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="notification-screen">
+          <!-- 顶部标题栏 -->
+          <div class="notification-header">
+            <a href="profile.html" class="back-btn">
+              <i class="ri-arrow-left-line"></i>
+            </a>
+            <div class="header-title">通知设置</div>
+          </div>
+          
+          <div class="notification-content">
+            <!-- 通知概览卡片 -->
+            <div class="notification-overview">
+              <div class="notification-status">
+                <div class="status-title">接收所有通知</div>
+                <label class="toggle-all">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="status-desc">
+                总开关，控制是否接收任何类型的通知提醒。关闭后将不会收到任何应用通知，但不影响系统重要提醒。
+              </div>
+            </div>
+            
+            <!-- 通知类型设置 -->
+            <div class="notification-section">
+              <div class="section-title">
+                <i class="ri-notification-3-line"></i>
+                通知类型
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-message-2-line"></i>
+                    消息提醒
+                  </div>
+                  <div class="notification-desc">接收聊天、评论等互动消息通知</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-calendar-check-line"></i>
+                    每日打卡
+                  </div>
+                  <div class="notification-desc">接收每日打卡、目标完成提醒</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-trophy-line"></i>
+                    成就提醒
+                  </div>
+                  <div class="notification-desc">获得徽章、完成里程碑等成就通知</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-user-add-line"></i>
+                    好友提醒
+                  </div>
+                  <div class="notification-desc">好友请求、好友动态更新提醒</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-customer-service-2-line"></i>
+                    系统通知
+                  </div>
+                  <div class="notification-desc">应用更新、系统维护等重要通知</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 家庭圈通知设置 -->
+            <div class="notification-section">
+              <div class="section-title">
+                <i class="ri-home-heart-line"></i>
+                家庭圈通知
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-parent-line"></i>
+                    家庭动态
+                  </div>
+                  <div class="notification-desc">家人活动状态变更、目标完成提醒</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-alarm-warning-line"></i>
+                    预警提醒
+                  </div>
+                  <div class="notification-desc">家人使用时间超标等异常提醒</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-group-line"></i>
+                    家庭活动
+                  </div>
+                  <div class="notification-desc">家庭挑战、集体活动邀请等提醒</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 勿扰模式设置 -->
+            <div class="notification-section">
+              <div class="section-title">
+                <i class="ri-moon-line"></i>
+                勿扰模式
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-time-line"></i>
+                    定时勿扰
+                  </div>
+                  <div class="notification-desc">设置特定时间段内不接收通知</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" id="dnd-toggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="do-not-disturb" id="dnd-settings" style="display: none;">
+                <div class="time-range">
+                  <div class="time-input" id="start-time">22:00</div>
+                  <div class="time-separator">至</div>
+                  <div class="time-input" id="end-time">07:00</div>
+                </div>
+                
+                <div class="advanced-settings">
+                  <div class="advanced-settings-title">
+                    <i class="ri-settings-3-line"></i>
+                    高级设置
+                  </div>
+                  
+                  <div class="custom-setting">
+                    <div class="custom-setting-title">允许接收的通知类型</div>
+                    <div class="custom-options">
+                      <div class="custom-option active">家庭预警</div>
+                      <div class="custom-option">重要提醒</div>
+                      <div class="custom-option">系统通知</div>
+                    </div>
+                  </div>
+                  
+                  <div class="custom-setting">
+                    <div class="custom-setting-title">勿扰时间适用日期</div>
+                    <div class="custom-options">
+                      <div class="custom-option active">每天</div>
+                      <div class="custom-option">工作日</div>
+                      <div class="custom-option">周末</div>
+                      <div class="custom-option">自定义</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 推送方式设置 -->
+            <div class="notification-section">
+              <div class="section-title">
+                <i class="ri-notification-badge-line"></i>
+                推送方式
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-vibrate-line"></i>
+                    振动提醒
+                  </div>
+                  <div class="notification-desc">接收通知时震动提醒</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-volume-up-line"></i>
+                    声音提醒
+                  </div>
+                  <div class="notification-desc">接收通知时播放提示音</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="notification-item">
+                <div class="notification-info">
+                  <div class="notification-title">
+                    <i class="ri-lock-line"></i>
+                    锁屏显示
+                  </div>
+                  <div class="notification-desc">在锁屏界面显示通知内容</div>
+                </div>
+                <label class="notification-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+  <script>
+    // 全局开关控制所有通知
+    document.querySelector('.toggle-all input').addEventListener('change', function() {
+      const isChecked = this.checked;
+      document.querySelectorAll('.notification-toggle input').forEach(toggle => {
+        toggle.checked = isChecked;
+        toggle.disabled = !isChecked;
+      });
+    });
+    
+    // 勿扰模式设置显示/隐藏
+    document.getElementById('dnd-toggle').addEventListener('change', function() {
+      const dndSettings = document.getElementById('dnd-settings');
+      if (this.checked) {
+        dndSettings.style.display = 'flex';
+      } else {
+        dndSettings.style.display = 'none';
+      }
+    });
+    
+    // 时间选择器模拟
+    document.getElementById('start-time').addEventListener('click', function() {
+      const time = prompt('请输入开始时间 (格式: HH:MM)', this.textContent);
+      if (time) {
+        this.textContent = time;
+      }
+    });
+    
+    document.getElementById('end-time').addEventListener('click', function() {
+      const time = prompt('请输入结束时间 (格式: HH:MM)', this.textContent);
+      if (time) {
+        this.textContent = time;
+      }
+    });
+    
+    // 自定义选项切换
+    document.querySelectorAll('.custom-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const parent = this.parentElement;
+        parent.querySelectorAll('.custom-option').forEach(opt => {
+          opt.classList.remove('active');
+        });
+        this.classList.add('active');
+      });
+    });
+    
+    // 页面加载完成时应用过渡动画
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('.notification-screen').classList.add('page-transition');
+    });
+    
+    // 返回按钮点击事件 - 添加过渡动画
+    document.querySelector('.back-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      // 应用淡出动画
+      document.querySelector('.notification-screen').style.opacity = '0';
+      document.querySelector('.notification-screen').style.transform = 'translateY(20px)';
+      
+      // 短暂延迟后再跳转回个人页面
+      setTimeout(() => {
+        window.location.href = 'profile.html';
+      }, 300);
+    });
+    
+    // 保存通知设置到localStorage
+    function saveNotificationSettings() {
+      const settings = {
+        globalEnabled: document.querySelector('.toggle-all input').checked,
+        notifications: {}
+      };
+      
+      // 获取所有通知开关状态
+      document.querySelectorAll('.notification-item').forEach(item => {
+        const title = item.querySelector('.notification-title').textContent.trim();
+        const enabled = item.querySelector('.notification-toggle input').checked;
+        settings.notifications[title] = enabled;
+      });
+      
+      // 获取勿扰模式设置
+      settings.doNotDisturb = {
+        enabled: document.getElementById('dnd-toggle').checked,
+        startTime: document.getElementById('start-time').textContent,
+        endTime: document.getElementById('end-time').textContent
+      };
+      
+      // 保存到localStorage
+      localStorage.setItem('notificationSettings', JSON.stringify(settings));
+      
+      // 显示保存成功提示
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary-color);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      `;
+      toast.textContent = '设置已保存';
+      document.body.appendChild(toast);
+      
+      // 显示然后淡出
+      setTimeout(() => {
+        toast.style.opacity = '1';
+      }, 10);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 2000);
+    }
+    
+    // 加载保存的通知设置
+    function loadNotificationSettings() {
+      const savedSettings = localStorage.getItem('notificationSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        
+        // 设置全局开关
+        document.querySelector('.toggle-all input').checked = settings.globalEnabled;
+        
+        // 设置各通知类型开关
+        if (settings.notifications) {
+          document.querySelectorAll('.notification-item').forEach(item => {
+            const title = item.querySelector('.notification-title').textContent.trim();
+            if (settings.notifications[title] !== undefined) {
+              item.querySelector('.notification-toggle input').checked = settings.notifications[title];
+            }
+          });
+        }
+        
+        // 设置勿扰模式
+        if (settings.doNotDisturb) {
+          document.getElementById('dnd-toggle').checked = settings.doNotDisturb.enabled;
+          if (settings.doNotDisturb.enabled) {
+            document.getElementById('dnd-settings').style.display = 'flex';
+          }
+          document.getElementById('start-time').textContent = settings.doNotDisturb.startTime;
+          document.getElementById('end-time').textContent = settings.doNotDisturb.endTime;
+        }
+      }
+    }
+    
+    // 页面加载时载入设置
+    window.addEventListener('load', loadNotificationSettings);
+    
+    // 为所有开关添加变更监听，自动保存设置
+    document.querySelectorAll('.notification-toggle input, .toggle-all input').forEach(toggle => {
+      toggle.addEventListener('change', saveNotificationSettings);
+    });
+    
+    // 勿扰模式时间变更时保存设置
+    document.getElementById('start-time').addEventListener('change', saveNotificationSettings);
+    document.getElementById('end-time').addEventListener('change', saveNotificationSettings);
+  </script>
+</body>
+</html> 

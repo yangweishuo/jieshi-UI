@@ -1,153 +1,146 @@
-# 戒视（JieShiUI）- 安装与运行指南
+# 戒视应用（JieShiUI）安装指南
 
-本文档提供详细的项目安装、配置和运行步骤，帮助开发者快速搭建并运行戒视UI原型。
+本文档提供了戒视应用UI原型的安装和配置说明。
 
 ## 系统要求
 
-- 现代浏览器（Chrome、Firefox、Edge等最新版本）
-- 本地Web服务器（可选，用于避免跨域问题）
+- 现代浏览器（Chrome 90+、Firefox 90+、Safari 14+、Edge 90+）
+- 支持JavaScript和本地存储
+- 建议使用移动设备或启用移动设备模拟模式访问
+- WebGL支持（用于3D勋章墙功能，不支持时会降级为2D模式）
 
-## 基础安装
+## 快速开始
 
-### 方法一：直接下载
+### 方法一：本地运行
 
-1. 点击仓库页面的"Code"按钮，选择"Download ZIP"
-2. 解压下载的ZIP文件到本地目录
-3. 使用浏览器打开`index.html`文件即可浏览项目
+1. 克隆或下载项目到本地：
+   ```
+   git clone https://github.com/yourusername/jieshi-ui.git
+   ```
 
-### 方法二：使用Git克隆
+2. 进入项目目录：
+   ```
+   cd jieshi-ui
+   ```
 
-```bash
-# 克隆仓库
-git clone https://github.com/yourusername/jeshi-ui.git
+3. 使用本地服务器运行项目（任选一种）：
 
-# 进入项目目录
-cd jeshi-ui
+   - 使用Python内置服务器：
+     ```
+     # Python 3.x
+     python -m http.server 8000
+     ```
+
+   - 使用Node.js：
+     ```
+     # 安装http-server
+     npm install -g http-server
+     # 运行服务
+     http-server -p 8000
+     ```
+
+4. 在浏览器中访问：
+   ```
+   http://localhost:8000
+   ```
+
+5. 在浏览器的开发者工具中启用移动设备模拟（推荐）：
+   - Chrome/Edge: F12 -> 切换设备工具栏（或Ctrl+Shift+M）
+   - Firefox: F12 -> 响应式设计模式（或Ctrl+Shift+M）
+
+### 方法二：在线预览
+
+您可以直接访问在线部署版本：
 ```
-
-## 使用本地服务器运行（推荐）
-
-为了获得最佳体验，特别是使用Three.js的3D功能，建议使用本地Web服务器运行项目。
-
-### 使用Node.js的http-server
-
-1. 确保已安装Node.js（https://nodejs.org/）
-2. 全局安装http-server：
-
-```bash
-npm install -g http-server
+https://jieshi-ui.example.com
 ```
+（注：这是示例链接，请替换为实际部署地址）
 
-3. 在项目根目录运行服务器：
+## 功能预览
 
-```bash
-http-server -p 8080
-```
+安装完成后，您可以通过首页（index.html）导航至不同功能页面：
 
-4. 在浏览器中访问 `http://localhost:8080`
+1. **首页与数据统计**
+   - 首页（home.html）：查看主要功能入口和当日概览
+   - 数据统计（statistics.html）：查看使用习惯分析和改进趋势
 
-### 使用Python的SimpleHTTPServer
+2. **AI助手系统**
+   - AI助手（ai.html）：与智能助手交互获取建议
+   - AI分析报告（ai-analysis.html）：查看详细的使用模式分析
 
-1. 确保已安装Python（https://www.python.org/）
-2. 在项目根目录运行以下命令：
+3. **社区与社交功能**
+   - 社交圈（social.html）：查看朋友动态和互动消息
+   - 社区主页（community.html）：浏览社区内容，参与交流讨论
+   - 文章详情（community-article.html）：阅读完整文章内容
+   - 视频详情（community-video.html）：观看视频内容
 
-Python 2.x:
-```bash
-python -m SimpleHTTPServer 8000
-```
+4. **个人中心与设置**
+   - 个人中心（profile.html）：管理个人资料和成就
+   - 账户安全（account-security.html）：修改密码和隐私设置
+   - 创作中心（creation-center.html）：管理创作内容和粉丝互动
 
-Python 3.x:
-```bash
-python -m http.server 8000
-```
+5. **成就系统**
+   - 3D勋章墙（medal-wall.html）：查看获得的勋章和成就
+   - 勋章详情（badges.html）：了解各勋章的获取条件和意义
+   - 排行榜（ranking.html）：查看用户排名和成就对比
 
-3. 在浏览器中访问 `http://localhost:8000`
+6. **家庭互助**
+   - 家庭中心（family.html）：管理家庭成员和互助活动
+   - 家庭消息（family-messages.html）：家庭成员间的互动通讯
 
-### 使用Visual Studio Code的Live Server扩展
+## 注意事项
 
-1. 在VS Code中安装"Live Server"扩展
-2. 右键点击`index.html`文件，选择"Open with Live Server"
-3. 浏览器将自动打开项目
+1. **本地存储**
+   - 项目使用localStorage模拟数据存储，清除浏览器缓存会重置应用状态
+   - 首次使用时会自动创建演示数据
 
-## 配置说明
+2. **WebGL支持**
+   - 3D勋章墙功能需要WebGL支持
+   - 在不支持WebGL的设备上会自动降级为2D展示模式
 
-项目是纯前端UI原型，不需要复杂配置。但如果你想调整某些参数，可以修改以下文件：
+3. **移动端体验**
+   - 界面设计主要针对移动设备优化
+   - 在桌面浏览器中使用时建议启用移动设备模拟
 
-- `script.js`: 修改全局JavaScript配置和功能
-- `style.css`: 调整全局样式和主题
-- 各HTML文件中的内联样式: 调整特定页面的样式
+4. **新增功能**
+   - 社区功能：在最新版本中，我们完善了社区相关页面，添加了社区主页、文章详情页和视频详情页
+   - 创作中心：新增了创作中心页面，支持内容创作和管理
+   - 社交圈社区集成：实现了社交圈与社区的无缝连接，添加了热角标提示
 
-## 项目结构说明
+## 常见问题
 
-```
-├── index.html            # 项目预览入口页
-├── login.html            # 登录/注册页面
-├── home.html             # 应用首页
-├── statistics.html       # 数据统计与分析页面
-├── medal-wall.html       # 3D勋章墙页面
-├── profile.html          # 个人中心页面
-└── ... 其他页面和资源
-```
+### 页面显示不正常？
 
-### 核心页面说明
+- 确保使用最新版本的浏览器
+- 尝试清除浏览器缓存后重新加载
+- 检查是否启用了JavaScript
 
-1. **首页 (home.html)**
-   - 应用主界面，提供功能导航
-   - 实现用户每日戒断目标和时间统计
+### 3D勋章墙无法显示？
 
-2. **统计页面 (statistics.html)**
-   - 数据可视化展示
-   - 使用Chart.js实现多种图表
+- 确认您的设备支持WebGL
+- 在浏览器设置中启用硬件加速
+- 使用降级模式查看2D版本
 
-3. **3D勋章墙 (medal-wall.html)**
-   - 使用Three.js实现3D交互效果
-   - 可能需要更强的硬件支持
+### 如何测试不同功能？
 
-## 开发者注意事项
+- 登录页面提供了测试账号（用户名：test，密码：123456）
+- 可以使用此账号体验所有功能模块
 
-1. **Three.js兼容性**
-   - 3D勋章墙需要WebGL支持
-   - 部分低端设备可能会自动降级至2D模式
+### 页面加载缓慢？
 
-2. **响应式设计**
-   - 项目已实现基本的移动端适配
-   - 最佳体验屏幕宽度为375px（iPhone尺寸）
+- 检查网络连接
+- 3D功能可能在低端设备上性能较差，可切换到2D模式
+- 图片资源较多，首次加载可能需要较长时间
 
-3. **浏览器兼容性**
-   - 建议使用Chrome或Firefox最新版本测试
-   - Safari浏览器上部分CSS效果可能有差异
+## 联系与支持
 
-## 常见问题解决
+如遇到安装或使用问题，请通过以下方式获取支持：
 
-### 3D勋章墙无法显示
-
-问题：打开medal-wall.html页面，但只显示加载画面或黑屏。
-
-解决方法：
-1. 确认浏览器支持WebGL（访问 https://get.webgl.org/ 测试）
-2. 更新图形驱动程序
-3. 使用本地服务器运行项目（参见上方说明）
-4. 点击右下角的2D模式切换按钮，切换到兼容模式
-
-### 页面样式错乱
-
-问题：某些页面样式显示不正确。
-
-解决方法：
-1. 确保已加载所有CSS文件
-2. 清除浏览器缓存
-3. 检查是否使用了最新版本的浏览器
-
-## 贡献代码
-
-如果您想为项目贡献代码：
-
-1. Fork此仓库
-2. 创建您的特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交您的更改 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 创建一个Pull Request
+- 项目仓库Issue区：[GitHub Issues](https://github.com/yourusername/jieshi-ui/issues)
+- 电子邮件：support@jieshi-app.example.com
 
 ---
 
-如有其他问题，请提交Issue或联系项目维护者。 
+感谢您使用戒视应用UI原型！本项目仅展示界面设计和交互，实际功能需要后端支持。
+
+*文档最后更新于2025年3月15日* 

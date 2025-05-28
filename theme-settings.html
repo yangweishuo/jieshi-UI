@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 主题设置</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .theme-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(30, 136, 229, 0.3) transparent;
+    }
+    
+    .theme-screen::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .theme-screen::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .theme-screen::-webkit-scrollbar-thumb {
+      background-color: rgba(30, 136, 229, 0.3);
+      border-radius: 4px;
+    }
+    
+    .theme-content {
+      padding-bottom: 20px;
+      flex: 1;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    
+    /* 顶部标题栏 */
+    .theme-header {
+      background: linear-gradient(135deg, rgba(30, 136, 229, 0.95), rgba(124, 77, 255, 0.95));
+      color: white;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      height: 60px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 5px 15px rgba(30, 136, 229, 0.2);
+    }
+    
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.15);
+      margin-right: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .back-btn i {
+      font-size: 22px;
+      color: white;
+    }
+    
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      flex: 1;
+    }
+    
+    /* 主题选择卡片 */
+    .theme-section {
+      background: white;
+      border-radius: 18px;
+      margin: 20px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-title i {
+      font-size: 22px;
+      margin-right: 10px;
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    /* 主题颜色选择器 */
+    .color-themes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .color-theme {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    
+    .color-theme:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .color-theme.active {
+      border: 2px solid #3498db;
+    }
+    
+    .color-theme.active::after {
+      content: "\ea3b"; /* RemixIcon checkmark code */
+      font-family: 'remixicon';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 24px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    
+    .theme-blue {
+      background: linear-gradient(135deg, #3498db, #00B0FF);
+    }
+    
+    .theme-purple {
+      background: linear-gradient(135deg, #9C27B0, #7C4DFF);
+    }
+    
+    .theme-green {
+      background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    }
+    
+    .theme-orange {
+      background: linear-gradient(135deg, #FF9800, #FFC107);
+    }
+    
+    .theme-red {
+      background: linear-gradient(135deg, #F44336, #FF5252);
+    }
+    
+    .theme-teal {
+      background: linear-gradient(135deg, #009688, #4DB6AC);
+    }
+    
+    /* 夜间模式切换 */
+    .display-mode {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .mode-info {
+      flex: 1;
+    }
+    
+    .mode-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .mode-title i {
+      font-size: 20px;
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+    
+    .mode-desc {
+      font-size: 12px;
+      color: #666;
+      padding-left: 30px;
+    }
+    
+    .mode-toggle {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+      margin-left: 15px;
+    }
+    
+    .mode-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .mode-toggle .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .3s;
+      border-radius: 24px;
+    }
+    
+    .mode-toggle .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    
+    .mode-toggle input:checked + .slider {
+      background-color: var(--primary-color);
+    }
+    
+    .mode-toggle input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+    
+    /* 字体设置 */
+    .font-settings {
+      margin-top: 20px;
+    }
+    
+    .font-size-control {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    
+    .font-size-slider {
+      flex: 1;
+      margin: 0 15px;
+      height: 6px;
+      background-color: rgba(30, 136, 229, 0.1);
+      border-radius: 3px;
+      position: relative;
+    }
+    
+    .font-size-slider .slider-handle {
+      width: 18px;
+      height: 18px;
+      background-color: var(--primary-color);
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 60%; /* 初始位置 */
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .font-size-label {
+      font-size: 14px;
+      color: #666;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .font-size-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--primary-color);
+      width: 30px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="theme-screen">
+          <!-- 顶部标题栏 -->
+          <div class="theme-header">
+            <a href="profile.html" class="back-btn">
+              <i class="ri-arrow-left-line"></i>
+            </a>
+            <div class="header-title">主题设置</div>
+          </div>
+          
+          <div class="theme-content">
+            <!-- 主题颜色部分 -->
+            <div class="theme-section">
+              <div class="section-title">
+                <i class="ri-palette-line"></i>
+                主题颜色
+              </div>
+              
+              <div class="color-themes">
+                <div class="color-theme theme-blue active" data-theme="blue"></div>
+                <div class="color-theme theme-purple" data-theme="purple"></div>
+                <div class="color-theme theme-green" data-theme="green"></div>
+                <div class="color-theme theme-orange" data-theme="orange"></div>
+                <div class="color-theme theme-red" data-theme="red"></div>
+                <div class="color-theme theme-teal" data-theme="teal"></div>
+              </div>
+              
+              <div class="display-mode">
+                <div class="mode-info">
+                  <div class="mode-title">
+                    <i class="ri-moon-line"></i>
+                    夜间模式
+                  </div>
+                  <div class="mode-desc">切换为深色主题，减轻眼睛疲劳</div>
+                </div>
+                <label class="mode-toggle">
+                  <input type="checkbox" id="dark-mode-toggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 字体设置 -->
+            <div class="theme-section">
+              <div class="section-title">
+                <i class="ri-font-size-2"></i>
+                字体设置
+              </div>
+              
+              <div class="font-settings">
+                <div class="mode-title">
+                  <i class="ri-text"></i>
+                  字体大小
+                </div>
+                <div class="mode-desc">调整应用内文字的显示大小</div>
+                
+                <div class="font-size-control">
+                  <div class="font-size-label">小</div>
+                  <div class="font-size-slider">
+                    <div class="slider-handle" id="font-size-handle"></div>
+                  </div>
+                  <div class="font-size-label">大</div>
+                  <div class="font-size-value">16px</div>
+                </div>
+              </div>
+              
+              <div class="font-settings" style="margin-top: 25px;">
+                <div class="mode-title">
+                  <i class="ri-character-recognition-line"></i>
+                  字体样式
+                </div>
+                <div class="mode-desc">选择您喜欢的字体显示样式</div>
+                
+                <div class="custom-options" style="margin-top: 15px;">
+                  <div class="custom-option active" style="font-family: 'PingFang SC', sans-serif;">默认 (PingFang)</div>
+                  <div class="custom-option" style="font-family: 'Microsoft YaHei', sans-serif;">微软雅黑</div>
+                  <div class="custom-option" style="font-family: 'Noto Sans SC', sans-serif;">Noto Sans</div>
+                  <div class="custom-option" style="font-family: 'Helvetica Neue', sans-serif;">Helvetica</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 界面动效设置 -->
+            <div class="theme-section">
+              <div class="section-title">
+                <i class="ri-shape-line"></i>
+                界面动效
+              </div>
+              
+              <div class="display-mode">
+                <div class="mode-info">
+                  <div class="mode-title">
+                    <i class="ri-animation-line"></i>
+                    界面动画
+                  </div>
+                  <div class="mode-desc">控制界面切换动画和过渡效果</div>
+                </div>
+                <label class="mode-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="display-mode">
+                <div class="mode-info">
+                  <div class="mode-title">
+                    <i class="ri-bubble-chart-line"></i>
+                    粒子特效
+                  </div>
+                  <div class="mode-desc">显示成就和里程碑的粒子动画效果</div>
+                </div>
+                <label class="mode-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="display-mode">
+                <div class="mode-info">
+                  <div class="mode-title">
+                    <i class="ri-blaze-line"></i>
+                    流畅模式
+                  </div>
+                  <div class="mode-desc">减少视觉效果以提高性能</div>
+                </div>
+                <label class="mode-toggle">
+                  <input type="checkbox">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 背景设置 -->
+            <div class="theme-section">
+              <div class="section-title">
+                <i class="ri-image-line"></i>
+                背景设置
+              </div>
+              
+              <div class="background-preview">
+                <div class="mode-title">
+                  <i class="ri-gallery-line"></i>
+                  主页背景
+                </div>
+                <div class="mode-desc">自定义应用主页的背景图片</div>
+                
+                <div style="display: flex; gap: 15px; margin-top: 15px; overflow-x: auto; padding: 5px 0;">
+                  <div style="width: 80px; height: 120px; border-radius: 10px; background: linear-gradient(135deg, #3498db, #00B0FF); flex-shrink: 0; position: relative; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);" class="active-bg">
+                    <div style="position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; background-color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                      <i class="ri-check-line" style="color: var(--primary-color); font-size: 14px;"></i>
+                    </div>
+                  </div>
+                  <div style="width: 80px; height: 120px; border-radius: 10px; background: url('images/bg-pattern-1.jpg') center/cover; flex-shrink: 0;"></div>
+                  <div style="width: 80px; height: 120px; border-radius: 10px; background: url('images/bg-pattern-2.jpg') center/cover; flex-shrink: 0;"></div>
+                  <div style="width: 80px; height: 120px; border-radius: 10px; background: linear-gradient(to bottom, #9C27B0, #7C4DFF); flex-shrink: 0;"></div>
+                  <div style="width: 80px; height: 120px; border-radius: 10px; background: #f5f5f5; flex-shrink: 0; display: flex; justify-content: center; align-items: center;">
+                    <i class="ri-add-circle-line" style="font-size: 24px; color: #999;"></i>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="display-mode" style="margin-top: 20px;">
+                <div class="mode-info">
+                  <div class="mode-title">
+                    <i class="ri-blur-off-line"></i>
+                    模糊效果
+                  </div>
+                  <div class="mode-desc">控制背景模糊效果强度</div>
+                </div>
+                <label class="mode-toggle">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 卡片样式设置 -->
+            <div class="theme-section">
+              <div class="section-title">
+                <i class="ri-layout-masonry-line"></i>
+                卡片样式
+              </div>
+              
+              <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <div style="flex: 1; height: 100px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); display: flex; justify-content: center; align-items: center; position: relative;" class="active-card">
+                  <span style="font-size: 14px; color: #666;">标准</span>
+                  <div style="position: absolute; top: 10px; right: 10px; width: 20px; height: 20px; background-color: var(--primary-color); border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                    <i class="ri-check-line" style="color: white; font-size: 14px;"></i>
+                  </div>
+                </div>
+                <div style="flex: 1; height: 100px; background: white; border: 2px solid rgba(30, 136, 229, 0.3); border-radius: 15px; display: flex; justify-content: center; align-items: center;">
+                  <span style="font-size: 14px; color: #666;">描边</span>
+                </div>
+              </div>
+              
+              <div style="display: flex; gap: 15px;">
+                <div style="flex: 1; height: 100px; background: linear-gradient(135deg, rgba(30, 136, 229, 0.05), rgba(124, 77, 255, 0.05)); border-radius: 15px; display: flex; justify-content: center; align-items: center;">
+                  <span style="font-size: 14px; color: #666;">渐变</span>
+                </div>
+                <div style="flex: 1; height: 100px; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.2); display: flex; justify-content: center; align-items: center;">
+                  <span style="font-size: 14px; color: #666;">毛玻璃</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 恢复默认设置 -->
+            <div style="margin: 30px 20px;">
+              <button style="width: 100%; padding: 15px; background: none; border: 1px solid rgba(30, 136, 229, 0.3); border-radius: 12px; font-size: 16px; color: var(--primary-color); font-weight: 500; cursor: pointer;">
+                恢复默认设置
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+  <script>
+    // 页面加载完成时应用过渡动画
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('.theme-screen').classList.add('page-transition');
+      // 加载保存的设置
+      loadThemeSettings();
+    });
+    
+    // 返回按钮点击事件 - 添加过渡动画
+    document.querySelector('.back-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      // 应用淡出动画
+      document.querySelector('.theme-screen').style.opacity = '0';
+      document.querySelector('.theme-screen').style.transform = 'translateY(20px)';
+      
+      // 短暂延迟后再跳转回个人页面
+      setTimeout(() => {
+        window.location.href = 'profile.html';
+      }, 300);
+    });
+    
+    // 主题颜色选择
+    const colorThemes = document.querySelectorAll('.color-theme');
+    colorThemes.forEach(theme => {
+      theme.addEventListener('click', function() {
+        // 移除所有主题的active类
+        colorThemes.forEach(t => t.classList.remove('active'));
+        // 给当前点击的主题添加active类
+        this.classList.add('active');
+        
+        // 获取主题名
+        const themeName = this.getAttribute('data-theme');
+        
+        // 应用主题颜色
+        applyThemeColor(themeName);
+        
+        // 保存设置
+        saveThemeSettings();
+      });
+    });
+    
+    // 应用主题颜色
+    function applyThemeColor(themeName) {
+      const themeColor = getThemeColor(themeName);
+      document.documentElement.style.setProperty('--primary-color', themeColor);
+      
+      // 更新次要颜色和渐变
+      updateSecondaryColors(themeName);
+      
+      // 显示主题已应用提示
+      showToast(`已应用${getThemeDisplayName(themeName)}主题`);
+    }
+    
+    // 获取主题的中文名称
+    function getThemeDisplayName(theme) {
+      const themeNames = {
+        'blue': '蓝色',
+        'purple': '紫色',
+        'green': '绿色',
+        'orange': '橙色',
+        'red': '红色',
+        'teal': '青色'
+      };
+      return themeNames[theme] || '蓝色';
+    }
+    
+    // 更新次要颜色和渐变
+    function updateSecondaryColors(themeName) {
+      // 次要颜色和渐变根据主题颜色进行调整
+      const secondaryColors = {
+        'blue': {
+          secondary: '#00B0FF',
+          accent: '#7C4DFF',
+          gradient: 'linear-gradient(135deg, #3498db, #00B0FF)'
+        },
+        'purple': {
+          secondary: '#9C27B0',
+          accent: '#E040FB',
+          gradient: 'linear-gradient(135deg, #9C27B0, #7C4DFF)'
+        },
+        'green': {
+          secondary: '#4CAF50',
+          accent: '#8BC34A',
+          gradient: 'linear-gradient(135deg, #4CAF50, #8BC34A)'
+        },
+        'orange': {
+          secondary: '#FF9800',
+          accent: '#FFC107',
+          gradient: 'linear-gradient(135deg, #FF9800, #FFC107)'
+        },
+        'red': {
+          secondary: '#F44336',
+          accent: '#FF5252',
+          gradient: 'linear-gradient(135deg, #F44336, #FF5252)'
+        },
+        'teal': {
+          secondary: '#009688',
+          accent: '#4DB6AC',
+          gradient: 'linear-gradient(135deg, #009688, #4DB6AC)'
+        }
+      };
+      
+      const colors = secondaryColors[themeName] || secondaryColors['blue'];
+      
+      document.documentElement.style.setProperty('--secondary-color', colors.secondary);
+      document.documentElement.style.setProperty('--accent-color', colors.accent);
+      document.documentElement.style.setProperty('--primary-gradient', colors.gradient);
+    }
+    
+    // 获取对应主题的颜色
+    function getThemeColor(theme) {
+      const themeColors = {
+        'blue': '#3498db',
+        'purple': '#9C27B0',
+        'green': '#4CAF50',
+        'orange': '#FF9800',
+        'red': '#F44336',
+        'teal': '#009688'
+      };
+      return themeColors[theme] || '#3498db';
+    }
+    
+    // 夜间模式切换
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    darkModeToggle.addEventListener('change', function() {
+      toggleDarkMode(this.checked);
+      saveThemeSettings();
+    });
+    
+    // 保存主题设置
+    function saveThemeSettings() {
+      // 获取当前激活的主题颜色
+      let activeTheme = 'blue';
+      document.querySelectorAll('.color-theme').forEach(theme => {
+        if (theme.classList.contains('active')) {
+          activeTheme = theme.getAttribute('data-theme');
+        }
+      });
+      
+      // 获取夜间模式状态
+      const isDarkMode = document.getElementById('dark-mode-toggle').checked;
+      
+      // 获取字体大小
+      const fontSize = document.querySelector('.font-size-value').textContent;
+      
+      // 获取字体样式
+      let fontFamily = 'PingFang SC';
+      document.querySelectorAll('.font-settings .custom-option').forEach(option => {
+        if (option.classList.contains('active')) {
+          fontFamily = option.style.fontFamily;
+        }
+      });
+      
+      // 获取界面动效设置
+      const animationToggles = document.querySelectorAll('.theme-section:nth-child(3) .display-mode .mode-toggle input');
+      const effectSettings = {
+        animation: animationToggles[0].checked,
+        particles: animationToggles[1].checked,
+        performanceMode: animationToggles[2].checked
+      };
+      
+      // 创建设置对象
+      const settings = {
+        theme: activeTheme,
+        darkMode: isDarkMode,
+        fontSize: fontSize,
+        fontFamily: fontFamily,
+        effects: effectSettings
+      };
+      
+      // 保存到localStorage
+      localStorage.setItem('themeSettings', JSON.stringify(settings));
+      
+      // 同步到profile页面的主题选择器
+      syncWithProfilePage(activeTheme);
+    }
+    
+    // 同步到个人页面的主题选择器
+    function syncWithProfilePage(themeName) {
+      // 在本地存储中保存当前主题，让个人页面能够读取
+      localStorage.setItem('currentTheme', themeName);
+    }
+    
+    // 加载保存的主题设置
+    function loadThemeSettings() {
+      const savedSettings = localStorage.getItem('themeSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        
+        // 应用主题颜色
+        if (settings.theme) {
+          // 找到对应主题并激活
+          document.querySelectorAll('.color-theme').forEach(theme => {
+            if (theme.getAttribute('data-theme') === settings.theme) {
+              theme.classList.add('active');
+            } else {
+              theme.classList.remove('active');
+            }
+          });
+          
+          // 应用主题颜色
+          applyThemeColor(settings.theme);
+        }
+        
+        // 应用夜间模式
+        if (settings.darkMode !== undefined) {
+          document.getElementById('dark-mode-toggle').checked = settings.darkMode;
+        }
+        
+        // 应用字体大小
+        if (settings.fontSize) {
+          document.querySelector('.font-size-value').textContent = settings.fontSize;
+          // 计算滑块位置
+          const sizeValue = parseInt(settings.fontSize);
+          const position = (sizeValue - 12) / 8; // 12-20px范围
+          document.getElementById('font-size-handle').style.left = `${position * 100}%`;
+        }
+        
+        // 应用字体样式
+        if (settings.fontFamily) {
+          document.querySelectorAll('.font-settings .custom-option').forEach(option => {
+            if (option.style.fontFamily.includes(settings.fontFamily)) {
+              option.classList.add('active');
+            } else {
+              option.classList.remove('active');
+            }
+          });
+        }
+        
+        // 应用界面动效设置
+        if (settings.effects) {
+          const animationToggles = document.querySelectorAll('.theme-section:nth-child(3) .display-mode .mode-toggle input');
+          if (animationToggles.length >= 3) {
+            animationToggles[0].checked = settings.effects.animation;
+            animationToggles[1].checked = settings.effects.particles;
+            animationToggles[2].checked = settings.effects.performanceMode;
+          }
+        }
+      }
+    }
+    
+    // 显示提示消息
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary-color);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      // 显示然后淡出
+      setTimeout(() => {
+        toast.style.opacity = '1';
+      }, 10);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 2000);
+    }
+    
+    // 字体大小调整模拟
+    const fontSizeHandle = document.getElementById('font-size-handle');
+    const fontSizeValue = document.querySelector('.font-size-value');
+    let isDragging = false;
+    
+    fontSizeHandle.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      e.preventDefault();
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      
+      const slider = document.querySelector('.font-size-slider');
+      const rect = slider.getBoundingClientRect();
+      let position = (e.clientX - rect.left) / rect.width;
+      
+      // 限制在0-1范围内
+      position = Math.max(0, Math.min(1, position));
+      
+      // 更新滑块位置
+      fontSizeHandle.style.left = `${position * 100}%`;
+      
+      // 计算字体大小 (12px - 20px)
+      const fontSize = Math.floor(12 + position * 8);
+      fontSizeValue.textContent = `${fontSize}px`;
+      
+      // 动态应用字体大小
+      applyFontSize(fontSize);
+    });
+    
+    document.addEventListener('mouseup', function() {
+      if (isDragging) {
+        isDragging = false;
+        saveThemeSettings();
+      }
+    });
+    
+    // 应用字体大小
+    function applyFontSize(size) {
+      document.documentElement.style.setProperty('--font-size', `${size}px`);
+    }
+    
+    // 添加触摸支持
+    fontSizeHandle.addEventListener('touchstart', function(e) {
+      isDragging = true;
+      e.preventDefault();
+    });
+    
+    document.addEventListener('touchmove', function(e) {
+      if (!isDragging) return;
+      
+      const slider = document.querySelector('.font-size-slider');
+      const rect = slider.getBoundingClientRect();
+      let position = (e.touches[0].clientX - rect.left) / rect.width;
+      
+      // 限制在0-1范围内
+      position = Math.max(0, Math.min(1, position));
+      
+      // 更新滑块位置
+      fontSizeHandle.style.left = `${position * 100}%`;
+      
+      // 计算字体大小 (12px - 20px)
+      const fontSize = Math.floor(12 + position * 8);
+      fontSizeValue.textContent = `${fontSize}px`;
+      
+      // 动态应用字体大小
+      applyFontSize(fontSize);
+    });
+    
+    document.addEventListener('touchend', function() {
+      if (isDragging) {
+        isDragging = false;
+        saveThemeSettings();
+      }
+    });
+    
+    // 字体样式选择
+    document.querySelectorAll('.custom-options .custom-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const parent = this.parentElement;
+        parent.querySelectorAll('.custom-option').forEach(opt => {
+          opt.classList.remove('active');
+        });
+        this.classList.add('active');
+        
+        // 应用字体样式
+        const fontFamily = this.style.fontFamily;
+        document.documentElement.style.setProperty('--main-font', fontFamily);
+        
+        // 保存设置
+        saveThemeSettings();
+      });
+    });
+    
+    // 界面动效设置改变时保存
+    document.querySelectorAll('.theme-section:nth-child(3) .display-mode .mode-toggle input').forEach(toggle => {
+      toggle.addEventListener('change', saveThemeSettings);
+    });
+    
+    // 恢复默认设置
+    document.querySelector('button').addEventListener('click', function() {
+      if (confirm('确定要恢复所有默认设置吗？')) {
+        // 重置所有设置
+        colorThemes.forEach(t => t.classList.remove('active'));
+        document.querySelector('.theme-blue').classList.add('active');
+        
+        // 重置开关
+        document.querySelectorAll('.mode-toggle input').forEach(toggle => {
+          toggle.checked = true;
+        });
+        document.getElementById('dark-mode-toggle').checked = false;
+        
+        // 重置字体大小滑块
+        fontSizeHandle.style.left = '60%';
+        fontSizeValue.textContent = '16px';
+        
+        // 重置字体样式
+        const fontOptions = document.querySelectorAll('.font-settings .custom-option');
+        fontOptions.forEach(opt => opt.classList.remove('active'));
+        fontOptions[0].classList.add('active');
+        
+        // 应用默认主题
+        applyThemeColor('blue');
+        toggleDarkMode(false);
+        applyFontSize(16);
+        document.documentElement.style.setProperty('--main-font', "'PingFang SC', 'Helvetica Neue', Arial, sans-serif");
+        
+        // 保存默认设置
+        saveThemeSettings();
+        
+        // 提示用户
+        showToast('已恢复默认设置');
+      }
+    });
+  </script>
+</body>
+</html> 

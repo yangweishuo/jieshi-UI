@@ -1107,7 +1107,7 @@
                 <a href="creation-center.html" class="menu-item" style="text-decoration: none; color: inherit;">
                   <div class="menu-icon">
                     <i class="ri-edit-2-line"></i>
-                  </div>
+                </div>
                   <div class="menu-content">
                     <div class="menu-title">创作中心</div>
                     <div class="menu-desc">我的文章、草稿箱、创作统计</div>
@@ -1117,7 +1117,7 @@
                   </div>
                 </a>
                 
-                <a href="message-center.html" class="menu-item" style="text-decoration: none; color: inherit;">
+                <a href="notification-settings.html" class="menu-item" style="text-decoration: none; color: inherit;">
                   <div class="menu-icon">
                     <i class="ri-notification-3-line"></i>
                     <span class="notification-badge">5</span>
@@ -1237,6 +1237,9 @@
                 <div class="theme-option theme-orange"></div>
                 <div class="theme-option theme-pink"></div>
               </div>
+              <a href="theme-settings.html" style="display: block; text-align: right; font-size: 12px; color: var(--primary-color); margin-top: 5px; text-decoration: none;">
+                更多主题设置 <i class="ri-arrow-right-s-line"></i>
+              </a>
               
               <div class="menu-item" style="margin-top: 10px;">
                 <div class="menu-icon">
@@ -1299,7 +1302,147 @@
     // 页面加载完成时应用过渡动画
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelector('.profile-screen').classList.add('page-transition');
+      
+      // 应用已保存的主题设置
+      applySavedThemeSettings();
     });
+    
+    // 应用保存的主题设置
+    function applySavedThemeSettings() {
+      // 从localStorage获取主题设置
+      const savedSettings = localStorage.getItem('themeSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        
+        // 应用主题颜色
+        if (settings.theme) {
+          // 更新主题选择器的选中状态
+          document.querySelectorAll('.theme-option').forEach(option => {
+            option.classList.remove('selected');
+            if (option.classList.contains(`theme-${settings.theme}`)) {
+              option.classList.add('selected');
+            }
+          });
+          
+          // 应用主题颜色到CSS变量
+          applyThemeColor(settings.theme);
+        }
+        
+        // 应用夜间模式
+        if (settings.darkMode !== undefined) {
+          toggleDarkMode(settings.darkMode);
+        }
+        
+        // 应用字体大小
+        if (settings.fontSize) {
+          document.documentElement.style.setProperty('--font-size', settings.fontSize);
+        }
+        
+        // 应用字体样式
+        if (settings.fontFamily) {
+          document.documentElement.style.setProperty('--main-font', settings.fontFamily);
+        }
+      } else {
+        // 如果没有保存的设置，检查是否有单独保存的主题
+        const currentTheme = localStorage.getItem('currentTheme');
+        if (currentTheme) {
+          // 更新主题选择器的选中状态
+          document.querySelectorAll('.theme-option').forEach(option => {
+            option.classList.remove('selected');
+            if (option.classList.contains(`theme-${currentTheme}`)) {
+              option.classList.add('selected');
+            }
+          });
+          
+          // 应用主题颜色
+          applyThemeColor(currentTheme);
+        }
+      }
+    }
+    
+    // 应用主题颜色
+    function applyThemeColor(themeName) {
+      const themeColor = getThemeColor(themeName);
+      document.documentElement.style.setProperty('--primary-color', themeColor);
+      
+      // 更新次要颜色和渐变
+      updateSecondaryColors(themeName);
+    }
+    
+    // 获取对应主题的颜色
+    function getThemeColor(theme) {
+      const themeColors = {
+        'blue': '#3498db',
+        'purple': '#9C27B0',
+        'green': '#4CAF50',
+        'orange': '#FF9800',
+        'red': '#F44336',
+        'teal': '#009688'
+      };
+      return themeColors[theme] || '#3498db';
+    }
+    
+    // 更新次要颜色和渐变
+    function updateSecondaryColors(themeName) {
+      // 次要颜色和渐变根据主题颜色进行调整
+      const secondaryColors = {
+        'blue': {
+          secondary: '#00B0FF',
+          accent: '#7C4DFF',
+          gradient: 'linear-gradient(135deg, #3498db, #00B0FF)'
+        },
+        'purple': {
+          secondary: '#9C27B0',
+          accent: '#E040FB',
+          gradient: 'linear-gradient(135deg, #9C27B0, #7C4DFF)'
+        },
+        'green': {
+          secondary: '#4CAF50',
+          accent: '#8BC34A',
+          gradient: 'linear-gradient(135deg, #4CAF50, #8BC34A)'
+        },
+        'orange': {
+          secondary: '#FF9800',
+          accent: '#FFC107',
+          gradient: 'linear-gradient(135deg, #FF9800, #FFC107)'
+        },
+        'red': {
+          secondary: '#F44336',
+          accent: '#FF5252',
+          gradient: 'linear-gradient(135deg, #F44336, #FF5252)'
+        },
+        'teal': {
+          secondary: '#009688',
+          accent: '#4DB6AC',
+          gradient: 'linear-gradient(135deg, #009688, #4DB6AC)'
+        }
+      };
+      
+      const colors = secondaryColors[themeName] || secondaryColors['blue'];
+      
+      document.documentElement.style.setProperty('--secondary-color', colors.secondary);
+      document.documentElement.style.setProperty('--accent-color', colors.accent);
+      document.documentElement.style.setProperty('--primary-gradient', colors.gradient);
+      
+      // 更新渐变背景
+      const profileHeader = document.querySelector('.profile-header');
+      if (profileHeader) {
+        profileHeader.style.background = `linear-gradient(135deg, rgba(${getColorRGB(themeColor)}, 0.95), rgba(${getColorRGB(colors.secondary)}, 0.95))`;
+      }
+    }
+    
+    // 将HEX颜色转换为RGB
+    function getColorRGB(hex) {
+      // 移除#号
+      hex = hex.replace('#', '');
+      
+      // 解析RGB值
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      
+      return `${r}, ${g}, ${b}`;
+    }
     
     // 设置菜单项点击事件
     document.querySelectorAll('.menu-item').forEach(item => {
@@ -1422,8 +1565,36 @@
           opt.classList.remove('selected');
         });
         this.classList.add('selected');
+        
+        // 获取选中的主题
+        let themeName = 'blue';
+        if (this.classList.contains('theme-blue')) themeName = 'blue';
+        else if (this.classList.contains('theme-green')) themeName = 'green';
+        else if (this.classList.contains('theme-purple')) themeName = 'purple';
+        else if (this.classList.contains('theme-orange')) themeName = 'orange';
+        else if (this.classList.contains('theme-pink')) themeName = 'red';
+        
+        // 应用主题
+        applyThemeColor(themeName);
+        
+        // 保存到localStorage
+        saveThemeSelection(themeName);
       });
     });
+    
+    // 保存主题选择
+    function saveThemeSelection(themeName) {
+      // 如果已经有完整的主题设置，则更新它
+      const savedSettings = localStorage.getItem('themeSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        settings.theme = themeName;
+        localStorage.setItem('themeSettings', JSON.stringify(settings));
+      } else {
+        // 否则只保存主题名称
+        localStorage.setItem('currentTheme', themeName);
+      }
+    }
   </script>
 </body>
 </html> 

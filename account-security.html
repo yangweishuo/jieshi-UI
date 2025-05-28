@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视 - 账户与安全</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .account-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(30, 136, 229, 0.3) transparent;
+    }
+    
+    .account-screen::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .account-screen::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .account-screen::-webkit-scrollbar-thumb {
+      background-color: rgba(30, 136, 229, 0.3);
+      border-radius: 4px;
+    }
+    
+    .account-content {
+      padding-bottom: 20px;
+      flex: 1;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    
+    /* 顶部标题栏 */
+    .account-header {
+      background: linear-gradient(135deg, rgba(30, 136, 229, 0.95), rgba(124, 77, 255, 0.95));
+      color: white;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      height: 60px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 5px 15px rgba(30, 136, 229, 0.2);
+    }
+    
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.15);
+      margin-right: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .back-btn i {
+      font-size: 22px;
+      color: white;
+    }
+    
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      flex: 1;
+    }
+    
+    /* 安全概览卡片 */
+    .security-overview {
+      background: white;
+      border-radius: 18px;
+      margin: 20px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      position: relative;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .security-score {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .score-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: conic-gradient(#1E88E5 0%, #1E88E5 85%, #f3f3f3 85%, #f3f3f3 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin-right: 20px;
+    }
+    
+    .score-circle::before {
+      content: '';
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      background-color: white;
+      border-radius: 50%;
+    }
+    
+    .score-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1E88E5;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .score-info {
+      flex: 1;
+    }
+    
+    .score-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .score-desc {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.4;
+    }
+    
+    /* 菜单部分 */
+    .security-section {
+      background: white;
+      border-radius: 18px;
+      margin: 20px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-title i {
+      font-size: 22px;
+      margin-right: 10px;
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+    
+    .menu-item:hover {
+      background-color: rgba(30, 136, 229, 0.05);
+      transform: translateX(5px);
+      border-radius: 10px;
+      padding-left: 10px;
+    }
+    
+    .menu-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(30, 136, 229, 0.1), rgba(124, 77, 255, 0.1));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    .menu-item:hover .menu-icon {
+      transform: scale(1.1);
+      background: linear-gradient(135deg, rgba(30, 136, 229, 0.2), rgba(124, 77, 255, 0.2));
+    }
+    
+    .menu-icon i {
+      font-size: 22px;
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .menu-content {
+      flex: 1;
+    }
+    
+    .menu-title {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 3px;
+      font-weight: 500;
+    }
+    
+    .menu-desc {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .menu-status {
+      display: flex;
+      align-items: center;
+      margin-left: 15px;
+    }
+    
+    .status-text {
+      font-size: 14px;
+      color: #1E88E5;
+      margin-right: 5px;
+    }
+    
+    .status-icon {
+      color: #1E88E5;
+      font-size: 20px;
+    }
+    
+    /* 注销账号区域 */
+    .danger-zone {
+      background: white;
+      border-radius: 18px;
+      margin: 20px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 82, 82, 0.2);
+    }
+    
+    .danger-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #FF5252;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 82, 82, 0.1);
+      display: flex;
+      align-items: center;
+    }
+    
+    .danger-title i {
+      font-size: 22px;
+      margin-right: 10px;
+      color: #FF5252;
+    }
+    
+    .danger-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .danger-item:hover {
+      background-color: rgba(255, 82, 82, 0.05);
+      transform: translateX(5px);
+      border-radius: 10px;
+      padding-left: 10px;
+    }
+    
+    .danger-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      background: rgba(255, 82, 82, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 15px;
+    }
+    
+    .danger-icon i {
+      font-size: 22px;
+      color: #FF5252;
+    }
+    
+    .danger-desc {
+      font-size: 12px;
+      color: #666;
+      margin-top: 3px;
+    }
+    
+    /* 页面切换动画 */
+    .account-content {
+      animation: pageTransition 0.5s ease-in-out;
+    }
+    
+    @keyframes pageTransition {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* 设备管理样式 */
+    .device-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .device-item:last-child {
+      border-bottom: none;
+    }
+    
+    .device-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(30, 136, 229, 0.1), rgba(124, 77, 255, 0.1));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 15px;
+    }
+    
+    .device-icon i {
+      font-size: 24px;
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .device-info {
+      flex: 1;
+    }
+    
+    .device-name {
+      font-size: 16px;
+      color: #333;
+      font-weight: 500;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .current-device {
+      font-size: 12px;
+      background-color: #1E88E5;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 10px;
+    }
+    
+    .device-details {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .device-action {
+      color: #FF5252;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .device-action:hover {
+      background-color: rgba(255, 82, 82, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="account-screen">
+          <!-- 顶部标题栏 -->
+          <div class="account-header">
+            <a href="profile.html" class="back-btn">
+              <i class="ri-arrow-left-line"></i>
+            </a>
+            <div class="header-title">账户与安全</div>
+          </div>
+          
+          <div class="account-content">
+            <!-- 安全概览卡片 -->
+            <div class="security-overview">
+              <div class="security-score">
+                <div class="score-circle">
+                  <div class="score-value">85</div>
+                </div>
+                <div class="score-info">
+                  <div class="score-label">账户安全评分</div>
+                  <div class="score-desc">您的账户安全状况良好，建议开启双重认证以进一步提升安全性。</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 账户安全设置 -->
+            <div class="security-section">
+              <div class="section-title">
+                <i class="ri-shield-keyhole-line"></i>
+                账户安全
+              </div>
+              
+              <div class="menu-item">
+                <div class="menu-icon">
+                  <i class="ri-lock-password-line"></i>
+                </div>
+                <div class="menu-content">
+                  <div class="menu-title">修改密码</div>
+                  <div class="menu-desc">定期更换密码以保障账户安全</div>
+                </div>
+                <div class="menu-status">
+                  <i class="ri-arrow-right-s-line status-icon"></i>
+                </div>
+              </div>
+              
+              <div class="menu-item">
+                <div class="menu-icon">
+                  <i class="ri-smartphone-line"></i>
+                </div>
+                <div class="menu-content">
+                  <div class="menu-title">手机号验证</div>
+                  <div class="menu-desc">用于账户找回和安全验证</div>
+                </div>
+                <div class="menu-status">
+                  <div class="status-text">已验证</div>
+                  <i class="ri-check-line status-icon"></i>
+                </div>
+              </div>
+              
+              <div class="menu-item">
+                <div class="menu-icon">
+                  <i class="ri-mail-check-line"></i>
+                </div>
+                <div class="menu-content">
+                  <div class="menu-title">邮箱验证</div>
+                  <div class="menu-desc">用于接收账户通知和找回密码</div>
+                </div>
+                <div class="menu-status">
+                  <div class="status-text">未验证</div>
+                  <i class="ri-close-line status-icon" style="color: #FF5252;"></i>
+                </div>
+              </div>
+              
+              <div class="menu-item">
+                <div class="menu-icon">
+                  <i class="ri-fingerprint-line"></i>
+                </div>
+                <div class="menu-content">
+                  <div class="menu-title">双重认证</div>
+                  <div class="menu-desc">登录时需要额外验证以提高安全性</div>
+                </div>
+                <div class="menu-status">
+                  <div class="status-text">未开启</div>
+                  <i class="ri-toggle-line status-icon" style="color: #999;"></i>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 登录设备管理 -->
+            <div class="security-section">
+              <div class="section-title">
+                <i class="ri-computer-line"></i>
+                登录设备管理
+              </div>
+              
+              <div class="device-item">
+                <div class="device-icon">
+                  <i class="ri-smartphone-line"></i>
+                </div>
+                <div class="device-info">
+                  <div class="device-name">
+                    iPhone 13 <span class="current-device">当前设备</span>
+                  </div>
+                  <div class="device-details">上海市 · 最近登录：今天 14:30</div>
+                </div>
+              </div>
+              
+              <div class="device-item">
+                <div class="device-icon">
+                  <i class="ri-macbook-line"></i>
+                </div>
+                <div class="device-info">
+                  <div class="device-name">MacBook Pro</div>
+                  <div class="device-details">北京市 · 最近登录：昨天 20:15</div>
+                </div>
+                <div class="device-action">
+                  <i class="ri-delete-bin-line"></i> 移除
+                </div>
+              </div>
+              
+              <div class="device-item">
+                <div class="device-icon">
+                  <i class="ri-windows-line"></i>
+                </div>
+                <div class="device-info">
+                  <div class="device-name">Windows PC</div>
+                  <div class="device-details">广州市 · 最近登录：3天前</div>
+                </div>
+                <div class="device-action">
+                  <i class="ri-delete-bin-line"></i> 移除
+                </div>
+              </div>
+            </div>
+            
+            <!-- 隐私设置 -->
+            <div class="security-section">
+              <div class="section-title">
+                <i class="ri-eye-off-line"></i>
+                隐私设置
+              </div>
+              
+              <div class="menu-item">
+                <div class="menu-icon">
+                  <i class="ri-user-shared-line"></i>
+                </div>
+                <div class="menu-content">
+                  <div class="menu-title">个人资料可见性</div>
+                  <div class="menu-desc">设置谁可以查看您的个人资料</div>
+                </div>
+                <div class="menu-status">
+                  <div class="status-text">仅好友</div>
+                  <i class="ri-arrow-right-s-line status-icon"></i>
+                </div>
+              </div>
+              
+              <div class="menu-item">
+                <div class="menu-icon">
+                  <i class="ri-history-line"></i>
+                </div>
+                <div class="menu-content">
+                  <div class="menu-title">使用记录可见性</div>
+                  <div class="menu-desc">设置谁可以查看您的使用统计</div>
+                </div>
+                <div class="menu-status">
+                  <div class="status-text">仅自己</div>
+                  <i class="ri-arrow-right-s-line status-icon"></i>
+                </div>
+              </div>
+              
+              <div class="menu-item">
+                <div class="menu-icon">
+                  <i class="ri-book-read-line"></i>
+                </div>
+                <div class="menu-content">
+                  <div class="menu-title">数据使用协议</div>
+                  <div class="menu-desc">查看您的数据如何被使用</div>
+                </div>
+                <div class="menu-status">
+                  <i class="ri-arrow-right-s-line status-icon"></i>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 危险区域 -->
+            <div class="danger-zone">
+              <div class="danger-title">
+                <i class="ri-error-warning-line"></i>
+                危险操作
+              </div>
+              
+              <div class="danger-item">
+                <div class="danger-icon">
+                  <i class="ri-delete-bin-6-line"></i>
+                </div>
+                <div class="menu-content">
+                  <div class="menu-title">清除所有数据</div>
+                  <div class="danger-desc">删除您的所有使用记录和统计数据</div>
+                </div>
+              </div>
+              
+              <div class="danger-item">
+                <div class="danger-icon">
+                  <i class="ri-user-unfollow-line"></i>
+                </div>
+                <div class="menu-content">
+                  <div class="menu-title">注销账号</div>
+                  <div class="danger-desc">永久删除您的账号和所有相关数据</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // 修改密码点击事件
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', function() {
+        // 这里可以添加弹窗或页面跳转逻辑
+        if (this.querySelector('.menu-title').textContent === '修改密码') {
+          alert('打开修改密码窗口');
+        }
+      });
+    });
+    
+    // 危险操作点击事件
+    document.querySelectorAll('.danger-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const title = this.querySelector('.menu-title').textContent;
+        if (title === '清除所有数据') {
+          const confirm = window.confirm('确定要清除所有数据吗？此操作无法撤销。');
+          if (confirm) {
+            alert('数据已清除');
+          }
+        } else if (title === '注销账号') {
+          const confirm = window.confirm('确定要注销账号吗？所有数据将被永久删除，此操作无法撤销。');
+          if (confirm) {
+            const secondConfirm = window.confirm('再次确认：您确定要永久注销您的账号吗？');
+            if (secondConfirm) {
+              alert('账号已注销');
+              window.location.href = 'login.html';
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html> 
