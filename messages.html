@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>消息中心 - 戒视APP</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --primary-color: #2ECC71;
+      --secondary-color: #1E88E5;
+      --gradient: linear-gradient(135deg, #2ECC71, #1E88E5);
+      --light-gradient: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(30, 136, 229, 0.1));
+      --text-color: #333;
+      --text-secondary: #666;
+      --background-color: #f5f5f5;
+      --card-bg: #ffffff;
+      --border-radius: 15px;
+      --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      --main-font: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--main-font);
+      background-color: var(--background-color);
+      color: var(--text-color);
+    }
+
+    .messages-screen {
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(30, 136, 229, 0.3) transparent;
+    }
+    
+    .messages-screen::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .messages-screen::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .messages-screen::-webkit-scrollbar-thumb {
+      background-color: rgba(30, 136, 229, 0.3);
+      border-radius: 4px;
+    }
+    
+    .messages-content {
+      padding-bottom: 20px; /* 移除底部导航的内边距，改为更合理的值 */
+      flex: 1;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      position: relative;
+    }
+    
+    /* 引入滚动阴影效果 */
+    .messages-screen::after {
+      content: '';
+      position: absolute;
+      bottom: 0; /* 由于移除了底部导航，这里调整阴影位置 */
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: linear-gradient(to top, rgba(248, 249, 250, 0.9), transparent);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* 顶部标题栏 - 与账户安全页面一致 */
+    .messages-header {
+      background: linear-gradient(135deg, rgba(30, 136, 229, 0.95), rgba(124, 77, 255, 0.95));
+      color: white;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      height: 60px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 5px 15px rgba(30, 136, 229, 0.2);
+      margin-bottom: 20px;
+    }
+    
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.15);
+      margin-right: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .back-btn i {
+      font-size: 22px;
+      color: white;
+    }
+    
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      flex: 1;
+    }
+
+    .message-card {
+      background-color: var(--card-bg);
+      border-radius: 18px;
+      padding: 20px;
+      margin: 0 20px 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+    }
+
+    .card-title i {
+      font-size: 22px;
+      margin-right: 10px;
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 26px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .switch-slider {
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+    }
+
+    input:checked + .switch-slider:before {
+      transform: translateX(26px);
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-item:hover {
+      background-color: rgba(30, 136, 229, 0.05);
+      transform: translateX(5px);
+      border-radius: 10px;
+      padding-left: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .setting-label {
+      display: flex;
+      align-items: center;
+    }
+
+    .setting-label i {
+      margin-right: 10px;
+      font-size: 20px;
+      color: var(--secondary-color);
+    }
+
+    .setting-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .setting-name {
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+
+    .setting-description {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .frequency-selector {
+      display: flex;
+      margin-top: 15px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .frequency-option {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .frequency-option.active {
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      color: white;
+    }
+
+    .message-preview {
+      background-color: var(--card-bg);
+      border-radius: 18px;
+      padding: 15px;
+      margin: 0 20px 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid;
+      border-image: linear-gradient(to bottom, #1E88E5, #7C4DFF) 1;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .preview-title {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .preview-time {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .preview-content {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    .notification-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      color: white;
+      border-radius: 20px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .channel-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .channel-option {
+      flex: 1 0 calc(50% - 10px);
+      min-width: calc(50% - 10px);
+      background-color: rgba(0, 0, 0, 0.05);
+      border-radius: var(--border-radius);
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .channel-option.active {
+      background: linear-gradient(135deg, rgba(30, 136, 229, 0.1), rgba(124, 77, 255, 0.1));
+    }
+
+    .channel-option i {
+      margin-right: 8px;
+      font-size: 18px;
+      color: var(--secondary-color);
+    }
+
+    .channel-option.active i {
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-divider {
+      display: flex;
+      align-items: center;
+      margin: 25px 0 15px;
+    }
+
+    .divider-line {
+      flex-grow: 1;
+      height: 1px;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .divider-text {
+      padding: 0 15px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .action-button {
+      display: block;
+      width: calc(100% - 40px);
+      margin: 0 20px 20px;
+      padding: 15px 0;
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      color: white;
+      border: none;
+      border-radius: 18px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3);
+      transition: all 0.3s;
+    }
+
+    .action-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(30, 136, 229, 0.4);
+    }
+
+    .message-counter {
+      display: flex;
+      justify-content: space-between;
+      background-color: var(--card-bg);
+      border-radius: 18px;
+      padding: 15px;
+      margin: 0 20px 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .counter-item {
+      text-align: center;
+      flex: 1;
+    }
+
+    .counter-value {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      background: linear-gradient(135deg, #1E88E5, #7C4DFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .counter-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .message-history-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 20px 20px;
+      padding: 12px 0;
+      background-color: rgba(0, 0, 0, 0.05);
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .message-history-button:hover {
+      background-color: rgba(30, 136, 229, 0.1);
+      transform: translateY(-3px);
+    }
+
+    .message-history-button i {
+      margin-right: 8px;
+      font-size: 18px;
+      color: #1E88E5;
+    }
+    
+    /* 页面切换动画 */
+    .page-transition {
+      animation: pageTransition 0.5s ease-in-out;
+    }
+    
+    @keyframes pageTransition {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 将返回按钮移动到框架外 -->
+  <a href="index.html" class="back-button" title="返回预览页" style="position:fixed; top:20px; left:20px; z-index:1000;">
+    <i class="ri-arrow-left-line"></i>
+  </a>
+  
+  <div class="device-container">
+    <div class="device">
+      <div class="device-screen">
+        <div class="messages-screen">
+          <div class="messages-content">
+            <!-- 消息中心内容 -->
+            <div class="messages-header">
+              <div class="back-btn" onclick="window.location.href='profile.html'">
+                <i class="ri-arrow-left-line"></i>
+              </div>
+              <div class="header-title">消息中心</div>
+            </div>
+
+            <div class="message-counter">
+              <div class="counter-item">
+                <div class="counter-value">12</div>
+                <div class="counter-label">未读消息</div>
+              </div>
+              <div class="counter-item">
+                <div class="counter-value">36</div>
+                <div class="counter-label">互动消息</div>
+              </div>
+              <div class="counter-item">
+                <div class="counter-value">8</div>
+                <div class="counter-label">系统通知</div>
+              </div>
+            </div>
+
+            <div class="message-card">
+              <h2 class="card-title">
+                <i class="ri-notification-4-line"></i>
+                通知设置
+              </h2>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-notification-badge-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">推送通知</div>
+                    <div class="setting-description">接收所有应用消息的推送通知</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-vibrate-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">震动提醒</div>
+                    <div class="setting-description">收到消息时震动提醒</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-volume-up-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">声音提醒</div>
+                    <div class="setting-description">收到消息时发出声音提醒</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="message-card">
+              <h2 class="card-title">
+                <i class="ri-group-line"></i>
+                社交互动消息
+              </h2>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-user-follow-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">好友请求</div>
+                    <div class="setting-description">接收好友添加和邀请消息</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-message-3-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">互动评论</div>
+                    <div class="setting-description">接收动态评论和回复消息</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-heart-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">点赞通知</div>
+                    <div class="setting-description">接收点赞和互动鼓励</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="section-divider">
+                <div class="divider-line"></div>
+                <div class="divider-text">消息接收频率</div>
+                <div class="divider-line"></div>
+              </div>
+
+              <div class="frequency-selector">
+                <div class="frequency-option active">实时</div>
+                <div class="frequency-option">每小时</div>
+                <div class="frequency-option">每日汇总</div>
+              </div>
+            </div>
+
+            <div class="message-card">
+              <h2 class="card-title">
+                <i class="ri-medal-line"></i>
+                成就与提醒
+              </h2>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-award-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">成就解锁</div>
+                    <div class="setting-description">获得新成就和徽章时通知</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-calendar-check-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">打卡提醒</div>
+                    <div class="setting-description">每日打卡和戒断提醒</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-timer-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">时间限制警告</div>
+                    <div class="setting-description">短视频使用时间超过设定值警告</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="message-card">
+              <h2 class="card-title">
+                <i class="ri-broadcast-line"></i>
+                系统消息
+              </h2>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-information-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">系统公告</div>
+                    <div class="setting-description">接收系统更新和公告消息</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i class="ri-lightbulb-line"></i>
+                  <div class="setting-text">
+                    <div class="setting-name">AI建议</div>
+                    <div class="setting-description">接收AI助手提供的建议和提醒</div>
+                  </div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="section-divider">
+                <div class="divider-line"></div>
+                <div class="divider-text">通知接收渠道</div>
+                <div class="divider-line"></div>
+              </div>
+
+              <div class="channel-selector">
+                <div class="channel-option active">
+                  <i class="ri-notification-4-line"></i>
+                  <span>应用内</span>
+                </div>
+                <div class="channel-option active">
+                  <i class="ri-smartphone-line"></i>
+                  <span>手机推送</span>
+                </div>
+                <div class="channel-option">
+                  <i class="ri-mail-line"></i>
+                  <span>电子邮件</span>
+                </div>
+                <div class="channel-option">
+                  <i class="ri-message-2-line"></i>
+                  <span>短信</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="message-preview">
+              <div class="preview-header">
+                <div class="preview-title">消息预览 <span class="notification-badge">新</span></div>
+                <div class="preview-time">刚刚</div>
+              </div>
+              <div class="preview-content">
+                恭喜你坚持戒断短视频已达7天！成功解锁"初心者"勋章，点击查看详情。
+              </div>
+            </div>
+
+            <div class="message-history-button">
+              <i class="ri-history-line"></i>
+              <span>查看历史消息记录</span>
+            </div>
+
+            <button class="action-button">保存设置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // 页面加载完成时应用过渡动画
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('.messages-screen').classList.add('page-transition');
+    });
+    
+    // 频率选择器
+    const frequencyOptions = document.querySelectorAll('.frequency-option');
+    frequencyOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        frequencyOptions.forEach(opt => opt.classList.remove('active'));
+        option.classList.add('active');
+      });
+    });
+
+    // 通知渠道选择器
+    const channelOptions = document.querySelectorAll('.channel-option');
+    channelOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        option.classList.toggle('active');
+      });
+    });
+
+    // 返回按钮功能
+    document.querySelector('.back-btn').addEventListener('click', () => {
+      window.location.href = 'profile.html';
+    });
+    
+    // 初始化页面，从localStorage获取消息数据
+    document.addEventListener('DOMContentLoaded', function() {
+      // 尝试从localStorage中获取已保存的消息数据
+      const savedMessages = localStorage.getItem('jieshiAppMessages');
+      
+      if (savedMessages) {
+        const messageData = JSON.parse(savedMessages);
+        
+        // 更新消息计数器
+        if (messageData.counters) {
+          const counterValues = document.querySelectorAll('.counter-value');
+          if (messageData.counters.unread && counterValues[0]) {
+            counterValues[0].textContent = messageData.counters.unread;
+          }
+          if (messageData.counters.interaction && counterValues[1]) {
+            counterValues[1].textContent = messageData.counters.interaction;
+          }
+          if (messageData.counters.system && counterValues[2]) {
+            counterValues[2].textContent = messageData.counters.system;
+          }
+        }
+        
+        // 更新消息预览(如果有的话)
+        if (messageData.latestMessage) {
+          const previewTitle = document.querySelector('.preview-title');
+          const previewTime = document.querySelector('.preview-time');
+          const previewContent = document.querySelector('.preview-content');
+          
+          if (previewTitle && messageData.latestMessage.title) {
+            previewTitle.innerHTML = messageData.latestMessage.title;
+            if (messageData.latestMessage.isNew) {
+              previewTitle.innerHTML += ' <span class="notification-badge">新</span>';
+            }
+          }
+          
+          if (previewTime && messageData.latestMessage.time) {
+            previewTime.textContent = messageData.latestMessage.time;
+          }
+          
+          if (previewContent && messageData.latestMessage.content) {
+            previewContent.textContent = messageData.latestMessage.content;
+          }
+        }
+      } else {
+        // 如果没有保存的数据，使用默认数据并保存
+        saveDefaultMessageData();
+      }
+    });
+    
+    // 保存按钮点击事件
+    document.querySelector('.action-button').addEventListener('click', function() {
+      // 收集当前设置状态
+      const settings = {
+        notifications: {
+          push: document.querySelector('.setting-item:nth-child(1) input').checked,
+          vibration: document.querySelector('.setting-item:nth-child(2) input').checked,
+          sound: document.querySelector('.setting-item:nth-child(3) input').checked
+        },
+        social: {
+          friendRequests: document.querySelector('.message-card:nth-child(3) .setting-item:nth-child(1) input').checked,
+          comments: document.querySelector('.message-card:nth-child(3) .setting-item:nth-child(2) input').checked,
+          likes: document.querySelector('.message-card:nth-child(3) .setting-item:nth-child(3) input').checked
+        },
+        achievements: {
+          unlocks: document.querySelector('.message-card:nth-child(4) .setting-item:nth-child(1) input').checked,
+          checkins: document.querySelector('.message-card:nth-child(4) .setting-item:nth-child(2) input').checked,
+          timeWarnings: document.querySelector('.message-card:nth-child(4) .setting-item:nth-child(3) input').checked
+        },
+        system: {
+          announcements: document.querySelector('.message-card:nth-child(5) .setting-item:nth-child(1) input').checked,
+          aiSuggestions: document.querySelector('.message-card:nth-child(5) .setting-item:nth-child(2) input').checked
+        },
+        frequency: document.querySelector('.frequency-option.active').textContent,
+        channels: {
+          inApp: document.querySelector('.channel-option:nth-child(1)').classList.contains('active'),
+          push: document.querySelector('.channel-option:nth-child(2)').classList.contains('active'),
+          email: document.querySelector('.channel-option:nth-child(3)').classList.contains('active'),
+          sms: document.querySelector('.channel-option:nth-child(4)').classList.contains('active')
+        }
+      };
+      
+      // 保存设置到localStorage
+      localStorage.setItem('jieshiAppMessageSettings', JSON.stringify(settings));
+      
+      // 显示保存成功动画
+      showSaveSuccess();
+    });
+    
+    // 显示保存成功动画
+    function showSaveSuccess() {
+      const button = document.querySelector('.action-button');
+      const originalText = button.textContent;
+      
+      button.textContent = '✓ 设置已保存';
+      button.style.background = 'linear-gradient(135deg, #4CAF50, #2ECC71)';
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = '';
+      }, 2000);
+    }
+    
+    // 保存默认消息数据
+    function saveDefaultMessageData() {
+      const defaultData = {
+        counters: {
+          unread: 12,
+          interaction: 36,
+          system: 8
+        },
+        latestMessage: {
+          title: '消息预览',
+          isNew: true,
+          time: '刚刚',
+          content: '恭喜你坚持戒断短视频已达7天！成功解锁"初心者"勋章，点击查看详情。'
+        }
+      };
+      
+      localStorage.setItem('jieshiAppMessages', JSON.stringify(defaultData));
+    }
+  </script>
+</body>
+</html> 

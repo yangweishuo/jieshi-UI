@@ -179,6 +179,259 @@
       background: linear-gradient(135deg, #009688, #4DB6AC);
     }
     
+    /* 季节性主题 */
+    .theme-spring {
+      background: linear-gradient(135deg, #9CCC65, #8BC34A);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .theme-spring::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.4) 2px, transparent 2px),
+        radial-gradient(circle at 30% 60%, rgba(255, 255, 255, 0.4) 2px, transparent 2px),
+        radial-gradient(circle at 60% 30%, rgba(255, 255, 255, 0.4) 2px, transparent 2px),
+        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.4) 2px, transparent 2px);
+      background-size: 100px 100px;
+      animation: float-petals 8s linear infinite;
+    }
+    
+    .theme-summer {
+      background: linear-gradient(135deg, #FFA726, #FFEB3B);
+      position: relative;
+    }
+    
+    .theme-summer::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+      animation: sun-shimmer 5s ease-in-out infinite;
+    }
+    
+    .theme-autumn {
+      background: linear-gradient(135deg, #FF7043, #BF360C);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .theme-autumn::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(255, 193, 7, 0.3) 5px, transparent 5px),
+        radial-gradient(circle at 40% 70%, rgba(255, 152, 0, 0.3) 4px, transparent 4px),
+        radial-gradient(circle at 70% 40%, rgba(230, 81, 0, 0.3) 6px, transparent 6px);
+      background-size: 80px 80px;
+      animation: fall-leaves 15s linear infinite;
+    }
+    
+    .theme-winter {
+      background: linear-gradient(135deg, #B3E5FC, #0D47A1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .theme-winter::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+        radial-gradient(circle at 30% 60%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+        radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.8) 1px, transparent 1px);
+      background-size: 100px 100px;
+      animation: snow-fall 10s linear infinite;
+    }
+    
+    @keyframes float-petals {
+      0% {
+        background-position: 0 0;
+      }
+      100% {
+        background-position: 100px 100px;
+      }
+    }
+    
+    @keyframes sun-shimmer {
+      0%, 100% {
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+    
+    @keyframes fall-leaves {
+      0% {
+        transform: rotate(0deg) translateY(-50px);
+      }
+      100% {
+        transform: rotate(20deg) translateY(50px);
+      }
+    }
+    
+    @keyframes snow-fall {
+      0% {
+        background-position: 0 0;
+      }
+      100% {
+        background-position: 50px 100px;
+      }
+    }
+    
+    /* 基于时间的主题 */
+    .theme-morning {
+      background: linear-gradient(135deg, #FF9800, #FFEB3B);
+    }
+    
+    .theme-afternoon {
+      background: linear-gradient(135deg, #29B6F6, #FFC107);
+    }
+    
+    .theme-evening {
+      background: linear-gradient(135deg, #5C6BC0, #E91E63);
+    }
+    
+    .theme-night {
+      background: linear-gradient(135deg, #212121, #3F51B5);
+    }
+    
+    /* 智能主题切换 */
+    .smart-theme-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .smart-theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    
+    .preview-container {
+      width: 100%;
+      height: 80px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      margin-top: 15px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .season-preview {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    
+    .season-preview.active {
+      opacity: 1;
+    }
+    
+    .preview-text {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      color: white;
+      font-size: 12px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    
+    .time-preview {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    
+    .time-preview.active {
+      opacity: 1;
+    }
+    
+    /* 开关样式 */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+    }
+    
+    input:checked + .slider {
+      background-color: #3498db;
+      background: linear-gradient(135deg, #3498db, #7C4DFF);
+    }
+    
+    input:focus + .slider {
+      box-shadow: 0 0 1px #3498db;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+    
+    .slider.round {
+      border-radius: 34px;
+    }
+    
+    .slider.round:before {
+      border-radius: 50%;
+    }
+    
+    /* 描述文本 */
+    .section-desc {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+    
     /* 夜间模式切换 */
     .display-mode {
       display: flex;
@@ -351,6 +604,78 @@
                 <label class="mode-toggle">
                   <input type="checkbox" id="dark-mode-toggle">
                   <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 季节性主题卡片 -->
+            <div class="theme-section">
+              <div class="section-title">
+                <i class="ri-sun-line"></i>
+                季节性主题
+              </div>
+              <p class="section-desc">根据当前季节自动调整应用的主题颜色</p>
+              
+              <div class="smart-theme-toggle">
+                <span>开启季节性主题</span>
+                <label class="switch">
+                  <input type="checkbox" id="season-theme-toggle">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              
+              <div class="preview-container">
+                <div class="season-preview theme-spring" data-season="春季">
+                  <div class="preview-text">春季主题</div>
+                </div>
+                <div class="season-preview theme-summer" data-season="夏季">
+                  <div class="preview-text">夏季主题</div>
+                </div>
+                <div class="season-preview theme-autumn" data-season="秋季">
+                  <div class="preview-text">秋季主题</div>
+                </div>
+                <div class="season-preview theme-winter" data-season="冬季">
+                  <div class="preview-text">冬季主题</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 时间智能主题卡片 -->
+            <div class="theme-section">
+              <div class="section-title">
+                <i class="ri-time-line"></i>
+                时间智能主题
+              </div>
+              <p class="section-desc">根据一天中的时间自动调整应用的主题颜色</p>
+              
+              <div class="smart-theme-toggle">
+                <span>开启时间智能主题</span>
+                <label class="switch">
+                  <input type="checkbox" id="time-theme-toggle">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              
+              <div class="preview-container">
+                <div class="time-preview theme-morning" data-time="早晨">
+                  <div class="preview-text">早晨主题 (6:00-11:59)</div>
+                </div>
+                <div class="time-preview theme-afternoon" data-time="下午">
+                  <div class="preview-text">下午主题 (12:00-17:59)</div>
+                </div>
+                <div class="time-preview theme-evening" data-time="傍晚">
+                  <div class="preview-text">傍晚主题 (18:00-21:59)</div>
+                </div>
+                <div class="time-preview theme-night" data-time="夜间">
+                  <div class="preview-text">夜间主题 (22:00-5:59)</div>
+                </div>
+              </div>
+              
+              <div class="smart-theme-toggle">
+                <span>深夜自动开启暗黑模式</span>
+                <label class="switch">
+                  <input type="checkbox" id="night-mode-toggle" checked>
+                  <span class="slider round"></span>
                 </label>
               </div>
             </div>
@@ -532,413 +857,231 @@
   
   <script src="script.js"></script>
   <script>
-    // 页面加载完成时应用过渡动画
     document.addEventListener('DOMContentLoaded', function() {
-      document.querySelector('.theme-screen').classList.add('page-transition');
-      // 加载保存的设置
-      loadThemeSettings();
-    });
-    
-    // 返回按钮点击事件 - 添加过渡动画
-    document.querySelector('.back-btn').addEventListener('click', function(e) {
-      e.preventDefault();
-      // 应用淡出动画
-      document.querySelector('.theme-screen').style.opacity = '0';
-      document.querySelector('.theme-screen').style.transform = 'translateY(20px)';
+      // 获取主题切换开关
+      const seasonThemeToggle = document.getElementById('season-theme-toggle');
+      const timeThemeToggle = document.getElementById('time-theme-toggle');
+      const nightModeToggle = document.getElementById('night-mode-toggle');
       
-      // 短暂延迟后再跳转回个人页面
-      setTimeout(() => {
+      // 季节性主题预览
+      const seasonPreviews = document.querySelectorAll('.season-preview');
+      let currentSeasonIndex = 0;
+      
+      // 时间智能主题预览
+      const timePreviews = document.querySelectorAll('.time-preview');
+      let currentTimeIndex = 0;
+      
+      // 返回按钮点击事件
+      document.querySelector('.back-btn').addEventListener('click', function() {
         window.location.href = 'profile.html';
-      }, 300);
-    });
-    
-    // 主题颜色选择
-    const colorThemes = document.querySelectorAll('.color-theme');
-    colorThemes.forEach(theme => {
-      theme.addEventListener('click', function() {
-        // 移除所有主题的active类
-        colorThemes.forEach(t => t.classList.remove('active'));
-        // 给当前点击的主题添加active类
-        this.classList.add('active');
-        
-        // 获取主题名
-        const themeName = this.getAttribute('data-theme');
-        
-        // 应用主题颜色
-        applyThemeColor(themeName);
-        
-        // 保存设置
-        saveThemeSettings();
-      });
-    });
-    
-    // 应用主题颜色
-    function applyThemeColor(themeName) {
-      const themeColor = getThemeColor(themeName);
-      document.documentElement.style.setProperty('--primary-color', themeColor);
-      
-      // 更新次要颜色和渐变
-      updateSecondaryColors(themeName);
-      
-      // 显示主题已应用提示
-      showToast(`已应用${getThemeDisplayName(themeName)}主题`);
-    }
-    
-    // 获取主题的中文名称
-    function getThemeDisplayName(theme) {
-      const themeNames = {
-        'blue': '蓝色',
-        'purple': '紫色',
-        'green': '绿色',
-        'orange': '橙色',
-        'red': '红色',
-        'teal': '青色'
-      };
-      return themeNames[theme] || '蓝色';
-    }
-    
-    // 更新次要颜色和渐变
-    function updateSecondaryColors(themeName) {
-      // 次要颜色和渐变根据主题颜色进行调整
-      const secondaryColors = {
-        'blue': {
-          secondary: '#00B0FF',
-          accent: '#7C4DFF',
-          gradient: 'linear-gradient(135deg, #3498db, #00B0FF)'
-        },
-        'purple': {
-          secondary: '#9C27B0',
-          accent: '#E040FB',
-          gradient: 'linear-gradient(135deg, #9C27B0, #7C4DFF)'
-        },
-        'green': {
-          secondary: '#4CAF50',
-          accent: '#8BC34A',
-          gradient: 'linear-gradient(135deg, #4CAF50, #8BC34A)'
-        },
-        'orange': {
-          secondary: '#FF9800',
-          accent: '#FFC107',
-          gradient: 'linear-gradient(135deg, #FF9800, #FFC107)'
-        },
-        'red': {
-          secondary: '#F44336',
-          accent: '#FF5252',
-          gradient: 'linear-gradient(135deg, #F44336, #FF5252)'
-        },
-        'teal': {
-          secondary: '#009688',
-          accent: '#4DB6AC',
-          gradient: 'linear-gradient(135deg, #009688, #4DB6AC)'
-        }
-      };
-      
-      const colors = secondaryColors[themeName] || secondaryColors['blue'];
-      
-      document.documentElement.style.setProperty('--secondary-color', colors.secondary);
-      document.documentElement.style.setProperty('--accent-color', colors.accent);
-      document.documentElement.style.setProperty('--primary-gradient', colors.gradient);
-    }
-    
-    // 获取对应主题的颜色
-    function getThemeColor(theme) {
-      const themeColors = {
-        'blue': '#3498db',
-        'purple': '#9C27B0',
-        'green': '#4CAF50',
-        'orange': '#FF9800',
-        'red': '#F44336',
-        'teal': '#009688'
-      };
-      return themeColors[theme] || '#3498db';
-    }
-    
-    // 夜间模式切换
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
-    darkModeToggle.addEventListener('change', function() {
-      toggleDarkMode(this.checked);
-      saveThemeSettings();
-    });
-    
-    // 保存主题设置
-    function saveThemeSettings() {
-      // 获取当前激活的主题颜色
-      let activeTheme = 'blue';
-      document.querySelectorAll('.color-theme').forEach(theme => {
-        if (theme.classList.contains('active')) {
-          activeTheme = theme.getAttribute('data-theme');
-        }
       });
       
-      // 获取夜间模式状态
-      const isDarkMode = document.getElementById('dark-mode-toggle').checked;
-      
-      // 获取字体大小
-      const fontSize = document.querySelector('.font-size-value').textContent;
-      
-      // 获取字体样式
-      let fontFamily = 'PingFang SC';
-      document.querySelectorAll('.font-settings .custom-option').forEach(option => {
-        if (option.classList.contains('active')) {
-          fontFamily = option.style.fontFamily;
-        }
-      });
-      
-      // 获取界面动效设置
-      const animationToggles = document.querySelectorAll('.theme-section:nth-child(3) .display-mode .mode-toggle input');
-      const effectSettings = {
-        animation: animationToggles[0].checked,
-        particles: animationToggles[1].checked,
-        performanceMode: animationToggles[2].checked
-      };
-      
-      // 创建设置对象
-      const settings = {
-        theme: activeTheme,
-        darkMode: isDarkMode,
-        fontSize: fontSize,
-        fontFamily: fontFamily,
-        effects: effectSettings
-      };
-      
-      // 保存到localStorage
-      localStorage.setItem('themeSettings', JSON.stringify(settings));
-      
-      // 同步到profile页面的主题选择器
-      syncWithProfilePage(activeTheme);
-    }
-    
-    // 同步到个人页面的主题选择器
-    function syncWithProfilePage(themeName) {
-      // 在本地存储中保存当前主题，让个人页面能够读取
-      localStorage.setItem('currentTheme', themeName);
-    }
-    
-    // 加载保存的主题设置
-    function loadThemeSettings() {
-      const savedSettings = localStorage.getItem('themeSettings');
-      if (savedSettings) {
-        const settings = JSON.parse(savedSettings);
-        
-        // 应用主题颜色
-        if (settings.theme) {
-          // 找到对应主题并激活
-          document.querySelectorAll('.color-theme').forEach(theme => {
-            if (theme.getAttribute('data-theme') === settings.theme) {
-              theme.classList.add('active');
-            } else {
-              theme.classList.remove('active');
-            }
-          });
+      // 颜色主题选择
+      const colorThemes = document.querySelectorAll('.color-theme');
+      colorThemes.forEach(theme => {
+        theme.addEventListener('click', function() {
+          // 移除所有active类
+          colorThemes.forEach(t => t.classList.remove('active'));
+          // 给当前点击的主题添加active类
+          this.classList.add('active');
           
-          // 应用主题颜色
-          applyThemeColor(settings.theme);
-        }
-        
-        // 应用夜间模式
-        if (settings.darkMode !== undefined) {
-          document.getElementById('dark-mode-toggle').checked = settings.darkMode;
-        }
-        
-        // 应用字体大小
-        if (settings.fontSize) {
-          document.querySelector('.font-size-value').textContent = settings.fontSize;
-          // 计算滑块位置
-          const sizeValue = parseInt(settings.fontSize);
-          const position = (sizeValue - 12) / 8; // 12-20px范围
-          document.getElementById('font-size-handle').style.left = `${position * 100}%`;
-        }
-        
-        // 应用字体样式
-        if (settings.fontFamily) {
-          document.querySelectorAll('.font-settings .custom-option').forEach(option => {
-            if (option.style.fontFamily.includes(settings.fontFamily)) {
-              option.classList.add('active');
-            } else {
-              option.classList.remove('active');
-            }
-          });
-        }
-        
-        // 应用界面动效设置
-        if (settings.effects) {
-          const animationToggles = document.querySelectorAll('.theme-section:nth-child(3) .display-mode .mode-toggle input');
-          if (animationToggles.length >= 3) {
-            animationToggles[0].checked = settings.effects.animation;
-            animationToggles[1].checked = settings.effects.particles;
-            animationToggles[2].checked = settings.effects.performanceMode;
+          // 切换为手动主题时，关闭自动主题
+          seasonThemeToggle.checked = false;
+          timeThemeToggle.checked = false;
+          
+          // 存储用户选择的主题（实际应用中使用localStorage或发送到服务器）
+          const themeClass = Array.from(this.classList).find(cls => cls.startsWith('theme-'));
+          console.log('已选择主题:', themeClass);
+        });
+      });
+      
+      // 季节性主题切换
+      seasonThemeToggle.addEventListener('change', function() {
+        if (this.checked) {
+          // 开启季节性主题时，关闭时间智能主题
+          timeThemeToggle.checked = false;
+          
+          // 获取当前季节
+          const currentSeason = getCurrentSeason();
+          console.log('当前季节:', currentSeason);
+          
+          // 应用季节性主题
+          applySeasonTheme(currentSeason);
+          
+          // 开始季节预览轮播
+          startSeasonPreview();
+        } else {
+          // 停止季节预览轮播
+          stopSeasonPreview();
+          
+          // 恢复默认选中的主题
+          const activeTheme = document.querySelector('.color-theme.active');
+          if (activeTheme) {
+            const themeClass = Array.from(activeTheme.classList).find(cls => cls.startsWith('theme-'));
+            console.log('恢复主题:', themeClass);
           }
         }
-      }
-    }
-    
-    // 显示提示消息
-    function showToast(message) {
-      const toast = document.createElement('div');
-      toast.style.cssText = `
-        position: fixed;
-        bottom: 20%;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--primary-color);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 20px;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      `;
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      
-      // 显示然后淡出
-      setTimeout(() => {
-        toast.style.opacity = '1';
-      }, 10);
-      
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => {
-          toast.remove();
-        }, 300);
-      }, 2000);
-    }
-    
-    // 字体大小调整模拟
-    const fontSizeHandle = document.getElementById('font-size-handle');
-    const fontSizeValue = document.querySelector('.font-size-value');
-    let isDragging = false;
-    
-    fontSizeHandle.addEventListener('mousedown', function(e) {
-      isDragging = true;
-      e.preventDefault();
-    });
-    
-    document.addEventListener('mousemove', function(e) {
-      if (!isDragging) return;
-      
-      const slider = document.querySelector('.font-size-slider');
-      const rect = slider.getBoundingClientRect();
-      let position = (e.clientX - rect.left) / rect.width;
-      
-      // 限制在0-1范围内
-      position = Math.max(0, Math.min(1, position));
-      
-      // 更新滑块位置
-      fontSizeHandle.style.left = `${position * 100}%`;
-      
-      // 计算字体大小 (12px - 20px)
-      const fontSize = Math.floor(12 + position * 8);
-      fontSizeValue.textContent = `${fontSize}px`;
-      
-      // 动态应用字体大小
-      applyFontSize(fontSize);
-    });
-    
-    document.addEventListener('mouseup', function() {
-      if (isDragging) {
-        isDragging = false;
-        saveThemeSettings();
-      }
-    });
-    
-    // 应用字体大小
-    function applyFontSize(size) {
-      document.documentElement.style.setProperty('--font-size', `${size}px`);
-    }
-    
-    // 添加触摸支持
-    fontSizeHandle.addEventListener('touchstart', function(e) {
-      isDragging = true;
-      e.preventDefault();
-    });
-    
-    document.addEventListener('touchmove', function(e) {
-      if (!isDragging) return;
-      
-      const slider = document.querySelector('.font-size-slider');
-      const rect = slider.getBoundingClientRect();
-      let position = (e.touches[0].clientX - rect.left) / rect.width;
-      
-      // 限制在0-1范围内
-      position = Math.max(0, Math.min(1, position));
-      
-      // 更新滑块位置
-      fontSizeHandle.style.left = `${position * 100}%`;
-      
-      // 计算字体大小 (12px - 20px)
-      const fontSize = Math.floor(12 + position * 8);
-      fontSizeValue.textContent = `${fontSize}px`;
-      
-      // 动态应用字体大小
-      applyFontSize(fontSize);
-    });
-    
-    document.addEventListener('touchend', function() {
-      if (isDragging) {
-        isDragging = false;
-        saveThemeSettings();
-      }
-    });
-    
-    // 字体样式选择
-    document.querySelectorAll('.custom-options .custom-option').forEach(option => {
-      option.addEventListener('click', function() {
-        const parent = this.parentElement;
-        parent.querySelectorAll('.custom-option').forEach(opt => {
-          opt.classList.remove('active');
-        });
-        this.classList.add('active');
-        
-        // 应用字体样式
-        const fontFamily = this.style.fontFamily;
-        document.documentElement.style.setProperty('--main-font', fontFamily);
-        
-        // 保存设置
-        saveThemeSettings();
       });
-    });
-    
-    // 界面动效设置改变时保存
-    document.querySelectorAll('.theme-section:nth-child(3) .display-mode .mode-toggle input').forEach(toggle => {
-      toggle.addEventListener('change', saveThemeSettings);
-    });
-    
-    // 恢复默认设置
-    document.querySelector('button').addEventListener('click', function() {
-      if (confirm('确定要恢复所有默认设置吗？')) {
-        // 重置所有设置
-        colorThemes.forEach(t => t.classList.remove('active'));
-        document.querySelector('.theme-blue').classList.add('active');
+      
+      // 时间智能主题切换
+      timeThemeToggle.addEventListener('change', function() {
+        if (this.checked) {
+          // 开启时间智能主题时，关闭季节性主题
+          seasonThemeToggle.checked = false;
+          
+          // 获取当前时间段
+          const currentTimeSlot = getCurrentTimeSlot();
+          console.log('当前时间段:', currentTimeSlot);
+          
+          // 应用时间智能主题
+          applyTimeTheme(currentTimeSlot);
+          
+          // 开始时间预览轮播
+          startTimePreview();
+        } else {
+          // 停止时间预览轮播
+          stopTimePreview();
+          
+          // 恢复默认选中的主题
+          const activeTheme = document.querySelector('.color-theme.active');
+          if (activeTheme) {
+            const themeClass = Array.from(activeTheme.classList).find(cls => cls.startsWith('theme-'));
+            console.log('恢复主题:', themeClass);
+          }
+        }
+      });
+      
+      // 深夜暗黑模式切换
+      nightModeToggle.addEventListener('change', function() {
+        console.log('深夜暗黑模式:', this.checked ? '已开启' : '已关闭');
+      });
+      
+      // 获取当前季节
+      function getCurrentSeason() {
+        const now = new Date();
+        const month = now.getMonth() + 1; // 0-11表示1-12月
         
-        // 重置开关
-        document.querySelectorAll('.mode-toggle input').forEach(toggle => {
-          toggle.checked = true;
-        });
-        document.getElementById('dark-mode-toggle').checked = false;
-        
-        // 重置字体大小滑块
-        fontSizeHandle.style.left = '60%';
-        fontSizeValue.textContent = '16px';
-        
-        // 重置字体样式
-        const fontOptions = document.querySelectorAll('.font-settings .custom-option');
-        fontOptions.forEach(opt => opt.classList.remove('active'));
-        fontOptions[0].classList.add('active');
-        
-        // 应用默认主题
-        applyThemeColor('blue');
-        toggleDarkMode(false);
-        applyFontSize(16);
-        document.documentElement.style.setProperty('--main-font', "'PingFang SC', 'Helvetica Neue', Arial, sans-serif");
-        
-        // 保存默认设置
-        saveThemeSettings();
-        
-        // 提示用户
-        showToast('已恢复默认设置');
+        if (month >= 3 && month <= 5) return '春季';
+        if (month >= 6 && month <= 8) return '夏季';
+        if (month >= 9 && month <= 11) return '秋季';
+        return '冬季'; // 12, 1, 2月
       }
+      
+      // 获取当前时间段
+      function getCurrentTimeSlot() {
+        const now = new Date();
+        const hour = now.getHours();
+        
+        if (hour >= 6 && hour < 12) return '早晨';
+        if (hour >= 12 && hour < 18) return '下午';
+        if (hour >= 18 && hour < 22) return '傍晚';
+        return '夜间'; // 22-5点
+      }
+      
+      // 应用季节性主题
+      function applySeasonTheme(season) {
+        // 移除所有季节主题类
+        document.querySelectorAll('.season-preview').forEach(preview => {
+          if (preview.dataset.season === season) {
+            preview.classList.add('active');
+            
+            // 这里应用对应的主题到整个应用（实际应用中）
+            console.log('应用季节主题:', season);
+          } else {
+            preview.classList.remove('active');
+          }
+        });
+      }
+      
+      // 应用时间智能主题
+      function applyTimeTheme(timeSlot) {
+        // 移除所有时间主题类
+        document.querySelectorAll('.time-preview').forEach(preview => {
+          if (preview.dataset.time === timeSlot) {
+            preview.classList.add('active');
+            
+            // 这里应用对应的主题到整个应用（实际应用中）
+            console.log('应用时间主题:', timeSlot);
+            
+            // 如果是夜间且开启了夜间模式，则应用暗黑模式
+            if (timeSlot === '夜间' && nightModeToggle.checked) {
+              console.log('应用暗黑模式');
+              // 应用暗黑模式的代码（实际应用中）
+            }
+          } else {
+            preview.classList.remove('active');
+          }
+        });
+      }
+      
+      // 季节预览轮播
+      let seasonPreviewInterval;
+      function startSeasonPreview() {
+        // 先显示当前季节
+        seasonPreviews.forEach(preview => preview.classList.remove('active'));
+        seasonPreviews[currentSeasonIndex].classList.add('active');
+        
+        // 启动轮播
+        seasonPreviewInterval = setInterval(() => {
+          seasonPreviews[currentSeasonIndex].classList.remove('active');
+          currentSeasonIndex = (currentSeasonIndex + 1) % seasonPreviews.length;
+          seasonPreviews[currentSeasonIndex].classList.add('active');
+        }, 3000);
+      }
+      
+      function stopSeasonPreview() {
+        clearInterval(seasonPreviewInterval);
+        seasonPreviews.forEach(preview => preview.classList.remove('active'));
+      }
+      
+      // 时间预览轮播
+      let timePreviewInterval;
+      function startTimePreview() {
+        // 先显示当前时间段
+        timePreviews.forEach(preview => preview.classList.remove('active'));
+        timePreviews[currentTimeIndex].classList.add('active');
+        
+        // 启动轮播
+        timePreviewInterval = setInterval(() => {
+          timePreviews[currentTimeIndex].classList.remove('active');
+          currentTimeIndex = (currentTimeIndex + 1) % timePreviews.length;
+          timePreviews[currentTimeIndex].classList.add('active');
+        }, 3000);
+      }
+      
+      function stopTimePreview() {
+        clearInterval(timePreviewInterval);
+        timePreviews.forEach(preview => preview.classList.remove('active'));
+      }
+      
+      // 初始化应用当前季节/时间的主题
+      const currentSeason = getCurrentSeason();
+      const currentTimeSlot = getCurrentTimeSlot();
+      
+      // 预设季节预览的当前季节
+      seasonPreviews.forEach((preview, index) => {
+        if (preview.dataset.season === currentSeason) {
+          currentSeasonIndex = index;
+        }
+      });
+      
+      // 预设时间预览的当前时间段
+      timePreviews.forEach((preview, index) => {
+        if (preview.dataset.time === currentTimeSlot) {
+          currentTimeIndex = index;
+        }
+      });
+      
+      // 如果需要在页面加载时自动应用当前季节或时间主题，取消注释以下代码
+      /*
+      if (seasonThemeToggle.checked) {
+        applySeasonTheme(currentSeason);
+        startSeasonPreview();
+      } else if (timeThemeToggle.checked) {
+        applyTimeTheme(currentTimeSlot);
+        startTimePreview();
+      }
+      */
     });
   </script>
 </body>

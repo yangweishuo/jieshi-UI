@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戒视APP - 更新历史</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--main-font);
+      background-color: #f5f5f5;
+    }
+    
+    /* 导航栏 */
+    .navbar {
+      width: 100%;
+      height: 70px;
+      background-color: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    .navbar-content {
+      max-width: 1200px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+    
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+      box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+    }
+    
+    .logo-icon i {
+      font-size: 24px;
+      color: white;
+    }
+    
+    .logo-text {
+      font-weight: bold;
+      font-size: 22px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .navbar-links {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .navbar-link {
+      color: #666;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+    }
+    
+    .navbar-link i {
+      margin-right: 5px;
+    }
+    
+    .navbar-link:hover {
+      color: var(--secondary-color);
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 90px auto 0;
+      padding: 30px 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .page-title {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .page-subtitle {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    /* 更新日志样式 */
+    .update-timeline {
+      position: relative;
+      padding-left: 30px;
+      margin-top: 50px;
+    }
+    
+    .update-timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(to bottom, #2ECC71, #1E88E5);
+      border-radius: 4px;
+    }
+    
+    .update-entry {
+      position: relative;
+      margin-bottom: 50px;
+      padding-bottom: 20px;
+    }
+    
+    .update-entry:last-child {
+      margin-bottom: 0;
+    }
+    
+    .update-dot {
+      position: absolute;
+      left: -40px;
+      top: 10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+      z-index: 1;
+    }
+    
+    .update-version {
+      display: inline-block;
+      padding: 5px 15px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      color: white;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 10px rgba(30, 136, 229, 0.2);
+    }
+    
+    .update-date {
+      font-size: 14px;
+      color: #999;
+      margin-left: 15px;
+    }
+    
+    .update-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    
+    .update-description {
+      font-size: 16px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .update-features {
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(5px);
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    
+    .feature-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .feature-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(30, 136, 229, 0.1));
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+    
+    .feature-icon i {
+      font-size: 16px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .feature-text {
+      flex: 1;
+    }
+    
+    .feature-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .feature-desc {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+    
+    .update-images {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      overflow-x: auto;
+      padding: 10px 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(30, 136, 229, 0.3) transparent;
+    }
+    
+    .update-images::-webkit-scrollbar {
+      height: 6px;
+    }
+    
+    .update-images::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .update-images::-webkit-scrollbar-thumb {
+      background-color: rgba(30, 136, 229, 0.3);
+      border-radius: 3px;
+    }
+    
+    .update-image {
+      width: 180px;
+      height: 320px;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+    
+    .update-image:hover {
+      transform: scale(1.03);
+    }
+    
+    .footer {
+      margin-top: 60px;
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 14px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    /* 返回顶部按钮 */
+    .back-to-top {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      border-radius: 50%;
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      box-shadow: 0 3px 15px rgba(30, 136, 229, 0.4);
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s;
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .back-to-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(30, 136, 229, 0.6);
+    }
+    
+    .back-to-top i {
+      font-size: 24px;
+    }
+    
+    /* 返回首页按钮 */
+    .back-to-home {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      background: white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s;
+    }
+    
+    .back-to-home:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .back-to-home i {
+      font-size: 24px;
+      color: var(--primary-color);
+      background: linear-gradient(135deg, #2ECC71, #1E88E5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .navbar-links {
+        display: none;
+      }
+      
+      .update-timeline {
+        padding-left: 20px;
+      }
+      
+      .update-dot {
+        left: -30px;
+      }
+      
+      .back-to-top, .back-to-home {
+        width: 40px;
+        height: 40px;
+        bottom: 20px;
+      }
+      
+      .back-to-home {
+        left: 20px;
+      }
+      
+      .back-to-top {
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <div class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-logo">
+        <div class="logo-icon">
+          <i class="ri-eye-off-line"></i>
+        </div>
+        <div class="logo-text">戒视APP</div>
+      </div>
+      <div class="navbar-links">
+        <a href="index.html" class="navbar-link"><i class="ri-home-5-line"></i> 首页</a>
+        <a href="index.html#pages" class="navbar-link"><i class="ri-pages-line"></i> 页面预览</a>
+        <a href="update-history.html" class="navbar-link active"><i class="ri-history-line"></i> 更新历史</a>
+        <a href="https://github.com/yangweishuo/jieshi-UI" target="_blank" class="navbar-link"><i class="ri-github-line"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <h1 class="page-title">更新历史</h1>
+      <p class="page-subtitle">戒视APP UI/UX设计更新记录</p>
+    </div>
+    
+    <div class="update-timeline">
+      <!-- v1.0.0 更新 -->
+      <div class="update-entry">
+        <div class="update-dot"></div>
+        <span class="update-version">v1.0.0</span>
+        <span class="update-date">2023年10月15日</span>
+        <h2 class="update-title">正式版发布</h2>
+        <p class="update-description">完成所有核心功能的UI/UX设计，优化整体交互体验，增强视觉一致性。</p>
+        
+        <div class="update-features">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-palette-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">主题设置完善</h3>
+              <p class="feature-desc">实现季节性主题和时间智能主题功能，支持根据时间自动切换主题风格。</p>
+            </div>
+          </div>
+          
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-notification-4-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">消息中心优化</h3>
+              <p class="feature-desc">重新设计消息中心页面，优化通知流程，增强社交互动功能。</p>
+            </div>
+          </div>
+          
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-layout-masonry-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">统一视觉风格</h3>
+              <p class="feature-desc">统一全部页面的UI组件和交互方式，提升整体品牌识别度。</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="update-images">
+          <img src="https://dummyimage.com/180x320/3498DB/ffffff&text=主题设置" alt="主题设置页面" class="update-image">
+          <img src="https://dummyimage.com/180x320/2ECC71/ffffff&text=消息中心" alt="消息中心页面" class="update-image">
+          <img src="https://dummyimage.com/180x320/9C27B0/ffffff&text=统一风格" alt="统一UI风格" class="update-image">
+        </div>
+      </div>
+      
+      <!-- v0.9.1 更新 -->
+      <div class="update-entry">
+        <div class="update-dot"></div>
+        <span class="update-version">v0.9.1</span>
+        <span class="update-date">2023年9月28日</span>
+        <h2 class="update-title">交互体验优化</h2>
+        <p class="update-description">优化社交互动流程，移除冗余功能，提升核心功能体验。</p>
+        
+        <div class="update-features">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-chat-3-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">优化互动消息</h3>
+              <p class="feature-desc">简化消息交互流程，移除虚拟礼物功能，聚焦真实社交互动。</p>
+            </div>
+          </div>
+          
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-user-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">个人中心创作功能</h3>
+              <p class="feature-desc">新增个人中心内容创作模块，支持用户分享戒断心得和成功经验。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- v0.9.0 更新 -->
+      <div class="update-entry">
+        <div class="update-dot"></div>
+        <span class="update-version">v0.9.0</span>
+        <span class="update-date">2023年9月15日</span>
+        <h2 class="update-title">完整UI原型实现</h2>
+        <p class="update-description">完成所有核心功能的UI设计和交互原型，准备进入最终测试阶段。</p>
+        
+        <div class="update-features">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-layout-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">完整页面实现</h3>
+              <p class="feature-desc">实现全部应用页面，完成所有核心功能的视觉和交互设计。</p>
+            </div>
+          </div>
+          
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-navigation-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">交互流程优化</h3>
+              <p class="feature-desc">优化页面间导航和转场动画，提升整体操作流畅性。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- v0.8.0 更新 -->
+      <div class="update-entry">
+        <div class="update-dot"></div>
+        <span class="update-version">v0.8.0</span>
+        <span class="update-date">2023年8月30日</span>
+        <h2 class="update-title">社区和排行榜功能</h2>
+        <p class="update-description">增加社区内容分享和时长排行榜功能，强化社交激励机制。</p>
+        
+        <div class="update-features">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-group-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">社区功能</h3>
+              <p class="feature-desc">设计社区页面，支持用户分享戒断经验和心得，增强用户间互动。</p>
+            </div>
+          </div>
+          
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-trophy-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">排行榜系统</h3>
+              <p class="feature-desc">实现时长排行榜页面，展示用户戒断时长排名和趋势图表，激励用户坚持。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- v0.7.0 更新 -->
+      <div class="update-entry">
+        <div class="update-dot"></div>
+        <span class="update-version">v0.7.0</span>
+        <span class="update-date">2023年8月15日</span>
+        <h2 class="update-title">3D勋章墙和成就系统</h2>
+        <p class="update-description">实现交互式3D勋章墙，完善成就系统的视觉反馈。</p>
+        
+        <div class="update-features">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-medal-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">3D勋章墙</h3>
+              <p class="feature-desc">设计交互式3D勋章展示墙，支持旋转和缩放操作，提升成就展示体验。</p>
+            </div>
+          </div>
+          
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-award-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">成就解锁流程</h3>
+              <p class="feature-desc">优化成就解锁流程和视觉反馈，增加解锁动画和声音效果。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- v0.6.0 更新 -->
+      <div class="update-entry">
+        <div class="update-dot"></div>
+        <span class="update-version">v0.6.0</span>
+        <span class="update-date">2023年7月30日</span>
+        <h2 class="update-title">AI助手和分析功能</h2>
+        <p class="update-description">添加智能AI助手和数据分析功能，为用户提供个性化建议和戒断方案。</p>
+        
+        <div class="update-features">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-robot-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">AI助手界面</h3>
+              <p class="feature-desc">设计对话式AI助手界面，提供情感支持和戒断建议。</p>
+            </div>
+          </div>
+          
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="ri-radar-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3 class="feature-title">成瘾分析页面</h3>
+              <p class="feature-desc">实现基于用户数据的成瘾风险分析页面，展示多维度评估结果。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>© 2025 戒视APP - UI/UX设计</p>
+    </div>
+  </div>
+  
+  <!-- 返回首页按钮 -->
+  <div class="back-to-home" onclick="window.location.href='index.html'">
+    <i class="ri-home-5-line"></i>
+  </div>
+  
+  <!-- 返回顶部按钮 -->
+  <div class="back-to-top">
+    <i class="ri-arrow-up-line"></i>
+  </div>
+  
+  <script>
+    // 返回顶部按钮逻辑
+    const backToTopButton = document.querySelector('.back-to-top');
+    
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopButton.classList.add('visible');
+      } else {
+        backToTopButton.classList.remove('visible');
+      }
+    });
+    
+    backToTopButton.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // 添加当前页面导航高亮
+    document.addEventListener('DOMContentLoaded', () => {
+      const navLinks = document.querySelectorAll('.navbar-link');
+      const currentPath = window.location.pathname.split('/').pop();
+      
+      navLinks.forEach(link => {
+        const linkPath = link.getAttribute('href').split('/').pop();
+        if (linkPath === currentPath) {
+          link.style.color = '#1E88E5';
+          link.style.fontWeight = '700';
+        }
+      });
+    });
+  </script>
+</body>
+</html> 

@@ -1196,28 +1196,30 @@
                   <i class="ri-message-3-line"></i>
                   消息中心
                 </div>
-                <a href="#" class="view-all">
+                <a href="messages.html" class="view-all">
                   查看全部 <i class="ri-arrow-right-s-line"></i>
                 </a>
               </div>
               
-              <div class="message-item">
-                <div class="message-icon like">
-                  <i class="ri-heart-fill like"></i>
+              <div id="messages-container">
+                <div class="message-item">
+                  <div class="message-icon like">
+                    <i class="ri-heart-fill like"></i>
+                  </div>
+                  <div class="message-content">
+                    <div class="message-text">张小月赞了你的动态</div>
+                    <div class="message-time">10分钟前</div>
+                  </div>
                 </div>
-                <div class="message-content">
-                  <div class="message-text">张小月赞了你的动态</div>
-                  <div class="message-time">10分钟前</div>
-                </div>
-              </div>
-              
-              <div class="message-item">
-                <div class="message-icon task">
-                  <i class="ri-task-line task"></i>
-                </div>
-                <div class="message-content">
-                  <div class="message-text">小组"专注学习"发布了新任务</div>
-                  <div class="message-time">2小时前</div>
+                
+                <div class="message-item">
+                  <div class="message-icon task">
+                    <i class="ri-task-line task"></i>
+                  </div>
+                  <div class="message-content">
+                    <div class="message-text">小组"专注学习"发布了新任务</div>
+                    <div class="message-time">2小时前</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1305,7 +1307,48 @@
       
       // 应用已保存的主题设置
       applySavedThemeSettings();
+      
+      // 加载消息中心数据
+      loadMessagesData();
     });
+    
+    // 加载消息中心数据
+    function loadMessagesData() {
+      const savedMessages = localStorage.getItem('jieshiAppMessages');
+      if (savedMessages) {
+        const messageData = JSON.parse(savedMessages);
+        
+        // 更新未读消息数
+        if (messageData.counters && messageData.counters.unread) {
+          const notificationBadge = document.querySelector('.menu-icon .notification-badge');
+          if (notificationBadge) {
+            notificationBadge.textContent = messageData.counters.unread;
+          }
+        }
+      } else {
+        // 如果没有保存的数据，初始化默认数据
+        initializeDefaultMessagesData();
+      }
+    }
+    
+    // 初始化默认消息数据
+    function initializeDefaultMessagesData() {
+      const defaultData = {
+        counters: {
+          unread: 5,
+          interaction: 36,
+          system: 8
+        },
+        latestMessage: {
+          title: '消息预览',
+          isNew: true,
+          time: '刚刚',
+          content: '恭喜你坚持戒断短视频已达7天！成功解锁"初心者"勋章，点击查看详情。'
+        }
+      };
+      
+      localStorage.setItem('jieshiAppMessages', JSON.stringify(defaultData));
+    }
     
     // 应用保存的主题设置
     function applySavedThemeSettings() {
